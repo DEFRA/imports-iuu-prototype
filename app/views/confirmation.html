@@ -1,0 +1,77 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Import notification submitted" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">
+        Import notification submitted
+      </h1>
+      <div class="govuk-panel__body">
+        Your reference number<br>
+        <strong>{{ data['reference-number'] or 'IMP-2025-' + range(100000, 999999) | random }}</strong>
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-m">What happens next</h2>
+
+    <p class="govuk-body">We have sent your import notification to the Border Control Post at <strong>{{ data['port-of-entry'] | capitalize }}</strong>.</p>
+
+    <p class="govuk-body">The border control post will review your notification. You should expect to hear from them:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>before your consignment arrives if there are any issues with your documentation</li>
+      <li>at the border when your consignment is inspected</li>
+    </ul>
+
+    <div class="govuk-inset-text">
+      <p>You must ensure the driver or vessel master has a printed or digital copy of this notification reference number when arriving at the border.</p>
+    </div>
+
+    <h2 class="govuk-heading-m">Your consignment summary</h2>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Importer</dt>
+        <dd class="govuk-summary-list__value">{{ data['importer-name'] }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Port of entry</dt>
+        <dd class="govuk-summary-list__value">{{ data['port-of-entry'] | capitalize }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Estimated arrival</dt>
+        <dd class="govuk-summary-list__value">
+          {{ data['arrival-date-day'] }}/{{ data['arrival-date-month'] }}/{{ data['arrival-date-year'] }}
+          at {{ data['arrival-time-hour'] }}:{{ data['arrival-time-minute'] }}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Number of species</dt>
+        <dd class="govuk-summary-list__value">
+          {% if data['species-list'] %}{{ data['species-list'].length }}{% else %}0{% endif %}
+        </dd>
+      </div>
+    </dl>
+
+    <p class="govuk-body">A confirmation email has been sent to <strong>{{ data['importer-email'] }}</strong>.</p>
+
+    <h2 class="govuk-heading-m">If you need to make changes</h2>
+
+    <p class="govuk-body">To amend or cancel this notification, contact the DEFRA Fish Import Team quoting your reference number:</p>
+    <ul class="govuk-list">
+      <li>Email: <a href="mailto:fish.imports@defra.gov.uk" class="govuk-link">fish.imports@defra.gov.uk</a></li>
+      <li>Telephone: 0300 020 0301</li>
+    </ul>
+
+    <div class="govuk-button-group">
+      <a href="/" class="govuk-link">Submit another import notification</a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

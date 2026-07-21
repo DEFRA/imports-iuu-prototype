@@ -1,0 +1,268 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Upload Non-Manipulation Declarations" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Supporting documents</span>
+    <h1 class="govuk-heading-l">Upload a Non-Manipulation Declaration</h1>
+
+    <p class="govuk-body">A Non-Manipulation Declaration (NMD) is required when fish products have been transported through or stored in a third country before being imported into Great Britain. It confirms the goods were not altered during transit or storage.</p>
+
+    {% if data['non-manipulation-documents'] and data['non-manipulation-documents'].length > 0 %}
+    <h2 class="govuk-heading-m">Documents uploaded</h2>
+    <dl class="govuk-summary-list govuk-!-margin-bottom-6">
+      {% for doc in data['non-manipulation-documents'] %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ doc.reference }}</dt>
+        <dd class="govuk-summary-list__value">{{ doc.storageCountry }}{% if doc.facilityName %} · {{ doc.facilityName }}{% endif %}</dd>
+        <dd class="govuk-summary-list__actions">
+          <a href="/remove-nmd?index={{ loop.index0 }}" class="govuk-link">Remove</a>
+        </dd>
+      </div>
+      {% endfor %}
+    </dl>
+    {% endif %}
+
+    <form action="/non-manipulation-declaration" method="post">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="nmd-file">Upload Non-Manipulation Declaration</label>
+        <div id="nmd-file-hint" class="govuk-hint">PDF, JPEG or PNG. Maximum file size 10MB.</div>
+        <input class="govuk-file-upload" id="nmd-file" name="nmd-file" type="file"
+          aria-describedby="nmd-file-hint" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-ref">NMD document number</label>
+                <input class="govuk-input govuk-input--width-20" id="nmd-ref" name="nmd-ref" type="text" value="{{ data['nmd-ref'] }}">
+              </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-cc-reference">
+                  Catch Certificate number this relates to
+                </label>
+                <select class="govuk-select" id="nmd-cc-reference" name="nmd-cc-reference">
+                  <option value="">Select a Catch Certificate</option>
+                  {% for cert in data['catch-certificates'] %}
+                  <option value="{{ cert.reference }}" data-declared-volume="{{ cert.declaredVolume }}"
+                    {% if data['nmd-cc-reference'] == cert.reference %}selected{% endif %}>
+                    {{ cert.reference }}
+                    {% if cert.species %} — {{ cert.species }}{% endif %}
+                    {% if cert.declaredVolume %} — {{ cert.declaredVolume }}kg{% endif %}
+                    {% if cert.vesselName %} — {{ cert.vesselName }}{% endif %}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-storage-country">Country of transit or storage</label>
+                <input class="govuk-input govuk-input--width-20" id="nmd-storage-country" name="nmd-storage-country"
+                  type="text" value="{{ data['nmd-storage-country'] or data['country-of-export'] }}">
+              </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-facility-name">Storage facility name</label>
+                <input class="govuk-input" id="nmd-facility-name" name="nmd-facility-name" type="text"
+                  value="{{ data['nmd-facility-name'] }}">
+              </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-facility-approval">
+                  Facility approval number (if applicable)
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="nmd-facility-approval" name="nmd-facility-approval"
+                  type="text">
+              </div>
+
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                    How were the goods stored?
+                  </legend>
+                  <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="storage-condition-1" name="storage-conditions"
+                        type="checkbox" value="chilled" {% if data['storage-conditions'] == 'chilled' or (data['storage-conditions'] and 'chilled' in data['storage-conditions']) %}checked{% endif %}>
+                      <label class="govuk-label govuk-checkboxes__label" for="storage-condition-1">Chilled</label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="storage-condition-2" name="storage-conditions"
+                        type="checkbox" value="frozen" {% if data['storage-conditions'] == 'frozen' or (data['storage-conditions'] and 'frozen' in data['storage-conditions']) %}checked{% endif %}>
+                      <label class="govuk-label govuk-checkboxes__label" for="storage-condition-2">Frozen</label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="storage-condition-3" name="storage-conditions"
+                        type="checkbox" value="other" {% if data['storage-conditions'] == 'other' or (data['storage-conditions'] and 'other' in data['storage-conditions']) %}checked{% endif %}>
+                      <label class="govuk-label govuk-checkboxes__label" for="storage-condition-3">Other</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-weight-in">Net weight entering storage (kg)</label>
+                <div class="govuk-input__wrapper">
+                  <input class="govuk-input govuk-input--width-10" id="nmd-weight-in" name="nmd-weight-in"
+                    type="text" inputmode="decimal" value="{{ data['nmd-weight-in'] }}">
+                  <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+                </div>
+              </div>
+
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="nmd-weight-out">Net weight departing storage (kg)</label>
+                <div class="govuk-input__wrapper">
+                  <input class="govuk-input govuk-input--width-10" id="nmd-weight-out" name="nmd-weight-out"
+                    type="text" inputmode="decimal" value="{{ data['nmd-weight-out'] }}">
+                  <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+                </div>
+              </div>
+
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" role="group" aria-describedby="nmd-arrival-hint">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date of arrival at storage</legend>
+                  <div id="nmd-arrival-hint" class="govuk-hint">For example, 10 3 2025</div>
+                  <div class="govuk-date-input">
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-arrival-day">Day</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-arrival-day"
+                          name="nmd-arrival-day" type="text" inputmode="numeric" value="{{ data['nmd-arrival-day'] or data['arrival-date-day'] }}">
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-arrival-month">Month</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-arrival-month"
+                          name="nmd-arrival-month" type="text" inputmode="numeric" value="{{ data['nmd-arrival-month'] or data['arrival-date-month'] }}">
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-arrival-year">Year</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="nmd-arrival-year"
+                          name="nmd-arrival-year" type="text" inputmode="numeric" value="{{ data['nmd-arrival-year'] or data['arrival-date-year'] }}">
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" role="group" aria-describedby="nmd-arrival-time-hint">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Time of arrival at storage (optional)</legend>
+                  <div id="nmd-arrival-time-hint" class="govuk-hint">Use 24-hour time, for example 14 30</div>
+                  <div class="govuk-date-input">
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-arrival-hour">Hour</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-arrival-hour"
+                          name="nmd-arrival-hour" type="text" inputmode="numeric" value="{{ data['nmd-arrival-hour'] or data['arrival-time-hour'] }}">
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-arrival-minute">Minute</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-arrival-minute"
+                          name="nmd-arrival-minute" type="text" inputmode="numeric" value="{{ data['nmd-arrival-minute'] or data['arrival-time-minute'] }}">
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" role="group" aria-describedby="nmd-departure-hint">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date of departure from storage</legend>
+                  <div id="nmd-departure-hint" class="govuk-hint">For example, 20 3 2025</div>
+                  <div class="govuk-date-input">
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-departure-day">Day</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-departure-day"
+                          name="nmd-departure-day" type="text" inputmode="numeric" value="{{ data['nmd-departure-day'] }}">
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-departure-month">Month</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-departure-month"
+                          name="nmd-departure-month" type="text" inputmode="numeric" value="{{ data['nmd-departure-month'] }}">
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-departure-year">Year</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="nmd-departure-year"
+                          name="nmd-departure-year" type="text" inputmode="numeric" value="{{ data['nmd-departure-year'] }}">
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" role="group" aria-describedby="nmd-departure-time-hint">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Time of departure from storage (optional)</legend>
+                  <div id="nmd-departure-time-hint" class="govuk-hint">Use 24-hour time, for example 08 15</div>
+                  <div class="govuk-date-input">
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-departure-hour">Hour</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-departure-hour"
+                          name="nmd-departure-hour" type="text" inputmode="numeric" value="{{ data['nmd-departure-hour'] }}">
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="nmd-departure-minute">Minute</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="nmd-departure-minute"
+                          name="nmd-departure-minute" type="text" inputmode="numeric" value="{{ data['nmd-departure-minute'] }}">
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-button--secondary" name="upload-another" value="true">
+          Upload and add another
+        </button>
+        <button class="govuk-button" name="action" value="continue">
+          Save and continue
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var certificateSelect = document.getElementById('nmd-cc-reference')
+    var weightInInput = document.getElementById('nmd-weight-in')
+    var weightOutInput = document.getElementById('nmd-weight-out')
+
+    if (!certificateSelect || !weightInInput || !weightOutInput) return
+
+    function applyCertificateDefaults() {
+      var selectedOption = certificateSelect.options[certificateSelect.selectedIndex]
+      if (!selectedOption) return
+      var declaredVolume = selectedOption.getAttribute('data-declared-volume')
+      if (declaredVolume && !weightInInput.value) {
+        weightInInput.value = declaredVolume
+      }
+      if (declaredVolume && !weightOutInput.value) {
+        weightOutInput.value = declaredVolume
+      }
+    }
+
+    applyCertificateDefaults()
+    certificateSelect.addEventListener('change', applyCertificateDefaults)
+  })()
+</script>
+
+{% endblock %}

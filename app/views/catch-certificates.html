@@ -1,0 +1,125 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Upload Catch Certificates" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Supporting documents</span>
+    <h1 class="govuk-heading-l">Upload a Catch Certificate</h1>
+
+    <p class="govuk-body">A Catch Certificate must be provided for all fish and seafood products in this consignment. Upload one certificate at a time.</p>
+
+    <div class="govuk-inset-text">
+      <p>Catch Certificates must be issued and stamped by the competent authority of the flag state, and uploaded as PDF, JPEG or PNG (maximum 10MB).</p>
+    </div>
+
+    {% if data['catch-certificates'] and data['catch-certificates'].length > 0 %}
+    <h2 class="govuk-heading-m">Certificates uploaded</h2>
+    <dl class="govuk-summary-list govuk-!-margin-bottom-6">
+      {% for doc in data['catch-certificates'] %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ doc.reference }}</dt>
+        <dd class="govuk-summary-list__value">
+          {{ doc.species }}<br>
+          <span class="govuk-body-s">{{ doc.vesselName }}{% if doc.vesselIMO %} · IMO {{ doc.vesselIMO }}{% endif %}</span>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a href="/remove-catch-certificate?index={{ loop.index0 }}" class="govuk-link">Remove</a>
+        </dd>
+      </div>
+      {% endfor %}
+    </dl>
+    {% endif %}
+
+    <form action="/catch-certificates" method="post">
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="catch-certificate-file">
+          Upload Catch Certificate
+        </label>
+        <div id="catch-certificate-hint" class="govuk-hint">PDF, JPEG or PNG. Maximum file size 10MB.</div>
+        <input class="govuk-file-upload" id="catch-certificate-file" name="catch-certificate-file" type="file"
+          aria-describedby="catch-certificate-hint" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="catch-certificate-ref">
+          Catch Certificate reference number
+        </label>
+        <input class="govuk-input govuk-input--width-20" id="catch-certificate-ref" name="catch-certificate-ref" type="text" value="{{ data['catch-certificate-ref'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="catch-certificate-trip-id">
+          Unique fishing trip identification number
+        </label>
+        <div id="trip-id-hint" class="govuk-hint">As stated on the certificate</div>
+        <input class="govuk-input govuk-input--width-20" id="catch-certificate-trip-id" name="catch-certificate-trip-id"
+          type="text" aria-describedby="trip-id-hint" value="{{ data['catch-certificate-trip-id'] }}">
+      </div>
+
+      <h2 class="govuk-heading-m">Catching vessel</h2>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="cc-vessel-name">Vessel name</label>
+        <input class="govuk-input govuk-input--width-20" id="cc-vessel-name" name="cc-vessel-name" type="text" value="{{ data['cc-vessel-name'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="cc-vessel-flag">Flag state</label>
+        <input class="govuk-input govuk-input--width-20" id="cc-vessel-flag" name="cc-vessel-flag" type="text" value="{{ data['cc-vessel-flag'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="cc-vessel-imo">
+          IMO number (if available)
+        </label>
+        <div id="cc-imo-hint" class="govuk-hint">7-digit number. Required where the vessel has no CFR number.</div>
+        <input class="govuk-input govuk-input--width-10" id="cc-vessel-imo" name="cc-vessel-imo" type="text"
+          aria-describedby="cc-imo-hint" inputmode="numeric" value="{{ data['cc-vessel-imo'] }}">
+      </div>
+
+      <h2 class="govuk-heading-m">Species and volume</h2>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="catch-certificate-species">
+          Which species does this certificate cover?
+        </label>
+        <select class="govuk-select" id="catch-certificate-species" name="catch-certificate-species">
+          <option value="">Select a species</option>
+          {% for species in data['species-list'] %}
+          <option value="{{ species.name }}" {% if data['catch-certificate-species'] == species.name %}selected{% endif %}>{{ species.name }}</option>
+          {% endfor %}
+          <option value="all" {% if data['catch-certificate-species'] == 'all' %}selected{% endif %}>All species in this consignment</option>
+        </select>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="cc-declared-volume">
+          Total declared volume for this species on the certificate (kg)
+        </label>
+        <div class="govuk-input__wrapper">
+          <input class="govuk-input govuk-input--width-10" id="cc-declared-volume" name="cc-declared-volume"
+            type="text" inputmode="decimal" value="{{ data['cc-declared-volume'] }}">
+          <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+        </div>
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-button--secondary" name="upload-another" value="true">
+          Upload and add another
+        </button>
+        <button class="govuk-button" name="action" value="continue">
+          Save and continue
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

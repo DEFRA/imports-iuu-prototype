@@ -1,0 +1,55 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Import fish and fish products into Great Britain" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Import fish and fish products into Great Britain</h1>
+
+    <p class="govuk-body-l">Use this service to notify the UK authorities of fish and seafood products you intend to import into Great Britain.</p>
+
+    <p class="govuk-body">You must submit an import notification before your consignment arrives at the border control post. You will need to provide:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>your EORI (Economic Operators Registration and Identification) number</li>
+      <li>details of the consignment, including species, product form and weight</li>
+      <li>port of entry and estimated arrival date and time</li>
+      <li>transport details (vessel, flight or road vehicle)</li>
+      <li>supporting documentation, including Catch Certificates</li>
+    </ul>
+
+    <div class="govuk-inset-text">
+      <p>This service covers imports from non-EU countries. Fish imported from EU member states may have different requirements.</p>
+    </div>
+
+    <h2 class="govuk-heading-m">Before you start</h2>
+
+    <p class="govuk-body">You must have:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>a valid EORI number registered with HMRC</li>
+      <li>valid Catch Certificates for all fish and seafood products</li>
+      <li>a Processing Statement if the goods have been processed</li>
+      <li>a Non-Manipulation Declaration if required</li>
+    </ul>
+
+    <a href="/importer-details" role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+      Start now
+      <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
+      </svg>
+    </a>
+
+    <h2 class="govuk-heading-s">If you need help using this service</h2>
+    <p class="govuk-body">Contact the DEFRA Fish Import Team:<br>
+      Email: <a href="mailto:fish.imports@defra.gov.uk" class="govuk-link">fish.imports@defra.gov.uk</a><br>
+      Telephone: 0300 020 0301<br>
+      Monday to Friday, 9am to 5pm
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

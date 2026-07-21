@@ -1,0 +1,46 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Non-Manipulation Declaration required?" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Supporting documents</span>
+    <h1 class="govuk-heading-l">Do you need to provide a Non-Manipulation Declaration?</h1>
+
+    <p class="govuk-body">A Non-Manipulation Declaration is required when goods were transported through or stored in a third country before being imported into Great Britain.</p>
+
+    <form action="/non-manipulation-declaration-required" method="post">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-visually-hidden">
+            Do you need to provide a Non-Manipulation Declaration?
+          </legend>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has-nmd-yes" name="has-nmd" type="radio" value="yes"
+                {% if data['has-nmd'] == 'yes' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has-nmd-yes">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has-nmd-no" name="has-nmd" type="radio" value="no"
+                {% if data['has-nmd'] == 'no' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has-nmd-no">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

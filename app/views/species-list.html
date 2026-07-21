@@ -1,0 +1,82 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Species added" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Fish species in this consignment</h1>
+
+    {% if data['species-list'] and data['species-list'].length > 0 %}
+
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Species added so far</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Species</th>
+          <th scope="col" class="govuk-table__header">Product form</th>
+          <th scope="col" class="govuk-table__header">CN code</th>
+          <th scope="col" class="govuk-table__header">Net weight</th>
+          <th scope="col" class="govuk-table__header">Packages</th>
+          <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for species in data['species-list'] %}
+        <tr class="govuk-table__row">
+          <td class="govuk-table__cell">{{ species.name }}</td>
+          <td class="govuk-table__cell">{{ species.productForm }}</td>
+          <td class="govuk-table__cell">{{ species.commodityCode or '—' }}</td>
+          <td class="govuk-table__cell">{{ species.netWeight }} kg</td>
+          <td class="govuk-table__cell">{{ species.numberOfPackages }}</td>
+          <td class="govuk-table__cell">
+            <a href="/remove-species?index={{ loop.index0 }}" class="govuk-link govuk-link--no-visited-state">
+              Remove<span class="govuk-visually-hidden"> {{ species.name }}</span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% else %}
+
+    <p class="govuk-body">No species added yet.</p>
+
+    {% endif %}
+
+    <form action="/species-list" method="post">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Do you need to add another species or product?
+          </legend>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="add-another-1" name="add-another-species" type="radio" value="yes">
+              <label class="govuk-label govuk-radios__label" for="add-another-1">
+                Yes, add another species
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="add-another-2" name="add-another-species" type="radio" value="no">
+              <label class="govuk-label govuk-radios__label" for="add-another-2">
+                No, continue to documents
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

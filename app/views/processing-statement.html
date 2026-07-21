@@ -1,0 +1,130 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Upload Processing Statements" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Supporting documents</span>
+    <h1 class="govuk-heading-l">Upload a Processing Statement</h1>
+
+    <p class="govuk-body">Upload one Processing Statement at a time. You can add multiple statements before continuing.</p>
+
+    {% if data['processing-statement'] and data['processing-statement'].length > 0 %}
+    <h2 class="govuk-heading-m">Documents uploaded</h2>
+    <dl class="govuk-summary-list govuk-!-margin-bottom-6">
+      {% for doc in data['processing-statement'] %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ doc.reference }}</dt>
+        <dd class="govuk-summary-list__value">{{ doc.plantName }}{% if doc.plantApproval %} · {{ doc.plantApproval }}{% endif %}</dd>
+        <dd class="govuk-summary-list__actions">
+          <a href="/remove-processing-statement?index={{ loop.index0 }}" class="govuk-link">Remove</a>
+        </dd>
+      </div>
+      {% endfor %}
+    </dl>
+    {% endif %}
+
+    <form action="/processing-statement" method="post">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="processing-statement-file">Upload Processing Statement</label>
+        <div id="ps-file-hint" class="govuk-hint">PDF, JPEG or PNG. Maximum file size 10MB.</div>
+        <input class="govuk-file-upload" id="processing-statement-file" name="processing-statement-file"
+          type="file" aria-describedby="ps-file-hint" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="processing-statement-ref">Processing Statement document number</label>
+        <input class="govuk-input govuk-input--width-20" id="processing-statement-ref"
+          name="processing-statement-ref" type="text" value="{{ data['processing-statement-ref'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="ps-cc-reference">
+          Catch Certificate number this relates to
+        </label>
+        <select class="govuk-select" id="ps-cc-reference" name="ps-cc-reference">
+          <option value="">Select a Catch Certificate</option>
+          {% for cert in data['catch-certificates'] %}
+          <option value="{{ cert.reference }}" data-declared-volume="{{ cert.declaredVolume }}"
+            {% if data['ps-cc-reference'] == cert.reference %}selected{% endif %}>
+            {{ cert.reference }}
+            {% if cert.species %} — {{ cert.species }}{% endif %}
+            {% if cert.declaredVolume %} — {{ cert.declaredVolume }}kg{% endif %}
+            {% if cert.vesselName %} — {{ cert.vesselName }}{% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="processing-plant-name">Processing plant name</label>
+        <input class="govuk-input" id="processing-plant-name" name="processing-plant-name" type="text" value="{{ data['processing-plant-name'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="processing-plant-approval">Plant approval number</label>
+        <div id="plant-approval-hint" class="govuk-hint">
+          Official approval number issued by the competent authority of the processing country
+        </div>
+        <input class="govuk-input govuk-input--width-20" id="processing-plant-approval"
+          name="processing-plant-approval" type="text" aria-describedby="plant-approval-hint" value="{{ data['processing-plant-approval'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="ps-landed-weight">Total landed weight (kg)</label>
+        <div id="ps-landed-hint" class="govuk-hint">Net weight of the raw fish as stated on the Catch Certificate</div>
+        <div class="govuk-input__wrapper">
+          <input class="govuk-input govuk-input--width-10" id="ps-landed-weight" name="ps-landed-weight"
+            type="text" inputmode="decimal" aria-describedby="ps-landed-hint" value="{{ data['ps-landed-weight'] }}">
+          <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+        </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="ps-product-weight">Processed fishery product weight (kg)</label>
+        <div id="ps-product-hint" class="govuk-hint">Weight of the finished product leaving the plant</div>
+        <div class="govuk-input__wrapper">
+          <input class="govuk-input govuk-input--width-10" id="ps-product-weight" name="ps-product-weight"
+            type="text" inputmode="decimal" aria-describedby="ps-product-hint" value="{{ data['ps-product-weight'] }}">
+          <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+        </div>
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-button--secondary" name="upload-another" value="true">
+          Upload and add another
+        </button>
+        <button class="govuk-button" name="action" value="continue">
+          Save and continue
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var certificateSelect = document.getElementById('ps-cc-reference')
+    var landedWeightInput = document.getElementById('ps-landed-weight')
+
+    if (!certificateSelect || !landedWeightInput) return
+
+    function applyCertificateDefaults() {
+      var selectedOption = certificateSelect.options[certificateSelect.selectedIndex]
+      if (!selectedOption) return
+      var declaredVolume = selectedOption.getAttribute('data-declared-volume')
+      if (declaredVolume && !landedWeightInput.value) {
+        landedWeightInput.value = declaredVolume
+      }
+    }
+
+    applyCertificateDefaults()
+    certificateSelect.addEventListener('change', applyCertificateDefaults)
+  })()
+</script>
+
+{% endblock %}

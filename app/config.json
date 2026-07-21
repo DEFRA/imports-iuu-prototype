@@ -1,0 +1,9 @@
+{
+  "serviceName": "Import fish and fish products into Great Britain",
+  "useServiceNavigation": true,
+  "plugins": {
+    "govuk-frontend": {
+      "rebrand": true
+    }
+  }
+}
