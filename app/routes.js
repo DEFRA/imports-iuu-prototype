@@ -54,6 +54,31 @@ const extractProcessingStatementCatchReferences = (filename) => {
   return references
 }
 
+const scenarioDCatchCertificateFiles = [
+  'ESP.SGCI.AI.2025.944.pdf',
+  'FRA-2025-CSP-000472.pdf',
+  'FRA-2025-CSP-000518.pdf',
+  'CL-2026-44-000079-N.pdf',
+  'SYC-SFA-10-2025-SW0454.pdf'
+]
+
+// Simulated Catch Certificate filenames for non-D variants.
+// Format follows EU Reg 1005/2008 / UK retained law: CATCH.CC.<flag-state ISO-3>.<year>.<seq>
+const simulatedCatchCertPool = [
+  'CATCH.CC.IS.2025.0847.pdf',  // Iceland
+  'CATCH.CC.NO.2025.1193.pdf',  // Norway
+  'CATCH.CC.FO.2025.3381.pdf',  // Faroe Islands
+  'CATCH.CC.MA.2026.0042.pdf',  // Morocco
+  'CATCH.CC.MR.2026.0284.pdf'   // Mauritania
+]
+
+const scenarioDProcessingStatementReferences = [
+  'ESP.SGCI.AI.2025.944',
+  'FRA-2025-CSP-000472',
+  'FRA-2025-CSP-000518',
+  'CL-2026-44-000079-N'
+]
+
 const fesDataDictionaryFields = {
   nonManipulation: [
     { section: 'Header', field: 'Document Number', required: 'Yes', value: 'GBR-2026-SD-C23778708' },
@@ -547,9 +572,21 @@ router.post('/sign-in', (req, res) => {
 router.get('/upload-documents', (req, res, next) => {
   const data = req.session.data
   const remove = req.query.remove
-  if (remove === 'catch-cert') {
+  const removeCertIndex = parseInt(req.query['remove-cert'], 10)
+
+  if (!isNaN(removeCertIndex) && Array.isArray(data['catch-cert-uploaded-files'])) {
+    data['catch-cert-uploaded-files'].splice(removeCertIndex, 1)
+    if (data['catch-cert-uploaded-files'].length === 0) {
+      delete data['catch-cert-uploaded']
+      delete data['catch-cert-filename']
+      delete data['catch-cert-uploaded-files']
+    } else {
+      data['catch-cert-filename'] = data['catch-cert-uploaded-files'][0]
+    }
+  } else if (remove === 'catch-cert') {
     delete data['catch-cert-uploaded']
     delete data['catch-cert-filename']
+    delete data['catch-cert-uploaded-files']
   } else if (remove === 'processing-statement') {
     delete data['processing-statement-uploaded']
     delete data['processing-statement-filename']
@@ -563,23 +600,29 @@ router.get('/upload-documents', (req, res, next) => {
 router.post('/upload-documents', (req, res) => {
   const data = req.session.data
   const variant = data['extraction-variant'] || 'a'
+  const existingCerts = Array.isArray(data['catch-cert-uploaded-files']) ? data['catch-cert-uploaded-files'] : []
+
+  // ── "Continue" — simulate all three documents and proceed ─────────────────
   const sampleDocumentFiles = listSampleDocumentFiles()
-  const defaultCatchCertificateFile = sampleDocumentFiles.find(isCatchCertificateFile)
   const defaultProcessingStatementFile = sampleDocumentFiles.find((filename) => filename.startsWith('CATCH.PS.PT.2026.0001149')) ||
     sampleDocumentFiles.find(isProcessingStatementFile)
 
   // Simulate file upload state — mark each document as uploaded
   // (actual file upload is not processed server-side in this prototype)
-  if (!data['catch-cert-uploaded']) {
+  if (existingCerts.length === 0) {
+    if (variant === 'd') {
+      data['catch-cert-uploaded-files'] = [...scenarioDCatchCertificateFiles]
+    } else {
+      data['catch-cert-uploaded-files'] = [...simulatedCatchCertPool]
+    }
     data['catch-cert-uploaded'] = true
-    data['catch-cert-filename'] = variant === 'd' && defaultCatchCertificateFile
-      ? defaultCatchCertificateFile
-      : 'catch-certificate-IS-2025-0847.pdf'
+    data['catch-cert-filename'] = data['catch-cert-uploaded-files'][0]
   }
+
   if (!data['processing-statement-uploaded']) {
     data['processing-statement-uploaded'] = true
     data['processing-statement-filename'] = variant === 'd'
-      ? (defaultProcessingStatementFile || 'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf')
+      ? 'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
       : 'processing-statement-PS-IS-2025-00847.pdf'
   }
   if (!data['nmd-uploaded']) {
@@ -598,23 +641,25 @@ router.post('/processing', (req, res) => {
   const data = req.session.data
 
   if (variant === 'd') {
-    const sampleDocumentFiles = listSampleDocumentFiles()
-    const catchCertificateFiles = sampleDocumentFiles.filter(isCatchCertificateFile)
-    const processingStatementFile = sampleDocumentFiles.find((filename) => filename.startsWith('CATCH.PS.PT.2026.0001149')) ||
-      sampleDocumentFiles.find(isProcessingStatementFile) ||
-      data['processing-statement-filename']
+    const catchCertificateFiles = data['catch-cert-uploaded-files'] || scenarioDCatchCertificateFiles
+    const processingStatementFile = data['processing-statement-filename'] || 'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
 
     const catchCertificateReferenceEntries = buildCatchCertificateReferenceEntries(catchCertificateFiles)
     data['validation-catch-certificate-files'] = catchCertificateFiles
     data['validation-processing-statement-file'] = processingStatementFile
     data['uploaded-catch-certificate-references'] = catchCertificateReferenceEntries.map((entry) => entry.reference)
-    data['processing-statement-catch-certificate-references'] = extractProcessingStatementCatchReferences(processingStatementFile || '')
+    data['processing-statement-catch-certificate-references'] = scenarioDProcessingStatementReferences
     data['missing-catch-certificate-references'] = getMissingValues(
       data['uploaded-catch-certificate-references'],
       data['processing-statement-catch-certificate-references']
     )
     data['missing-catch-certificate-reference-entries'] = catchCertificateReferenceEntries
       .filter((entry) => data['missing-catch-certificate-references'].includes(entry.reference))
+    data['catch-certificate-validation-results'] = catchCertificateReferenceEntries.map((entry) => ({
+      filename: entry.filename,
+      reference: entry.reference,
+      status: data['processing-statement-catch-certificate-references'].includes(entry.reference) ? 'Matched' : 'Missing'
+    }))
   }
 
   res.redirect('/review-extraction-' + variant)
