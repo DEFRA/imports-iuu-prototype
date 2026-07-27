@@ -1,0 +1,92 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Import notification: upload your documents" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <h1 class="govuk-heading-xl">Import notification: upload your documents</h1>
+
+    <p class="govuk-body-l">Upload your supporting documents and we will attempt to extract the information needed for your import notification automatically.</p>
+
+    <h2 class="govuk-heading-m">Why an import notification is required</h2>
+
+    <p class="govuk-body">Under the UK's Illegal, Unreported and Unregulated (IUU) fishing regulations, all fish and seafood products imported into Great Britain from non-EU countries must be accompanied by verified documentation. You must submit an import notification before your consignment arrives at the border control post.</p>
+
+    <p class="govuk-body">Failure to submit a valid notification may result in your consignment being held or refused entry at the border.</p>
+
+    <h2 class="govuk-heading-m">Documents you will need to upload</h2>
+
+    <p class="govuk-body">You must provide all of the following documents before you can continue:</p>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Catch Certificate</dt>
+        <dd class="govuk-summary-list__value">Confirms the fish were caught legally. Must be issued by the flag state authority of the vessel that caught the fish.</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Processing Statement</dt>
+        <dd class="govuk-summary-list__value">Required where fish products have been processed or transformed after catch. Issued by the processing country's competent authority.</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Non-Manipulation Declaration (NMD)</dt>
+        <dd class="govuk-summary-list__value">Confirms that the fish products have not been altered or re-packed since the Processing Statement was issued. Required in most circumstances.</dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m">What we will extract automatically</h2>
+
+    <p class="govuk-body">Once you have uploaded your documents, we will attempt to extract the following information to reduce manual data entry:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>species name and commodity code</li>
+      <li>net weight and product description</li>
+      <li>catch area, catch date and flag state</li>
+      <li>vessel details</li>
+      <li>processing facility name and country</li>
+      <li>Processing Statement and Catch Certificate reference numbers</li>
+      <li>exporter name and export approval number</li>
+    </ul>
+
+    <div class="govuk-inset-text">
+      <p>Not all information may be extracted successfully. Where information cannot be extracted, you will be asked to enter it manually.</p>
+    </div>
+
+    <h2 class="govuk-heading-m">Your responsibility</h2>
+
+    <p class="govuk-body">The information extracted from your documents is provided as a suggestion only. You remain responsible for reviewing all extracted information and confirming that it is accurate before submission.</p>
+
+    <p class="govuk-body">Do not submit information you have not verified. Submitting inaccurate information is a criminal offence under the IUU fishing regulations.</p>
+
+    <h2 class="govuk-heading-m">How this reduces manual data entry</h2>
+
+    <p class="govuk-body">By uploading your documents upfront, the service can pre-fill many of the form fields automatically. You will only need to:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>review the extracted information for accuracy</li>
+      <li>correct any errors or gaps</li>
+      <li>confirm the information is correct before submission</li>
+    </ul>
+
+    <p class="govuk-body">This is expected to significantly reduce the time needed to complete an import notification.</p>
+
+    <a href="/sign-in" role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+      Start import notification
+      <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
+      </svg>
+    </a>
+
+    <h2 class="govuk-heading-s">If you need help using this service</h2>
+    <p class="govuk-body">Contact the DEFRA Fish Import Team:<br>
+      Email: <a href="mailto:fish.imports@defra.gov.uk" class="govuk-link">fish.imports@defra.gov.uk</a><br>
+      Telephone: 0300 020 0301<br>
+      Monday to Friday, 9am to 5pm
+    </p>
+
+  </div>
+</div>
+
+{% endblock %}

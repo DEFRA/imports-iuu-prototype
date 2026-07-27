@@ -1,0 +1,47 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Analysing your documents" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Analysing your documents</h1>
+
+    <p class="govuk-body-l">We are reading your uploaded documents and extracting the information needed for your import notification.</p>
+
+    <div class="govuk-inset-text">
+      <p><strong>3 documents received:</strong> Catch Certificate, Processing Statement, Non-Manipulation Declaration</p>
+    </div>
+
+    <ul class="govuk-list">
+      <li class="govuk-body" style="padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6;">
+        <span style="display:inline-block; width:1.5rem; text-align:center; margin-right:0.5rem;" aria-hidden="true">&#10003;</span>
+        Documents received and validated
+      </li>
+      <li class="govuk-body" style="padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6;">
+        <span style="display:inline-block; width:1.5rem; text-align:center; margin-right:0.5rem;" aria-hidden="true">&#10003;</span>
+        Document format checked
+      </li>
+      <li class="govuk-body" style="padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6;">
+        <span style="display:inline-block; width:1.5rem; text-align:center; margin-right:0.5rem;" aria-hidden="true">&#10003;</span>
+        Information extraction complete
+      </li>
+    </ul>
+
+    <p class="govuk-body govuk-!-margin-top-6">On the next screen you will be shown the information we have extracted. You must check that every detail is correct before you submit your notification.</p>
+
+    <p class="govuk-body">You remain responsible for the accuracy of all submitted information.</p>
+
+    <form action="/processing" method="post">
+      <button class="govuk-button" data-module="govuk-button">
+        Review extracted information
+      </button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
