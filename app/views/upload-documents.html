@@ -1,0 +1,127 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Upload your documents" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Upload your documents</h1>
+
+    <p class="govuk-body">Upload all three documents. We will extract information from them to reduce the amount you need to enter manually.</p>
+
+    <p class="govuk-body">Accepted file formats: PDF, JPG, PNG. Maximum file size: 10MB per document.</p>
+
+    <form action="/upload-documents" method="post" enctype="multipart/form-data">
+
+      {# ── Catch Certificate ── #}
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Catch Certificate
+              <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-2">Required</strong>
+            </h2>
+          </legend>
+          <p class="govuk-body govuk-hint">Issued by the flag state authority of the catching vessel. Must cover all species in this consignment.</p>
+
+          {% if data['catch-cert-uploaded'] %}
+            <div class="govuk-summary-list__row" style="display:flex; align-items:center; gap:1rem; padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6; margin-bottom: 1rem;">
+              <span class="govuk-body" style="flex:1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:0.25rem">
+                  <circle cx="10" cy="10" r="10" fill="#00703c"/>
+                  <path d="M5 10l3.5 3.5L15 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <strong>{{ data['catch-cert-filename'] or 'catch-certificate.pdf' }}</strong> uploaded
+              </span>
+              <a href="/upload-documents?remove=catch-cert" class="govuk-link govuk-link--no-visited-state">Remove</a>
+            </div>
+          {% else %}
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="catch-cert-upload">
+                Upload Catch Certificate
+              </label>
+              <input class="govuk-file-upload" id="catch-cert-upload" name="catch-cert-upload" type="file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+          {% endif %}
+        </fieldset>
+      </div>
+
+      {# ── Processing Statement ── #}
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Processing Statement
+              <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-2">Required</strong>
+            </h2>
+          </legend>
+          <p class="govuk-body govuk-hint">Required where the fish products have been processed or transformed after catch. Issued by the processing country's competent authority.</p>
+
+          {% if data['processing-statement-uploaded'] %}
+            <div style="display:flex; align-items:center; gap:1rem; padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6; margin-bottom: 1rem;">
+              <span class="govuk-body" style="flex:1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:0.25rem">
+                  <circle cx="10" cy="10" r="10" fill="#00703c"/>
+                  <path d="M5 10l3.5 3.5L15 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <strong>{{ data['processing-statement-filename'] or 'processing-statement.pdf' }}</strong> uploaded
+              </span>
+              <a href="/upload-documents?remove=processing-statement" class="govuk-link govuk-link--no-visited-state">Remove</a>
+            </div>
+          {% else %}
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="processing-statement-upload">
+                Upload Processing Statement
+              </label>
+              <input class="govuk-file-upload" id="processing-statement-upload" name="processing-statement-upload" type="file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+          {% endif %}
+        </fieldset>
+      </div>
+
+      {# ── Non-Manipulation Declaration ── #}
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Non-Manipulation Declaration (NMD)
+              <strong class="govuk-tag govuk-tag--red govuk-!-margin-left-2">Required</strong>
+            </h2>
+          </legend>
+          <p class="govuk-body govuk-hint">Confirms the fish products have not been altered or re-packed since the Processing Statement was issued.</p>
+
+          {% if data['nmd-uploaded'] %}
+            <div style="display:flex; align-items:center; gap:1rem; padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6; margin-bottom: 1rem;">
+              <span class="govuk-body" style="flex:1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:0.25rem">
+                  <circle cx="10" cy="10" r="10" fill="#00703c"/>
+                  <path d="M5 10l3.5 3.5L15 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <strong>{{ data['nmd-filename'] or 'non-manipulation-declaration.pdf' }}</strong> uploaded
+              </span>
+              <a href="/upload-documents?remove=nmd" class="govuk-link govuk-link--no-visited-state">Remove</a>
+            </div>
+          {% else %}
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="nmd-upload">
+                Upload Non-Manipulation Declaration
+              </label>
+              <input class="govuk-file-upload" id="nmd-upload" name="nmd-upload" type="file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
+          {% endif %}
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Continue
+      </button>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
