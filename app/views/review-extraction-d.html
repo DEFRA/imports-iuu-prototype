@@ -20,6 +20,7 @@
     </div>
 
     <h2 class="govuk-heading-m">Validation result</h2>
+    <p class="govuk-body">We compared each Catch Certificate uploaded against Catch Certificate references listed in the Processing Statement.</p>
 
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
@@ -38,7 +39,37 @@
         <dt class="govuk-summary-list__key">References found in Processing Statement</dt>
         <dd class="govuk-summary-list__value">{{ data['processing-statement-catch-certificate-references'] | join(', ') }}</dd>
       </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Validation outcome</dt>
+        <dd class="govuk-summary-list__value">{{ data['missing-catch-certificate-reference-entries'] | length }} missing reference(s)</dd>
+      </div>
     </dl>
+
+    <h2 class="govuk-heading-m">Catch Certificate comparison</h2>
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Catch Certificate file</th>
+          <th scope="col" class="govuk-table__header">Reference</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for result in data['catch-certificate-validation-results'] %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ result.filename }}</td>
+            <td class="govuk-table__cell">{{ result.reference }}</td>
+            <td class="govuk-table__cell">
+              {% if result.status == 'Matched' %}
+                <strong class="govuk-tag govuk-tag--green">Matched</strong>
+              {% else %}
+                <strong class="govuk-tag govuk-tag--red">Missing in PS</strong>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
     <h2 class="govuk-heading-m">Missing Catch Certificate references</h2>
     <p class="govuk-body">Check that these references are present in the Processing Statement and match your uploaded Catch Certificate documents:</p>

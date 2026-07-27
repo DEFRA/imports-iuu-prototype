@@ -27,16 +27,26 @@
           </legend>
           <p class="govuk-body govuk-hint">Issued by the flag state authority of the catching vessel. Must cover all species in this consignment.</p>
 
-          {% if data['catch-cert-uploaded'] %}
-            <div class="govuk-summary-list__row" style="display:flex; align-items:center; gap:1rem; padding: 0.5rem 0; border-bottom: 1px solid #b1b4b6; margin-bottom: 1rem;">
-              <span class="govuk-body" style="flex:1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:0.25rem">
-                  <circle cx="10" cy="10" r="10" fill="#00703c"/>
-                  <path d="M5 10l3.5 3.5L15 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <strong>{{ data['catch-cert-filename'] or 'catch-certificate.pdf' }}</strong> uploaded
-              </span>
-              <a href="/upload-documents?remove=catch-cert" class="govuk-link govuk-link--no-visited-state">Remove</a>
+          {% if data['catch-cert-uploaded-files'] and (data['catch-cert-uploaded-files'] | length) %}
+            <ul class="govuk-list govuk-!-margin-bottom-3" style="margin-top:0">
+              {% for filename in data['catch-cert-uploaded-files'] %}
+                <li style="display:flex; align-items:center; gap:1rem; padding:0.5rem 0; border-bottom:1px solid #b1b4b6;">
+                  <span class="govuk-body" style="flex:1; margin-bottom:0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:0.25rem">
+                      <circle cx="10" cy="10" r="10" fill="#00703c"/>
+                      <path d="M5 10l3.5 3.5L15 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <strong>{{ filename }}</strong>
+                  </span>
+                  <a href="/upload-documents?remove-cert={{ loop.index0 }}" class="govuk-link govuk-link--no-visited-state">Remove</a>
+                </li>
+              {% endfor %}
+            </ul>
+            <div class="govuk-form-group govuk-!-margin-top-3 govuk-!-margin-bottom-2">
+              <label class="govuk-label" for="catch-cert-upload">
+                Upload another Catch Certificate
+              </label>
+              <input class="govuk-file-upload" id="catch-cert-upload" name="catch-cert-upload" type="file" accept=".pdf,.jpg,.jpeg,.png">
             </div>
           {% else %}
             <div class="govuk-form-group">
@@ -71,6 +81,12 @@
               </span>
               <a href="/upload-documents?remove=processing-statement" class="govuk-link govuk-link--no-visited-state">Remove</a>
             </div>
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="processing-statement-upload">
+                Upload new Processing Statement
+              </label>
+              <input class="govuk-file-upload" id="processing-statement-upload" name="processing-statement-upload" type="file" accept=".pdf,.jpg,.jpeg,.png">
+            </div>
           {% else %}
             <div class="govuk-form-group">
               <label class="govuk-label" for="processing-statement-upload">
@@ -103,6 +119,12 @@
                 <strong>{{ data['nmd-filename'] or 'non-manipulation-declaration.pdf' }}</strong> uploaded
               </span>
               <a href="/upload-documents?remove=nmd" class="govuk-link govuk-link--no-visited-state">Remove</a>
+            </div>
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="nmd-upload">
+                Upload new Non-Manipulation Declaration
+              </label>
+              <input class="govuk-file-upload" id="nmd-upload" name="nmd-upload" type="file" accept=".pdf,.jpg,.jpeg,.png">
             </div>
           {% else %}
             <div class="govuk-form-group">
