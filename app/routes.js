@@ -296,7 +296,11 @@ router.post('/species-list', (req, res) => {
   if (addAnother === 'yes') {
     res.redirect('/species-details')
   } else {
-    res.redirect('/catch-certificates')
+    if (req.session.data['extraction-variant'] === 'c') {
+      res.redirect('/check-answers')
+    } else {
+      res.redirect('/catch-certificates')
+    }
   }
 })
 
@@ -471,6 +475,7 @@ router.post('/check-answers', (req, res) => {
   // Generate a reference number
   const refNumber = 'IMP-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000)
   req.session.data['reference-number'] = refNumber
+  req.session.data['submission-kind'] = req.session.data['extraction-variant'] === 'c' ? 'iuu' : 'import'
   res.redirect('/confirmation')
 })
 
