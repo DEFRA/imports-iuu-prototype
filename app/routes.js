@@ -683,7 +683,7 @@ router.post('/review-extraction-b', (req, res) => {
 // Review extraction — Variant C (failed)
 // -------------------------------------------------------
 router.post('/review-extraction-c', (req, res) => {
-  res.redirect('/upload-confirmation')
+  res.redirect('/importer-details')
 })
 
 // -------------------------------------------------------
