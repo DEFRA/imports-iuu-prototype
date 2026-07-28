@@ -37,14 +37,14 @@
           <dt class="govuk-summary-list__key">Business name</dt>
           <dd class="govuk-summary-list__value">
             {{ data['importer-name'] or 'Nordic Sea Imports Ltd' }}
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">EORI number</dt>
           <dd class="govuk-summary-list__value">
             {{ data['importer-eori'] or 'GB123456789000' }}
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
@@ -56,30 +56,30 @@
               {{ data['importer-town'] }}<br>
               {{ data['importer-postcode'] }}
             {% else %}
-              Not provided
+
             {% endif %}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Contact email</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-email'] or 'Not provided' }}</dd>
+          <dd class="govuk-summary-list__value">{{ data['importer-email'] or '' }}</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Contact telephone</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or 'Not provided' }}</dd>
+          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or '' }}</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Port of entry</dt>
           <dd class="govuk-summary-list__value">
             Grimsby (Associated British Ports)
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Estimated arrival</dt>
           <dd class="govuk-summary-list__value">
             28 July 2025, 08:30
-            
+
           </dd>
         </div>
         {% for item in fesDataDictionaryFields.byCategory.import %}
@@ -103,7 +103,7 @@
           <dt class="govuk-summary-list__key">Catch Certificate reference</dt>
           <dd class="govuk-summary-list__value">
             CC-IS-2025-0847
-            
+
           </dd>
         </div>
         {% for item in fesDataDictionaryFields.byCategory.catch %}
@@ -127,34 +127,34 @@
           <dt class="govuk-summary-list__key">Catch area</dt>
           <dd class="govuk-summary-list__value">
             FAO Area 27 — Northeast Atlantic (ICES Division Va)
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch date</dt>
           <dd class="govuk-summary-list__value">
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Flag state</dt>
           <dd class="govuk-summary-list__value">
             Iceland (IS)
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Vessel name</dt>
           <dd class="govuk-summary-list__value">
             FV Sigurður Ísfjörð
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Vessel IMO number</dt>
           <dd class="govuk-summary-list__value">
             8821432
-            
+
           </dd>
         </div>
       </dl>
@@ -172,34 +172,34 @@
           <dt class="govuk-summary-list__key">Species</dt>
           <dd class="govuk-summary-list__value">
             Atlantic Cod (<em>Gadus morhua</em>)
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Commodity type</dt>
           <dd class="govuk-summary-list__value">
             Chilled, gutted, head-on
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">CN code</dt>
           <dd class="govuk-summary-list__value">
             0302 51 10
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Net weight</dt>
           <dd class="govuk-summary-list__value">
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Product description</dt>
           <dd class="govuk-summary-list__value">
             Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes
-            
+
           </dd>
         </div>
         {% for item in fesDataDictionaryFields.byCategory.commodity %}
@@ -239,27 +239,27 @@
           <dt class="govuk-summary-list__key">Processing facility</dt>
           <dd class="govuk-summary-list__value">
             Samherji hf. Processing Plant, Akureyri
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing country</dt>
           <dd class="govuk-summary-list__value">
             Iceland
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing Statement reference</dt>
           <dd class="govuk-summary-list__value">
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing date</dt>
           <dd class="govuk-summary-list__value">
             15 July 2025
-            
+
           </dd>
         </div>
         {% for item in fesDataDictionaryFields.byCategory.processing %}
@@ -299,20 +299,20 @@
           <dt class="govuk-summary-list__key">Exporter name</dt>
           <dd class="govuk-summary-list__value">
             Samherji Export Ltd
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Export approval number</dt>
           <dd class="govuk-summary-list__value">
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Export country</dt>
           <dd class="govuk-summary-list__value">
             Iceland
-            
+
           </dd>
         </div>
         {% for item in fesDataDictionaryFields.byCategory.export %}
