@@ -44,14 +44,14 @@
           <dt class="govuk-summary-list__key">Business name</dt>
           <dd class="govuk-summary-list__value">
             {{ data['importer-name'] or 'Nordic Sea Imports Ltd' }}
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">EORI number</dt>
           <dd class="govuk-summary-list__value">
             {{ data['importer-eori'] or 'GB123456789000' }}
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
@@ -63,17 +63,17 @@
               {{ data['importer-town'] }}<br>
               {{ data['importer-postcode'] }}
             {% else %}
-              Not provided
+
             {% endif %}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Contact email</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-email'] or 'Not provided' }}</dd>
+          <dd class="govuk-summary-list__value">{{ data['importer-email'] or '' }}</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Contact telephone</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or 'Not provided' }}</dd>
+          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or '' }}</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Port of entry</dt>

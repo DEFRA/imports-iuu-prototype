@@ -37,14 +37,14 @@
           <dt class="govuk-summary-list__key">Business name</dt>
           <dd class="govuk-summary-list__value">
             {{ data['importer-name'] or 'Nordic Sea Imports Ltd' }}
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">EORI number</dt>
           <dd class="govuk-summary-list__value">
             {{ data['importer-eori'] or 'GB123456789000' }}
-            
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
@@ -56,30 +56,30 @@
               {{ data['importer-town'] }}<br>
               {{ data['importer-postcode'] }}
             {% else %}
-              Not provided
+              Fake Street
             {% endif %}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Contact email</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-email'] or 'Not provided' }}</dd>
+          <dd class="govuk-summary-list__value">{{ data['importer-email'] or 'example@example.com' }}</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Contact telephone</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or 'Not provided' }}</dd>
+          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or '0123 123 1234' }}</dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Port of entry</dt>
           <dd class="govuk-summary-list__value">
-            {{ data['scenario-a-port-of-entry'] or 'Grimsby (Associated British Ports)' }}
-            
+            Grimsby (Associated British Ports)
+
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Estimated arrival</dt>
           <dd class="govuk-summary-list__value">
-            {{ data['scenario-a-estimated-arrival'] or '28 July 2025, 08:30' }}
-            
+            28 July 2025, 08:30
+
           </dd>
         </div>
         {% for item in fesDataDictionaryFields.byCategory.import %}
