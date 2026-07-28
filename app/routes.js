@@ -15,6 +15,9 @@ const getMissingValues = (requiredValues, actualValues) => {
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
 
+const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
+const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
+
 const listSampleDocumentFiles = () => {
   if (!fs.existsSync(sampleDocumentsPath)) {
     return []
@@ -28,6 +31,12 @@ const listSampleDocumentFiles = () => {
 const isCatchCertificateFile = (filename) => filename.toUpperCase().includes('CATCH.CC')
 
 const isProcessingStatementFile = (filename) => filename.toUpperCase().includes('CATCH.PS')
+
+const buildGeneratedDocumentReference = (prefix, count) => {
+  const year = new Date().getFullYear()
+  const paddedCount = String(count).padStart(4, '0')
+  return prefix + '.' + year + '.' + paddedCount
+}
 
 const extractCatchCertificateReference = (filename) => {
   const withoutExtension = filename.replace(/\.[^/.]+$/, '')
@@ -310,40 +319,19 @@ router.post('/catch-certificates', (req, res) => {
   const data = req.session.data
   const body = req.body || {}
   const action = body.action
-  const getField = (name) => body[name] !== undefined ? body[name] : data[name]
 
   if (!Array.isArray(data['catch-certificates'])) {
     data['catch-certificates'] = []
   }
 
-  // Simulate a file upload by using the reference number as the filename
-  const ref = getField('catch-certificate-ref')
+  const ref = buildGeneratedDocumentReference('CATCH.CC.UPLOAD', data['catch-certificates'].length + 1)
   let certificateSaved = false
 
-  if (ref) {
-    data['catch-certificates'].push({
-      filename: ref + '.pdf',
-      reference: ref,
-      tripId: getField('catch-certificate-trip-id'),
-      vesselName: getField('cc-vessel-name'),
-      vesselFlag: getField('cc-vessel-flag'),
-      vesselIMO: getField('cc-vessel-imo'),
-      species: getField('catch-certificate-species'),
-      declaredVolume: getField('cc-declared-volume')
-    })
-    certificateSaved = true
-  }
-
-  if (certificateSaved) {
-    // Clear upload fields only after successful save
-    delete data['catch-certificate-ref']
-    delete data['catch-certificate-trip-id']
-    delete data['cc-vessel-name']
-    delete data['cc-vessel-flag']
-    delete data['cc-vessel-imo']
-    delete data['catch-certificate-species']
-    delete data['cc-declared-volume']
-  }
+  data['catch-certificates'].push({
+    filename: ref + '.pdf',
+    reference: ref
+  })
+  certificateSaved = true
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
 
@@ -387,39 +375,19 @@ router.post('/processing-statement', (req, res) => {
   const data = req.session.data
   const body = req.body || {}
   const action = body.action
-  const getField = (name) => body[name] !== undefined ? body[name] : data[name]
 
   if (!Array.isArray(data['processing-statement'])) {
     data['processing-statement'] = []
   }
 
-  const ref = getField('processing-statement-ref')
+  const ref = buildGeneratedDocumentReference('CATCH.PS.UPLOAD', data['processing-statement'].length + 1)
   let statementSaved = false
 
-  if (ref) {
-    const selectedCertificate = (data['catch-certificates'] || []).find((cc) => cc.reference === getField('ps-cc-reference'))
-    const landedWeight = getField('ps-landed-weight') || (selectedCertificate ? selectedCertificate.declaredVolume : '')
-
-    data['processing-statement'].push({
-      filename: ref + '.pdf',
-      reference: ref,
-      ccReference: getField('ps-cc-reference'),
-      plantName: getField('processing-plant-name'),
-      plantApproval: getField('processing-plant-approval'),
-      landedWeight,
-      productWeight: getField('ps-product-weight')
-    })
-    statementSaved = true
-  }
-
-  if (statementSaved) {
-    delete data['processing-statement-ref']
-    delete data['ps-cc-reference']
-    delete data['processing-plant-name']
-    delete data['processing-plant-approval']
-    delete data['ps-landed-weight']
-    delete data['ps-product-weight']
-  }
+  data['processing-statement'].push({
+    filename: ref + '.pdf',
+    reference: ref
+  })
+  statementSaved = true
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
   if (!statementSaved) {
@@ -454,65 +422,26 @@ router.post('/non-manipulation-declaration-required', (req, res) => {
   }
 
   data['non-manipulation-documents'] = []
-  res.redirect('/check-answers')
+  res.redirect(getDocumentsCompleteRedirect(data))
 })
 
 router.post('/non-manipulation-declaration', (req, res) => {
   const data = req.session.data
   const body = req.body || {}
   const action = body.action
-  const getField = (name) => body[name] !== undefined ? body[name] : data[name]
 
   if (!Array.isArray(data['non-manipulation-documents'])) {
     data['non-manipulation-documents'] = []
   }
 
-  const ref = getField('nmd-ref')
+  const ref = buildGeneratedDocumentReference('CATCH.NMD.UPLOAD', data['non-manipulation-documents'].length + 1)
   let nmdSaved = false
 
-  if (ref) {
-    const selectedCertificate = (data['catch-certificates'] || []).find((cc) => cc.reference === getField('nmd-cc-reference'))
-    const weightIn = getField('nmd-weight-in') || (selectedCertificate ? selectedCertificate.declaredVolume : '')
-    const weightOut = getField('nmd-weight-out') || weightIn
-
-    data['non-manipulation-documents'].push({
-      filename: ref + '.pdf',
-      reference: ref,
-      ccReference: getField('nmd-cc-reference'),
-      storageCountry: getField('nmd-storage-country'),
-      facilityName: getField('nmd-facility-name'),
-      facilityApproval: getField('nmd-facility-approval'),
-      storageConditions: getField('storage-conditions'),
-      weightIn,
-      weightOut,
-      arrivalDate: [getField('nmd-arrival-day'), getField('nmd-arrival-month'), getField('nmd-arrival-year')].filter(Boolean).join('/'),
-      arrivalTime: [getField('nmd-arrival-hour'), getField('nmd-arrival-minute')].filter(Boolean).join(':'),
-      departureDate: [getField('nmd-departure-day'), getField('nmd-departure-month'), getField('nmd-departure-year')].filter(Boolean).join('/'),
-      departureTime: [getField('nmd-departure-hour'), getField('nmd-departure-minute')].filter(Boolean).join(':')
-    })
-    nmdSaved = true
-  }
-
-  if (nmdSaved) {
-    delete data['nmd-ref']
-    delete data['nmd-cc-reference']
-    delete data['nmd-storage-country']
-    delete data['nmd-facility-name']
-    delete data['nmd-facility-approval']
-    delete data['storage-conditions']
-    delete data['nmd-weight-in']
-    delete data['nmd-weight-out']
-    delete data['nmd-arrival-day']
-    delete data['nmd-arrival-month']
-    delete data['nmd-arrival-year']
-    delete data['nmd-arrival-hour']
-    delete data['nmd-arrival-minute']
-    delete data['nmd-departure-day']
-    delete data['nmd-departure-month']
-    delete data['nmd-departure-year']
-    delete data['nmd-departure-hour']
-    delete data['nmd-departure-minute']
-  }
+  data['non-manipulation-documents'].push({
+    filename: ref + '.pdf',
+    reference: ref
+  })
+  nmdSaved = true
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
   if (!nmdSaved) {
@@ -522,7 +451,7 @@ router.post('/non-manipulation-declaration', (req, res) => {
   if (wantsAnother) {
     res.redirect('/non-manipulation-declaration')
   } else {
-    res.redirect('/check-answers')
+    res.redirect(getDocumentsCompleteRedirect(data))
   }
 })
 
@@ -563,74 +492,18 @@ router.get('/upload-guidance', (req, res, next) => {
 // Sign in
 // -------------------------------------------------------
 router.post('/sign-in', (req, res) => {
-  res.redirect('/upload-documents')
+  res.redirect('/catch-certificates')
 })
 
 // -------------------------------------------------------
-// Upload documents — handle remove actions and continue
+// Legacy upload-documents route — redirect to multi-page flow
 // -------------------------------------------------------
-router.get('/upload-documents', (req, res, next) => {
-  const data = req.session.data
-  const remove = req.query.remove
-  const removeCertIndex = parseInt(req.query['remove-cert'], 10)
-
-  if (!isNaN(removeCertIndex) && Array.isArray(data['catch-cert-uploaded-files'])) {
-    data['catch-cert-uploaded-files'].splice(removeCertIndex, 1)
-    if (data['catch-cert-uploaded-files'].length === 0) {
-      delete data['catch-cert-uploaded']
-      delete data['catch-cert-filename']
-      delete data['catch-cert-uploaded-files']
-    } else {
-      data['catch-cert-filename'] = data['catch-cert-uploaded-files'][0]
-    }
-  } else if (remove === 'catch-cert') {
-    delete data['catch-cert-uploaded']
-    delete data['catch-cert-filename']
-    delete data['catch-cert-uploaded-files']
-  } else if (remove === 'processing-statement') {
-    delete data['processing-statement-uploaded']
-    delete data['processing-statement-filename']
-  } else if (remove === 'nmd') {
-    delete data['nmd-uploaded']
-    delete data['nmd-filename']
-  }
-  next()
+router.get('/upload-documents', (req, res) => {
+  res.redirect('/catch-certificates')
 })
 
 router.post('/upload-documents', (req, res) => {
-  const data = req.session.data
-  const variant = data['extraction-variant'] || 'a'
-  const existingCerts = Array.isArray(data['catch-cert-uploaded-files']) ? data['catch-cert-uploaded-files'] : []
-
-  // ── "Continue" — simulate all three documents and proceed ─────────────────
-  const sampleDocumentFiles = listSampleDocumentFiles()
-  const defaultProcessingStatementFile = sampleDocumentFiles.find((filename) => filename.startsWith('CATCH.PS.PT.2026.0001149')) ||
-    sampleDocumentFiles.find(isProcessingStatementFile)
-
-  // Simulate file upload state — mark each document as uploaded
-  // (actual file upload is not processed server-side in this prototype)
-  if (existingCerts.length === 0) {
-    if (variant === 'd') {
-      data['catch-cert-uploaded-files'] = [...scenarioDCatchCertificateFiles]
-    } else {
-      data['catch-cert-uploaded-files'] = [...simulatedCatchCertPool]
-    }
-    data['catch-cert-uploaded'] = true
-    data['catch-cert-filename'] = data['catch-cert-uploaded-files'][0]
-  }
-
-  if (!data['processing-statement-uploaded']) {
-    data['processing-statement-uploaded'] = true
-    data['processing-statement-filename'] = variant === 'd'
-      ? 'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
-      : 'processing-statement-PS-IS-2025-00847.pdf'
-  }
-  if (!data['nmd-uploaded']) {
-    data['nmd-uploaded'] = true
-    data['nmd-filename'] = 'non-manipulation-declaration-NMD-IS-2025-0419.pdf'
-  }
-
-  res.redirect('/processing')
+  res.redirect('/catch-certificates')
 })
 
 // -------------------------------------------------------
@@ -690,5 +563,5 @@ router.post('/review-extraction-c', (req, res) => {
 // Review extraction — Variant D (cross-document validation failed)
 // -------------------------------------------------------
 router.post('/review-extraction-d', (req, res) => {
-  res.redirect('/upload-documents')
+  res.redirect('/catch-certificates')
 })
