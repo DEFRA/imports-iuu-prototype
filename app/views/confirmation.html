@@ -1,6 +1,6 @@
 {% extends "layouts/main.html" %}
 
-{% set pageName="Import notification submitted" %}
+{% set pageName="Import notification submitted" if data['submission-kind'] != 'iuu' else "IUU notification submitted" %}
 
 {% block content %}
 
@@ -9,7 +9,7 @@
 
     <div class="govuk-panel govuk-panel--confirmation">
       <h1 class="govuk-panel__title">
-        Import notification submitted
+        {% if data['submission-kind'] == 'iuu' %}IUU notification submitted{% else %}Import notification submitted{% endif %}
       </h1>
       <div class="govuk-panel__body">
         Your reference number<br>
@@ -31,7 +31,7 @@
       <p>You must ensure the driver or vessel master has a printed or digital copy of this notification reference number when arriving at the border.</p>
     </div>
 
-    <h2 class="govuk-heading-m">Your consignment summary</h2>
+    <h2 class="govuk-heading-m">{{ 'Your notification summary' if data['submission-kind'] == 'iuu' else 'Your consignment summary' }}</h2>
 
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
@@ -57,7 +57,9 @@
       </div>
     </dl>
 
-    <p class="govuk-body">A confirmation email has been sent to <strong>{{ data['importer-email'] }}</strong>.</p>
+    <p class="govuk-body">
+      A confirmation email has been sent to <strong>{{ data['importer-email'] }}</strong>.
+    </p>
 
     <h2 class="govuk-heading-m">If you need to make changes</h2>
 
@@ -68,7 +70,9 @@
     </ul>
 
     <div class="govuk-button-group">
-      <a href="/" class="govuk-link">Submit another import notification</a>
+      <a href="/" class="govuk-link">
+        {% if data['submission-kind'] == 'iuu' %}Submit another IUU notification{% else %}Submit another import notification{% endif %}
+      </a>
     </div>
 
   </div>
