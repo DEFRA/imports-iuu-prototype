@@ -15,7 +15,7 @@
         <h2 class="govuk-notification-banner__title">Partial extraction</h2>
       </div>
       <div class="govuk-notification-banner__content">
-        <p class="govuk-body">We extracted some information from your uploaded documents. Fields marked <strong class="govuk-tag govuk-tag--yellow">Requires input</strong> could not be extracted and must be entered manually.</p>
+        <p class="govuk-body">We extracted some information from your uploaded documents. Some fields could not be extracted and must be entered manually.</p>
         <p class="govuk-body">Check all extracted information is correct before continuing. You remain responsible for the accuracy of the information submitted.</p>
       </div>
     </div>
@@ -25,613 +25,298 @@
     <form action="/review-extraction-b" method="post" novalidate>
 
       {# ================================================================ #}
-      {# SECTION 1: Commodity Details                                     #}
+      {# SECTION 1: Importer Details                                      #}
       {# ================================================================ #}
-      <h2 class="govuk-heading-m govuk-!-margin-top-7">Commodity details</h2>
-
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Species</dt>
-          <dd class="govuk-summary-list__value">
-            Atlantic Cod (<em>Gadus morhua</em>)
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Commodity type</dt>
-          <dd class="govuk-summary-list__value">
-            Chilled, gutted, head-on
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">CN code</dt>
-          <dd class="govuk-summary-list__value">
-            0302 51 10
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Net weight</dt>
-          <dd class="govuk-summary-list__value">
-            <span class="govuk-hint govuk-!-margin-bottom-1">Not found in documents</span>
-            <strong class="govuk-tag govuk-tag--yellow">Requires input</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Product description</dt>
-          <dd class="govuk-summary-list__value">
-            Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-      </dl>
-
-      <h3 class="govuk-heading-s">Additional commodity fields</h3>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.commodity %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--s" for="net-weight-b">
-          Net weight (kg) <span class="govuk-tag govuk-tag--yellow">Requires input</span>
-        </label>
-        <div class="govuk-hint">This could not be extracted from your documents. Enter the net weight in kilograms.</div>
-        <input class="govuk-input govuk-input--width-10" id="net-weight-b" name="net-weight-b" type="text"
-          value="{{ data['net-weight-b'] }}">
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-            Are the remaining commodity details correct?
-          </legend>
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="commodity-correct-b" name="commodity-correct-b" type="radio" value="yes"
-                {% if data['commodity-correct-b'] == 'yes' or not data['commodity-correct-b'] %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="commodity-correct-b">
-                Yes, these details are correct
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="commodity-correct-b-2" name="commodity-correct-b" type="radio" value="no"
-                data-aria-controls="commodity-edit-b"
-                {% if data['commodity-correct-b'] == 'no' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="commodity-correct-b-2">
-                No, I need to make changes
-              </label>
-            </div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="commodity-edit-b">
-              <div class="govuk-inset-text govuk-!-margin-top-0">
-                <p class="govuk-body govuk-!-margin-bottom-2"><strong>Extracted value:</strong> Atlantic Cod (Gadus morhua)</p>
-                <div class="govuk-form-group">
-                  <label class="govuk-label" for="species-corrected-b">Correct species name</label>
-                  <input class="govuk-input" id="species-corrected-b" name="species-corrected-b" type="text"
-                    value="{{ data['species-corrected-b'] }}">
-                </div>
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="commodity-type-corrected-b">Commodity type</label>
-                <input class="govuk-input" id="commodity-type-corrected-b" name="commodity-type-corrected-b" type="text"
-                  value="{{ data['commodity-type-corrected-b'] or 'Chilled, gutted, head-on' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="cn-code-corrected-b">CN code</label>
-                <input class="govuk-input govuk-input--width-10" id="cn-code-corrected-b" name="cn-code-corrected-b" type="text"
-                  value="{{ data['cn-code-corrected-b'] or '0302 51 10' }}">
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-      {# ================================================================ #}
-      {# SECTION 2: Catch Details                                         #}
-      {# ================================================================ #}
-      <h2 class="govuk-heading-m">Catch details</h2>
-
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Catch area</dt>
-          <dd class="govuk-summary-list__value">
-            FAO Area 27 — Northeast Atlantic (ICES Division Va)
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Catch date</dt>
-          <dd class="govuk-summary-list__value">
-            <span class="govuk-hint govuk-!-margin-bottom-1">Not found in documents</span>
-            <strong class="govuk-tag govuk-tag--yellow">Requires input</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Flag state</dt>
-          <dd class="govuk-summary-list__value">
-            Iceland (IS)
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Vessel name</dt>
-          <dd class="govuk-summary-list__value">
-            FV Sigurður Ísfjörð
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Vessel IMO number</dt>
-          <dd class="govuk-summary-list__value">
-            8821432
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Catch Certificate reference</dt>
-          <dd class="govuk-summary-list__value">
-            CC-IS-2025-0847
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-      </dl>
-
-      <h3 class="govuk-heading-s">Additional catch fields</h3>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.catch %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--s" for="catch-date-b">
-          Catch date <span class="govuk-tag govuk-tag--yellow">Requires input</span>
-        </label>
-        <div class="govuk-hint">This could not be extracted from your documents. Enter the date the fish were caught.</div>
-        <input class="govuk-input govuk-input--width-20" id="catch-date-b" name="catch-date-b" type="text"
-          placeholder="DD/MM/YYYY" value="{{ data['catch-date-b'] }}">
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-            Are the remaining catch details correct?
-          </legend>
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="catch-correct-b" name="catch-correct-b" type="radio" value="yes"
-                {% if data['catch-correct-b'] == 'yes' or not data['catch-correct-b'] %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="catch-correct-b">
-                Yes, these details are correct
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="catch-correct-b-2" name="catch-correct-b" type="radio" value="no"
-                data-aria-controls="catch-edit-b"
-                {% if data['catch-correct-b'] == 'no' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="catch-correct-b-2">
-                No, I need to make changes
-              </label>
-            </div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="catch-edit-b">
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="catch-area-corrected-b">Catch area</label>
-                <input class="govuk-input" id="catch-area-corrected-b" name="catch-area-corrected-b" type="text"
-                  value="{{ data['catch-area-corrected-b'] or 'FAO Area 27 — Northeast Atlantic (ICES Division Va)' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="flag-state-corrected-b">Flag state</label>
-                <input class="govuk-input govuk-input--width-20" id="flag-state-corrected-b" name="flag-state-corrected-b" type="text"
-                  value="{{ data['flag-state-corrected-b'] or 'Iceland (IS)' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="vessel-name-corrected-b">Vessel name</label>
-                <input class="govuk-input" id="vessel-name-corrected-b" name="vessel-name-corrected-b" type="text"
-                  value="{{ data['vessel-name-corrected-b'] or 'FV Sigurður Ísfjörð' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="vessel-imo-corrected-b">Vessel IMO number</label>
-                <input class="govuk-input govuk-input--width-10" id="vessel-imo-corrected-b" name="vessel-imo-corrected-b" type="text"
-                  value="{{ data['vessel-imo-corrected-b'] or '8821432' }}">
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-      {# ================================================================ #}
-      {# SECTION 3: Processing Details                                    #}
-      {# ================================================================ #}
-      <h2 class="govuk-heading-m">Processing details</h2>
-
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing facility</dt>
-          <dd class="govuk-summary-list__value">
-            Samherji hf. Processing Plant, Akureyri
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing country</dt>
-          <dd class="govuk-summary-list__value">
-            Iceland
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing Statement reference</dt>
-          <dd class="govuk-summary-list__value">
-            <span class="govuk-hint govuk-!-margin-bottom-1">Not found in documents</span>
-            <strong class="govuk-tag govuk-tag--yellow">Requires input</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing date</dt>
-          <dd class="govuk-summary-list__value">
-            15 July 2025
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-      </dl>
-
-      <h3 class="govuk-heading-s">Additional processing fields</h3>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.processing %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--s" for="ps-ref-b">
-          Processing Statement reference <span class="govuk-tag govuk-tag--yellow">Requires input</span>
-        </label>
-        <div class="govuk-hint">This could not be extracted from your documents. Enter the Processing Statement reference number.</div>
-        <input class="govuk-input govuk-input--width-20" id="ps-ref-b" name="ps-ref-b" type="text"
-          value="{{ data['ps-ref-b'] }}">
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-            Are the remaining processing details correct?
-          </legend>
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="processing-correct-b" name="processing-correct-b" type="radio" value="yes"
-                {% if data['processing-correct-b'] == 'yes' or not data['processing-correct-b'] %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="processing-correct-b">
-                Yes, these details are correct
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="processing-correct-b-2" name="processing-correct-b" type="radio" value="no"
-                data-aria-controls="processing-edit-b"
-                {% if data['processing-correct-b'] == 'no' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="processing-correct-b-2">
-                No, I need to make changes
-              </label>
-            </div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="processing-edit-b">
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="processing-facility-corrected-b">Processing facility</label>
-                <input class="govuk-input" id="processing-facility-corrected-b" name="processing-facility-corrected-b" type="text"
-                  value="{{ data['processing-facility-corrected-b'] or 'Samherji hf. Processing Plant, Akureyri' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="processing-country-corrected-b">Processing country</label>
-                <input class="govuk-input govuk-input--width-20" id="processing-country-corrected-b" name="processing-country-corrected-b" type="text"
-                  value="{{ data['processing-country-corrected-b'] or 'Iceland' }}">
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-      {# ================================================================ #}
-      {# SECTION 4: Export Information                                    #}
-      {# ================================================================ #}
-      <h2 class="govuk-heading-m">Export information</h2>
-
-      <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Exporter name</dt>
-          <dd class="govuk-summary-list__value">
-            Samherji Export Ltd
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Export approval number</dt>
-          <dd class="govuk-summary-list__value">
-            <span class="govuk-hint govuk-!-margin-bottom-1">Not found in documents</span>
-            <strong class="govuk-tag govuk-tag--yellow">Requires input</strong>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Export country</dt>
-          <dd class="govuk-summary-list__value">
-            Iceland
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
-          </dd>
-        </div>
-      </dl>
-
-      <h3 class="govuk-heading-s">Additional export fields</h3>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.export %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--s" for="export-approval-b">
-          Export approval number <span class="govuk-tag govuk-tag--yellow">Requires input</span>
-        </label>
-        <div class="govuk-hint">This could not be extracted from your documents. Enter the export approval number.</div>
-        <input class="govuk-input govuk-input--width-20" id="export-approval-b" name="export-approval-b" type="text"
-          value="{{ data['export-approval-b'] }}">
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-            Are the remaining export details correct?
-          </legend>
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="export-correct-b" name="export-correct-b" type="radio" value="yes"
-                {% if data['export-correct-b'] == 'yes' or not data['export-correct-b'] %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="export-correct-b">
-                Yes, these details are correct
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="export-correct-b-2" name="export-correct-b" type="radio" value="no"
-                data-aria-controls="export-edit-b"
-                {% if data['export-correct-b'] == 'no' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="export-correct-b-2">
-                No, I need to make changes
-              </label>
-            </div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="export-edit-b">
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="exporter-name-corrected-b">Exporter name</label>
-                <input class="govuk-input" id="exporter-name-corrected-b" name="exporter-name-corrected-b" type="text"
-                  value="{{ data['exporter-name-corrected-b'] or 'Samherji Export Ltd' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="export-country-corrected-b">Export country</label>
-                <input class="govuk-input govuk-input--width-20" id="export-country-corrected-b" name="export-country-corrected-b" type="text"
-                  value="{{ data['export-country-corrected-b'] or 'Iceland' }}">
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-      {# ================================================================ #}
-      {# SECTION 5: Import Information                                    #}
-      {# ================================================================ #}
-      <h2 class="govuk-heading-m">Import information</h2>
+      <h2 class="govuk-heading-m govuk-!-margin-top-7">
+        Importer details
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/importer-details">Change</a>
+        </span>
+      </h2>
 
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Importer name</dt>
           <dd class="govuk-summary-list__value">
             Nordic Sea Imports Ltd
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">EORI number</dt>
           <dd class="govuk-summary-list__value">
             GB123456789000
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Port of entry</dt>
           <dd class="govuk-summary-list__value">
             Grimsby (Associated British Ports)
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Estimated arrival</dt>
           <dd class="govuk-summary-list__value">
             28 July 2025, 08:30
-            <br><strong class="govuk-tag govuk-tag--green">Extracted</strong>
+            
+          </dd>
+        </div>
+        {% for item in fesDataDictionaryFields.byCategory.import %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+
+      {# ================================================================ #}
+      {# SECTION 2: Catch Certificate                                     #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        Catch certificate
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/catch-certificates">Change</a>
+        </span>
+      </h2>
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Catch Certificate reference</dt>
+          <dd class="govuk-summary-list__value">
+            CC-IS-2025-0847
+            
+          </dd>
+        </div>
+        {% for item in fesDataDictionaryFields.byCategory.catch %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+
+      {# ================================================================ #}
+      {# SECTION 3: Catch Details                                         #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        Catch details
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/catch-certificates">Change</a>
+        </span>
+      </h2>
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Catch area</dt>
+          <dd class="govuk-summary-list__value">
+            FAO Area 27 — Northeast Atlantic (ICES Division Va)
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Catch date</dt>
+          <dd class="govuk-summary-list__value">
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Flag state</dt>
+          <dd class="govuk-summary-list__value">
+            Iceland (IS)
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Vessel name</dt>
+          <dd class="govuk-summary-list__value">
+            FV Sigurður Ísfjörð
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Vessel IMO number</dt>
+          <dd class="govuk-summary-list__value">
+            8821432
+            
           </dd>
         </div>
       </dl>
 
-      <h3 class="govuk-heading-s">Additional import fields</h3>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.import %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {# ================================================================ #}
+      {# SECTION 4: Commodity Details                                     #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        Commodity details
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/species-details">Change</a>
+        </span>
+      </h2>
 
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-            Are these import details correct?
-          </legend>
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="import-correct-b" name="import-correct-b" type="radio" value="yes"
-                {% if data['import-correct-b'] == 'yes' or not data['import-correct-b'] %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="import-correct-b">
-                Yes, these details are correct
-              </label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="import-correct-b-2" name="import-correct-b" type="radio" value="no"
-                data-aria-controls="import-edit-b"
-                {% if data['import-correct-b'] == 'no' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="import-correct-b-2">
-                No, I need to make changes
-              </label>
-            </div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="import-edit-b">
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="importer-name-corrected-b">Importer name</label>
-                <input class="govuk-input" id="importer-name-corrected-b" name="importer-name-corrected-b" type="text"
-                  value="{{ data['importer-name-corrected-b'] or 'Nordic Sea Imports Ltd' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="eori-corrected-b">EORI number</label>
-                <input class="govuk-input govuk-input--width-20" id="eori-corrected-b" name="eori-corrected-b" type="text"
-                  value="{{ data['eori-corrected-b'] or 'GB123456789000' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="port-corrected-b">Port of entry</label>
-                <input class="govuk-input" id="port-corrected-b" name="port-corrected-b" type="text"
-                  value="{{ data['port-corrected-b'] or 'Grimsby (Associated British Ports)' }}">
-              </div>
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="arrival-corrected-b">Estimated arrival (date and time)</label>
-                <input class="govuk-input govuk-input--width-20" id="arrival-corrected-b" name="arrival-corrected-b" type="text"
-                  placeholder="DD/MM/YYYY HH:MM" value="{{ data['arrival-corrected-b'] or '28/07/2025 08:30' }}">
-              </div>
-            </div>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Species</dt>
+          <dd class="govuk-summary-list__value">
+            Atlantic Cod (<em>Gadus morhua</em>)
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Commodity type</dt>
+          <dd class="govuk-summary-list__value">
+            Chilled, gutted, head-on
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">CN code</dt>
+          <dd class="govuk-summary-list__value">
+            0302 51 10
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Net weight</dt>
+          <dd class="govuk-summary-list__value">
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Product description</dt>
+          <dd class="govuk-summary-list__value">
+            Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes
+            
+          </dd>
+        </div>
+        {% for item in fesDataDictionaryFields.byCategory.commodity %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
           </div>
-        </fieldset>
-      </div>
+        {% endfor %}
+      </dl>
 
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+      {# ================================================================ #}
+      {# SECTION 5: Consignment Details                                   #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        Consignment details
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/transport-details">Change</a>
+        </span>
+      </h2>
+      <dl class="govuk-summary-list">
+        {% for item in fesDataDictionaryFields.byCategory.consignment %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
 
-      <h2 class="govuk-heading-m">Consignment details</h2>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.consignment %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {# ================================================================ #}
+      {# SECTION 6: Processing Details                                    #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        Processing details
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/processing-statement">Change</a>
+        </span>
+      </h2>
 
-      <h2 class="govuk-heading-m">NMD information</h2>
-      <table class="govuk-table govuk-!-font-size-16">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Field</th>
-            <th scope="col" class="govuk-table__header">Source</th>
-            <th scope="col" class="govuk-table__header">Required</th>
-            <th scope="col" class="govuk-table__header">Value</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for item in fesDataDictionaryFields.byCategory.nmd %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ item.field }}</td>
-              <td class="govuk-table__cell">{{ item.source }}</td>
-              <td class="govuk-table__cell">{{ item.required }}</td>
-              <td class="govuk-table__cell">{{ item.value }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Processing facility</dt>
+          <dd class="govuk-summary-list__value">
+            Samherji hf. Processing Plant, Akureyri
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Processing country</dt>
+          <dd class="govuk-summary-list__value">
+            Iceland
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Processing Statement reference</dt>
+          <dd class="govuk-summary-list__value">
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Processing date</dt>
+          <dd class="govuk-summary-list__value">
+            15 July 2025
+            
+          </dd>
+        </div>
+        {% for item in fesDataDictionaryFields.byCategory.processing %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
 
-      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+      {# ================================================================ #}
+      {# SECTION 7: NMD Information                                       #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        NMD information
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/non-manipulation-declaration">Change</a>
+        </span>
+      </h2>
+      <dl class="govuk-summary-list">
+        {% for item in fesDataDictionaryFields.byCategory.nmd %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
+
+      {# ================================================================ #}
+      {# SECTION 8: Exporter Details                                      #}
+      {# ================================================================ #}
+      <h2 class="govuk-heading-m">
+        Exporter details
+        <span class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-float-right">
+          <a class="govuk-link" href="/processing-statement">Change</a>
+        </span>
+      </h2>
+
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Exporter name</dt>
+          <dd class="govuk-summary-list__value">
+            Samherji Export Ltd
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Export approval number</dt>
+          <dd class="govuk-summary-list__value">
+            
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Export country</dt>
+          <dd class="govuk-summary-list__value">
+            Iceland
+            
+          </dd>
+        </div>
+        {% for item in fesDataDictionaryFields.byCategory.export %}
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
+            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+          </div>
+        {% endfor %}
+      </dl>
 
       <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
