@@ -23,6 +23,13 @@
     <p class="govuk-body">Review the information below. Where fields are missing, enter the correct values before continuing.</p>
 
     <form action="/review-extraction-b" method="post" novalidate>
+      {% set importFields = data['scenario-b-import-fields'] or fesDataDictionaryFields.byCategory.import %}
+      {% set catchFields = data['scenario-b-catch-fields'] or fesDataDictionaryFields.byCategory.catch %}
+      {% set commodityFields = data['scenario-b-commodity-fields'] or fesDataDictionaryFields.byCategory.commodity %}
+      {% set consignmentFields = data['scenario-b-consignment-fields'] or fesDataDictionaryFields.byCategory.consignment %}
+      {% set processingFields = data['scenario-b-processing-fields'] or fesDataDictionaryFields.byCategory.processing %}
+      {% set exportFields = data['scenario-b-export-fields'] or fesDataDictionaryFields.byCategory.export %}
+      {% set nmdFields = data['scenario-b-nmd-fields'] or fesDataDictionaryFields.byCategory.nmd %}
 
       {# ================================================================ #}
       {# SECTION 1: Importer Details                                      #}
@@ -71,21 +78,21 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Port of entry</dt>
           <dd class="govuk-summary-list__value">
-            Grimsby (Associated British Ports)
-
+            {{ data['scenario-b-port-of-entry'] or 'Grimsby (Associated British Ports)' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Estimated arrival</dt>
           <dd class="govuk-summary-list__value">
-            28 July 2025, 08:30
-
+            {{ data['scenario-b-estimated-arrival'] or '28 July 2025, 08:30' }}
+            
           </dd>
         </div>
-        {% for item in fesDataDictionaryFields.byCategory.import %}
+        {% for item in importFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
@@ -102,14 +109,14 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch Certificate reference</dt>
           <dd class="govuk-summary-list__value">
-            CC-IS-2025-0847
-
+            {{ data['scenario-b-catch-certificate-reference'] or 'CC-IS-2025-0847' }}
+            
           </dd>
         </div>
-        {% for item in fesDataDictionaryFields.byCategory.catch %}
+        {% for item in catchFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
@@ -126,35 +133,35 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch area</dt>
           <dd class="govuk-summary-list__value">
-            FAO Area 27 — Northeast Atlantic (ICES Division Va)
-
+            {{ data['scenario-b-catch-area'] or 'FAO Area 27 — Northeast Atlantic (ICES Division Va)' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch date</dt>
           <dd class="govuk-summary-list__value">
-
+            {{ data['scenario-b-catch-date'] or '' }}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Flag state</dt>
           <dd class="govuk-summary-list__value">
-            Iceland (IS)
-
+            {{ data['scenario-b-flag-state'] or 'Iceland (IS)' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Vessel name</dt>
           <dd class="govuk-summary-list__value">
-            FV Sigurður Ísfjörð
-
+            {{ data['scenario-b-vessel-name'] or 'FV Sigurður Ísfjörð' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Vessel IMO number</dt>
           <dd class="govuk-summary-list__value">
-            8821432
-
+            {{ data['scenario-b-vessel-imo'] or '8821432' }}
+            
           </dd>
         </div>
       </dl>
@@ -171,41 +178,41 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Species</dt>
           <dd class="govuk-summary-list__value">
-            Atlantic Cod (<em>Gadus morhua</em>)
-
+            {{ data['scenario-b-species'] or 'Atlantic Cod (Gadus morhua)' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Commodity type</dt>
           <dd class="govuk-summary-list__value">
-            Chilled, gutted, head-on
-
+            {{ data['scenario-b-commodity-type'] or 'Chilled, gutted, head-on' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">CN code</dt>
           <dd class="govuk-summary-list__value">
-            0302 51 10
-
+            {{ data['scenario-b-cn-code'] or '0302 51 10' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Net weight</dt>
           <dd class="govuk-summary-list__value">
-
+            {{ data['scenario-b-net-weight'] or '' }}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Product description</dt>
           <dd class="govuk-summary-list__value">
-            Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes
-
+            {{ data['scenario-b-product-description'] or 'Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes' }}
+            
           </dd>
         </div>
-        {% for item in fesDataDictionaryFields.byCategory.commodity %}
+        {% for item in commodityFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
@@ -218,10 +225,10 @@
         <a class="govuk-link review-extraction-section-header__change" href="/transport-details">Change</a>
       </div>
       <dl class="govuk-summary-list">
-        {% for item in fesDataDictionaryFields.byCategory.consignment %}
+        {% for item in consignmentFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
@@ -238,34 +245,34 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing facility</dt>
           <dd class="govuk-summary-list__value">
-            Samherji hf. Processing Plant, Akureyri
-
+            {{ data['scenario-b-processing-facility'] or 'Samherji hf. Processing Plant, Akureyri' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing country</dt>
           <dd class="govuk-summary-list__value">
-            Iceland
-
+            {{ data['scenario-b-processing-country'] or 'Iceland' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing Statement reference</dt>
           <dd class="govuk-summary-list__value">
-
+            {{ data['scenario-b-processing-reference'] or '' }}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing date</dt>
           <dd class="govuk-summary-list__value">
-            15 July 2025
-
+            {{ data['scenario-b-processing-date'] or '15 July 2025' }}
+            
           </dd>
         </div>
-        {% for item in fesDataDictionaryFields.byCategory.processing %}
+        {% for item in processingFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
@@ -278,10 +285,10 @@
         <a class="govuk-link review-extraction-section-header__change" href="/non-manipulation-declaration">Change</a>
       </div>
       <dl class="govuk-summary-list">
-        {% for item in fesDataDictionaryFields.byCategory.nmd %}
+        {% for item in nmdFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
@@ -298,27 +305,27 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Exporter name</dt>
           <dd class="govuk-summary-list__value">
-            Samherji Export Ltd
-
+            {{ data['scenario-b-exporter-name'] or 'Samherji Export Ltd' }}
+            
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Export approval number</dt>
           <dd class="govuk-summary-list__value">
-
+            {{ data['scenario-b-export-approval-number'] or '' }}
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Export country</dt>
           <dd class="govuk-summary-list__value">
-            Iceland
-
+            {{ data['scenario-b-export-country'] or 'Iceland' }}
+            
           </dd>
         </div>
-        {% for item in fesDataDictionaryFields.byCategory.export %}
+        {% for item in exportFields %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
           </div>
         {% endfor %}
       </dl>
