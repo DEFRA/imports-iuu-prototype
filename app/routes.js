@@ -496,6 +496,10 @@ router.get('/upload-guidance', (req, res, next) => {
 // -------------------------------------------------------
 // Sign in
 // -------------------------------------------------------
+router.get('/sign-in', (req, res) => {
+  res.redirect('/catch-certificates')
+})
+
 router.post('/sign-in', (req, res) => {
   res.redirect('/catch-certificates')
 })
