@@ -71,14 +71,14 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Port of entry</dt>
           <dd class="govuk-summary-list__value">
-            Grimsby (Associated British Ports)
+            {{ data['scenario-a-port-of-entry'] or 'Grimsby (Associated British Ports)' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Estimated arrival</dt>
           <dd class="govuk-summary-list__value">
-            28 July 2025, 08:30
+            {{ data['scenario-a-estimated-arrival'] or '28 July 2025, 08:30' }}
             
           </dd>
         </div>
@@ -102,7 +102,7 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch Certificate reference</dt>
           <dd class="govuk-summary-list__value">
-            CC-IS-2025-0847
+            {{ data['scenario-a-catch-certificate-reference'] or 'CC-IS-2025-0847' }}
             
           </dd>
         </div>
@@ -126,35 +126,35 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch area</dt>
           <dd class="govuk-summary-list__value">
-            FAO Area 27 — Northeast Atlantic (ICES Division Va)
+            {{ data['scenario-a-catch-area'] or 'FAO Area 27 — Northeast Atlantic (ICES Division Va)' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Catch date</dt>
           <dd class="govuk-summary-list__value">
-            14 July 2025
+            {{ data['scenario-a-catch-date'] or '14 July 2025' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Flag state</dt>
           <dd class="govuk-summary-list__value">
-            Iceland (IS)
+            {{ data['scenario-a-flag-state'] or 'Iceland (IS)' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Vessel name</dt>
           <dd class="govuk-summary-list__value">
-            FV Sigurður Ísfjörð
+            {{ data['scenario-a-vessel-name'] or 'FV Sigurður Ísfjörð' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Vessel IMO number</dt>
           <dd class="govuk-summary-list__value">
-            8821432
+            {{ data['scenario-a-vessel-imo'] or '8821432' }}
             
           </dd>
         </div>
@@ -172,35 +172,35 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Species</dt>
           <dd class="govuk-summary-list__value">
-            Atlantic Cod (<em>Gadus morhua</em>)
+            {{ data['scenario-a-species'] or 'Atlantic Cod (Gadus morhua)' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Commodity type</dt>
           <dd class="govuk-summary-list__value">
-            Chilled, gutted, head-on
+            {{ data['scenario-a-commodity-type'] or 'Chilled, gutted, head-on' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">CN code</dt>
           <dd class="govuk-summary-list__value">
-            0302 51 10
+            {{ data['scenario-a-cn-code'] or '0302 51 10' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Net weight</dt>
           <dd class="govuk-summary-list__value">
-            2,450 kg
+            {{ data['scenario-a-net-weight'] or '2,450 kg' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Product description</dt>
           <dd class="govuk-summary-list__value">
-            Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes
+            {{ data['scenario-a-product-description'] or 'Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes' }}
             
           </dd>
         </div>
@@ -240,28 +240,28 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing facility</dt>
           <dd class="govuk-summary-list__value">
-            Samherji hf. Processing Plant, Akureyri
+            {{ data['scenario-a-processing-facility'] or 'Samherji hf. Processing Plant, Akureyri' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing country</dt>
           <dd class="govuk-summary-list__value">
-            Iceland
+            {{ data['scenario-a-processing-country'] or 'Iceland' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing Statement reference</dt>
           <dd class="govuk-summary-list__value">
-            PS-IS-2025-00847
+            {{ data['scenario-a-processing-reference'] or 'PS-IS-2025-00847' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Processing date</dt>
           <dd class="govuk-summary-list__value">
-            15 July 2025
+            {{ data['scenario-a-processing-date'] or '15 July 2025' }}
             
           </dd>
         </div>
@@ -284,7 +284,7 @@
         {% for item in fesDataDictionaryFields.byCategory.nmd %}
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value }}</dd>
+            <dd class="govuk-summary-list__value">&nbsp;</dd>
           </div>
         {% endfor %}
       </dl>
@@ -301,21 +301,21 @@
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Exporter name</dt>
           <dd class="govuk-summary-list__value">
-            Samherji Export Ltd
+            {{ data['scenario-a-exporter-name'] or 'Samherji Export Ltd' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Export approval number</dt>
           <dd class="govuk-summary-list__value">
-            IS-EXP-2025-00294
+            {{ data['scenario-a-export-approval-number'] or 'IS-EXP-2025-00294' }}
             
           </dd>
         </div>
         <div class="govuk-summary-list__row">
           <dt class="govuk-summary-list__key">Export country</dt>
           <dd class="govuk-summary-list__value">
-            Iceland
+            {{ data['scenario-a-export-country'] or 'Iceland' }}
             
           </dd>
         </div>

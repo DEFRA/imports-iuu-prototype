@@ -28,6 +28,8 @@ const listSampleDocumentFiles = () => {
     .sort()
 }
 
+const findSampleExtractionJsonFile = () => listSampleDocumentFiles().find((filename) => /-extraction_.*\.json$/i.test(filename))
+
 const isCatchCertificateFile = (filename) => filename.toUpperCase().includes('CATCH.CC')
 
 const isProcessingStatementFile = (filename) => filename.toUpperCase().includes('CATCH.PS')
@@ -61,6 +63,171 @@ const extractProcessingStatementCatchReferences = (filename) => {
     match = pattern.exec(filename)
   }
   return references
+}
+
+const buildExtractionFieldLookup = (fields) => {
+  const lookup = {}
+  for (const field of fields || []) {
+    if (!field || !field.fieldName || field.value === undefined || field.value === null) continue
+    lookup[field.fieldName] = String(field.value).trim()
+  }
+  return lookup
+}
+
+const splitAddressForDisplay = (address) => {
+  if (!address) return { line1: '', line2: '', town: '', postcode: '' }
+  const parts = String(address).split(',').map((part) => part.trim()).filter(Boolean)
+  if (parts.length <= 1) {
+    return { line1: parts[0] || '', line2: '', town: '', postcode: '' }
+  }
+  const tail = parts[parts.length - 1]
+  const postcodeMatch = tail.match(/([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}|\d{4,6}[- ]?\d{0,4})$/i)
+  const postcode = postcodeMatch ? postcodeMatch[1] : ''
+  const town = postcode ? tail.replace(postcode, '').trim() : tail
+  return {
+    line1: parts[0] || '',
+    line2: parts.length > 2 ? parts.slice(1, -1).join(', ') : '',
+    town,
+    postcode
+  }
+}
+
+const buildScenarioAExtractionData = () => {
+  const extractionJsonFile = findSampleExtractionJsonFile()
+  if (!extractionJsonFile) return null
+
+  try {
+    const raw = fs.readFileSync(path.join(sampleDocumentsPath, extractionJsonFile), 'utf8')
+    const parsed = JSON.parse(raw)
+    const field = buildExtractionFieldLookup(parsed.fields)
+    const importerAddress = splitAddressForDisplay(field['importer.address'])
+
+    return {
+      'importer-name': field['importer.name'] || '',
+      'importer-eori': field['importer.eori'] || '',
+      'importer-phone': field['importer.phone'] || '',
+      'importer-email': field['importerRepresentative.email'] || '',
+      'importer-address-line-1': importerAddress.line1,
+      'importer-address-line-2': importerAddress.line2,
+      'importer-town': importerAddress.town,
+      'importer-postcode': importerAddress.postcode,
+      'scenario-a-port-of-entry': field['memberStateOfficeOfImport'] || '',
+      'scenario-a-estimated-arrival': field['arrivalTransport.estimatedArrivalTime'] || '',
+      'scenario-a-catch-certificate-reference': field['catchCertificate.reference'] || '',
+      'scenario-a-catch-area': [field['product.1.faoArea'], field['product.1.eezOrHighSeas'], field['product.1.rfmo']].filter(Boolean).join(' | '),
+      'scenario-a-catch-date': [field['product.1.catchDateFrom'], field['product.1.catchDateTo']].filter(Boolean).join(' to '),
+      'scenario-a-flag-state': [field['validatingAuthority.country'], field['validatingAuthority.isoCode'] ? '(' + field['validatingAuthority.isoCode'] + ')' : ''].filter(Boolean).join(' '),
+      'scenario-a-vessel-name': field['fishingVessel.name'] || '',
+      'scenario-a-vessel-imo': field['fishingVessel.imoNumber'] || '',
+      'scenario-a-species': field['product.1.species'] || '',
+      'scenario-a-commodity-type': field['importerProduct.cnDescription'] || field['productGroup.1.description'] || '',
+      'scenario-a-cn-code': field['product.1.productCode'] || '',
+      'scenario-a-net-weight': field['product.1.netCatchWeightKg'] || '',
+      'scenario-a-product-description': field['productGroup.1.description'] || '',
+      'scenario-a-processing-facility': field['memberStateOfficeOfImport'] || '',
+      'scenario-a-processing-country': field['transportDetails.countryOfExportation'] || '',
+      'scenario-a-processing-reference': field['processingStatement.reference'] || '',
+      'scenario-a-processing-date': field['transportDetails.signatureDate'] || field['flagStateValidation.date'] || '',
+      'scenario-a-exporter-name': field['exporter.name'] || '',
+      'scenario-a-export-approval-number': field['catchCertificate.documentNumber'] || '',
+      'scenario-a-export-country': field['exporter.country'] || ''
+    }
+  } catch (error) {
+    console.error('Failed to parse Scenario A extraction JSON:', extractionJsonFile, error)
+    return null
+  }
+}
+
+const buildScenarioBExtractionData = () => {
+  const extractionJsonFile = findSampleExtractionJsonFile()
+  if (!extractionJsonFile) return null
+
+  try {
+    const raw = fs.readFileSync(path.join(sampleDocumentsPath, extractionJsonFile), 'utf8')
+    const parsed = JSON.parse(raw)
+    const field = buildExtractionFieldLookup(parsed.fields)
+    const importerAddress = splitAddressForDisplay(field['importer.address'])
+
+    return {
+      'importer-name': field['importer.name'] || '',
+      'importer-eori': field['importer.eori'] || '',
+      'importer-phone': field['importer.phone'] || '',
+      'importer-email': field['importerRepresentative.email'] || '',
+      'importer-address-line-1': importerAddress.line1,
+      'importer-address-line-2': importerAddress.line2,
+      'importer-town': importerAddress.town,
+      'importer-postcode': importerAddress.postcode,
+      'scenario-b-port-of-entry': field['memberStateOfficeOfImport'] || '',
+      'scenario-b-estimated-arrival': field['arrivalTransport.estimatedArrivalTime'] || '',
+      'scenario-b-catch-certificate-reference': field['catchCertificate.reference'] || '',
+      'scenario-b-catch-area': [field['product.1.faoArea'], field['product.1.eezOrHighSeas'], field['product.1.rfmo']].filter(Boolean).join(' | '),
+      // Intentionally blank in Scenario B to represent partial extraction
+      'scenario-b-catch-date': '',
+      'scenario-b-flag-state': [field['validatingAuthority.country'], field['validatingAuthority.isoCode'] ? '(' + field['validatingAuthority.isoCode'] + ')' : ''].filter(Boolean).join(' '),
+      'scenario-b-vessel-name': field['fishingVessel.name'] || '',
+      'scenario-b-vessel-imo': field['fishingVessel.imoNumber'] || '',
+      'scenario-b-species': field['product.1.species'] || '',
+      'scenario-b-commodity-type': field['importerProduct.cnDescription'] || field['productGroup.1.description'] || '',
+      'scenario-b-cn-code': field['product.1.productCode'] || '',
+      // Intentionally blank in Scenario B to represent partial extraction
+      'scenario-b-net-weight': '',
+      'scenario-b-product-description': field['productGroup.1.description'] || '',
+      'scenario-b-processing-facility': field['memberStateOfficeOfImport'] || '',
+      'scenario-b-processing-country': field['transportDetails.countryOfExportation'] || '',
+      // Intentionally blank in Scenario B to represent partial extraction
+      'scenario-b-processing-reference': '',
+      'scenario-b-processing-date': field['transportDetails.signatureDate'] || field['flagStateValidation.date'] || '',
+      'scenario-b-exporter-name': field['exporter.name'] || '',
+      // Intentionally blank in Scenario B to represent partial extraction
+      'scenario-b-export-approval-number': '',
+      'scenario-b-export-country': field['exporter.country'] || '',
+      'scenario-b-import-fields': [
+        { field: 'Place of departure of product', value: field['transportDetails.countryOfExportation'] || '' },
+        { field: 'Date of departure', value: field['transportDetails.signatureDate'] || '' },
+        { field: 'Last point of departure before storage country', value: field['transportDetails.placeOfDeparture'] || '' },
+        { field: 'Date of arrival to storage (unloading)', value: '' },
+        { field: 'Place of storage', value: field['importer.country'] || '' }
+      ],
+      'scenario-b-catch-fields': [
+        { field: 'Catch certificate number', value: field['catchCertificate.documentNumber'] || '' },
+        { field: 'Vessel name(s), flag(s), validation date(s)', value: [field['fishingVessel.name'], field['fishingVessel.flagHomePort'], field['flagStateValidation.date']].filter(Boolean).join(' | ') },
+        { field: 'Catch description', value: field['productGroup.1.description'] || '' }
+      ],
+      'scenario-b-commodity-fields': [
+        { field: 'Species', value: field['product.1.species'] || '' },
+        { field: 'Product code', value: field['product.1.productCode'] || '' },
+        { field: 'Description of fisheries products', value: field['productGroup.1.description'] || '' },
+        { field: 'Processed fishery product (CN code + description)', value: field['importerProduct.cnDescription'] || '' }
+      ],
+      'scenario-b-consignment-fields': [
+        { field: 'Document linkage references', value: field['catchCertificate.documentNumber'] || '' },
+        { field: 'Net weight entering storage (kg)', value: '' },
+        { field: 'Net fishery product weight entering storage (kg)', value: '' },
+        { field: 'Net weight departing storage (kg)', value: '' },
+        { field: 'Net fishery product weight departing storage (kg)', value: '' },
+        { field: 'Total landed weight (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' },
+        { field: 'Catch processed (kg)', value: '' },
+        { field: 'Processed fishery product (kg)', value: '' }
+      ],
+      'scenario-b-processing-fields': [
+        { field: 'Processing plant', value: '' },
+        { field: 'Processing plant address', value: '' },
+        { field: 'Plant approval number', value: '' },
+        { field: 'Responsible person', value: '' },
+        { field: 'Date of acceptance', value: field['flagStateValidation.date'] || '' }
+      ],
+      'scenario-b-export-fields': [
+        { field: 'Exporter company', value: field['exporter.name'] || '' },
+        { field: 'Exporter address', value: field['exporter.address'] || '' },
+        { field: 'Date of submission to competent authority', value: field['exporter.signatureDate'] || '' },
+        { field: 'Point of destination', value: field['memberStateOfficeOfImport'] || '' }
+      ],
+      'scenario-b-nmd-fields': fesDataDictionaryFields.byCategory.nmd.map((item) => ({ field: item.field, value: '' }))
+    }
+  } catch (error) {
+    console.error('Failed to parse Scenario B extraction JSON:', extractionJsonFile, error)
+    return null
+  }
 }
 
 const scenarioDCatchCertificateFiles = [
@@ -517,6 +684,20 @@ router.post('/upload-documents', (req, res) => {
 router.post('/processing', (req, res) => {
   const variant = req.session.data['extraction-variant'] || 'a'
   const data = req.session.data
+
+  if (variant === 'a') {
+    const scenarioAExtractionData = buildScenarioAExtractionData()
+    if (scenarioAExtractionData) {
+      Object.assign(data, scenarioAExtractionData)
+    }
+  }
+
+  if (variant === 'b') {
+    const scenarioBExtractionData = buildScenarioBExtractionData()
+    if (scenarioBExtractionData) {
+      Object.assign(data, scenarioBExtractionData)
+    }
+  }
 
   if (variant === 'd') {
     const catchCertificateFiles = data['catch-cert-uploaded-files'] || scenarioDCatchCertificateFiles
