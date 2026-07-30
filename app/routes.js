@@ -130,7 +130,52 @@ const buildScenarioAExtractionData = () => {
       'scenario-a-processing-date': field['transportDetails.signatureDate'] || field['flagStateValidation.date'] || '',
       'scenario-a-exporter-name': field['exporter.name'] || '',
       'scenario-a-export-approval-number': field['catchCertificate.documentNumber'] || '',
-      'scenario-a-export-country': field['exporter.country'] || ''
+      'scenario-a-export-country': field['exporter.country'] || '',
+      'scenario-a-import-fields': [
+        { field: 'Place of departure of product', value: field['transportDetails.countryOfExportation'] || '' },
+        { field: 'Date of departure', value: field['transportDetails.signatureDate'] || '' },
+        { field: 'Last point of departure before storage country', value: field['transportDetails.placeOfDeparture'] || '' },
+        { field: 'Date of arrival to storage (unloading)', value: field['arrivalTransport.estimatedArrivalTime'] || '' },
+        { field: 'Place of storage', value: field['importer.country'] || '' }
+      ],
+      'scenario-a-catch-fields': [
+        { field: 'Catch certificate number', value: field['catchCertificate.documentNumber'] || field['catchCertificate.reference'] || '' },
+        { field: 'Vessel name(s), flag(s), validation date(s)', value: [field['fishingVessel.name'], field['fishingVessel.flagHomePort'], field['flagStateValidation.date']].filter(Boolean).join(' | ') },
+        { field: 'Catch description', value: field['productGroup.1.description'] || '' }
+      ],
+      'scenario-a-commodity-fields': [
+        { field: 'Species', value: field['product.1.species'] || '' },
+        { field: 'Product code', value: field['product.1.productCode'] || '' },
+        { field: 'Description of fisheries products', value: field['productGroup.1.description'] || '' },
+        { field: 'Processed fishery product (CN code + description)', value: field['importerProduct.cnDescription'] || '' }
+      ],
+      'scenario-a-consignment-fields': [
+        { field: 'Document linkage references', value: field['catchCertificate.documentNumber'] || '' },
+        { field: 'Net weight entering storage (kg)', value: field['product.1.netCatchWeightKg'] || '' },
+        { field: 'Net fishery product weight entering storage (kg)', value: field['product.1.netCatchWeightKg'] || '' },
+        { field: 'Net weight departing storage (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' },
+        { field: 'Net fishery product weight departing storage (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' },
+        { field: 'Total landed weight (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' },
+        { field: 'Catch processed (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' },
+        { field: 'Processed fishery product (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' }
+      ],
+      'scenario-a-processing-fields': [
+        { field: 'Processing plant', value: field['memberStateOfficeOfImport'] || '' },
+        { field: 'Processing plant address', value: field['importer.address'] || '' },
+        { field: 'Plant approval number', value: field['processingStatement.reference'] || '' },
+        { field: 'Responsible person', value: field['importerRepresentative.name'] || '' },
+        { field: 'Date of acceptance', value: field['flagStateValidation.date'] || '' }
+      ],
+      'scenario-a-export-fields': [
+        { field: 'Exporter company', value: field['exporter.name'] || '' },
+        { field: 'Exporter address', value: field['exporter.address'] || '' },
+        { field: 'Date of submission to competent authority', value: field['exporter.signatureDate'] || '' },
+        { field: 'Point of destination', value: field['memberStateOfficeOfImport'] || '' }
+      ],
+      'scenario-a-nmd-fields': fesDataDictionaryFields.byCategory.nmd.map((item) => ({
+        field: item.field,
+        value: item.value || ''
+      }))
     }
   } catch (error) {
     console.error('Failed to parse Scenario A extraction JSON:', extractionJsonFile, error)
@@ -182,47 +227,47 @@ const buildScenarioBExtractionData = () => {
       'scenario-b-export-approval-number': '',
       'scenario-b-export-country': field['exporter.country'] || '',
       'scenario-b-import-fields': [
-        { field: 'Place of departure of product', value: field['transportDetails.countryOfExportation'] || '' },
-        { field: 'Date of departure', value: field['transportDetails.signatureDate'] || '' },
-        { field: 'Last point of departure before storage country', value: field['transportDetails.placeOfDeparture'] || '' },
-        { field: 'Date of arrival to storage (unloading)', value: '' },
-        { field: 'Place of storage', value: field['importer.country'] || '' }
+        { field: 'Place of departure of product', value: field['transportDetails.countryOfExportation'] || '', extracted: true },
+        { field: 'Date of departure', value: field['transportDetails.signatureDate'] || '', extracted: true },
+        { field: 'Last point of departure before storage country', value: field['transportDetails.placeOfDeparture'] || '', extracted: true },
+        { field: 'Date of arrival to storage (unloading)', value: '', extracted: false },
+        { field: 'Place of storage', value: field['importer.country'] || '', extracted: true }
       ],
       'scenario-b-catch-fields': [
-        { field: 'Catch certificate number', value: field['catchCertificate.documentNumber'] || '' },
-        { field: 'Vessel name(s), flag(s), validation date(s)', value: [field['fishingVessel.name'], field['fishingVessel.flagHomePort'], field['flagStateValidation.date']].filter(Boolean).join(' | ') },
-        { field: 'Catch description', value: field['productGroup.1.description'] || '' }
+        { field: 'Catch certificate number', value: field['catchCertificate.documentNumber'] || '', extracted: true },
+        { field: 'Vessel name(s), flag(s), validation date(s)', value: [field['fishingVessel.name'], field['fishingVessel.flagHomePort'], field['flagStateValidation.date']].filter(Boolean).join(' | '), extracted: true },
+        { field: 'Catch description', value: field['productGroup.1.description'] || '', extracted: true }
       ],
       'scenario-b-commodity-fields': [
-        { field: 'Species', value: field['product.1.species'] || '' },
-        { field: 'Product code', value: field['product.1.productCode'] || '' },
-        { field: 'Description of fisheries products', value: field['productGroup.1.description'] || '' },
-        { field: 'Processed fishery product (CN code + description)', value: field['importerProduct.cnDescription'] || '' }
+        { field: 'Species', value: field['product.1.species'] || '', extracted: true },
+        { field: 'Product code', value: field['product.1.productCode'] || '', extracted: true },
+        { field: 'Description of fisheries products', value: field['productGroup.1.description'] || '', extracted: true },
+        { field: 'Processed fishery product (CN code + description)', value: field['importerProduct.cnDescription'] || '', extracted: true }
       ],
       'scenario-b-consignment-fields': [
-        { field: 'Document linkage references', value: field['catchCertificate.documentNumber'] || '' },
-        { field: 'Net weight entering storage (kg)', value: '' },
-        { field: 'Net fishery product weight entering storage (kg)', value: '' },
-        { field: 'Net weight departing storage (kg)', value: '' },
-        { field: 'Net fishery product weight departing storage (kg)', value: '' },
-        { field: 'Total landed weight (kg)', value: field['product.1.verifiedWeightLandedKg'] || '' },
-        { field: 'Catch processed (kg)', value: '' },
-        { field: 'Processed fishery product (kg)', value: '' }
+        { field: 'Document linkage references', value: field['catchCertificate.documentNumber'] || '', extracted: true },
+        { field: 'Net weight entering storage (kg)', value: '', extracted: false },
+        { field: 'Net fishery product weight entering storage (kg)', value: '', extracted: false },
+        { field: 'Net weight departing storage (kg)', value: '', extracted: false },
+        { field: 'Net fishery product weight departing storage (kg)', value: '', extracted: false },
+        { field: 'Total landed weight (kg)', value: field['product.1.verifiedWeightLandedKg'] || '', extracted: true },
+        { field: 'Catch processed (kg)', value: '', extracted: false },
+        { field: 'Processed fishery product (kg)', value: '', extracted: false }
       ],
       'scenario-b-processing-fields': [
-        { field: 'Processing plant', value: '' },
-        { field: 'Processing plant address', value: '' },
-        { field: 'Plant approval number', value: '' },
-        { field: 'Responsible person', value: '' },
-        { field: 'Date of acceptance', value: field['flagStateValidation.date'] || '' }
+        { field: 'Processing plant', value: '', extracted: false },
+        { field: 'Processing plant address', value: '', extracted: false },
+        { field: 'Plant approval number', value: '', extracted: false },
+        { field: 'Responsible person', value: '', extracted: false },
+        { field: 'Date of acceptance', value: field['flagStateValidation.date'] || '', extracted: true }
       ],
       'scenario-b-export-fields': [
-        { field: 'Exporter company', value: field['exporter.name'] || '' },
-        { field: 'Exporter address', value: field['exporter.address'] || '' },
-        { field: 'Date of submission to competent authority', value: field['exporter.signatureDate'] || '' },
-        { field: 'Point of destination', value: field['memberStateOfficeOfImport'] || '' }
+        { field: 'Exporter company', value: field['exporter.name'] || '', extracted: true },
+        { field: 'Exporter address', value: field['exporter.address'] || '', extracted: true },
+        { field: 'Date of submission to competent authority', value: field['exporter.signatureDate'] || '', extracted: true },
+        { field: 'Point of destination', value: field['memberStateOfficeOfImport'] || '', extracted: true }
       ],
-      'scenario-b-nmd-fields': fesDataDictionaryFields.byCategory.nmd.map((item) => ({ field: item.field, value: '' }))
+      'scenario-b-nmd-fields': fesDataDictionaryFields.byCategory.nmd.map((item) => ({ field: item.field, value: '', extracted: false }))
     }
   } catch (error) {
     console.error('Failed to parse Scenario B extraction JSON:', extractionJsonFile, error)

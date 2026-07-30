@@ -4,6 +4,55 @@
 
 {% block content %}
 
+{% macro extractionStatus(extracted) %}
+  {% if extracted %}
+    <strong class="govuk-tag govuk-tag--green">Extracted</strong>
+  {% else %}
+    <strong class="govuk-tag govuk-tag--grey">Not extracted</strong>
+  {% endif %}
+{% endmacro %}
+
+{% macro extractionRow(label, value, extracted=true) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ label }}</dt>
+    <dd class="govuk-summary-list__value">{% if value %}{{ value }}{% elif extracted %}&nbsp;{% else %}Not extracted{% endif %}</dd>
+    <dd class="govuk-summary-list__actions">{{ extractionStatus(extracted) }}</dd>
+  </div>
+{% endmacro %}
+
+{% macro sectionHeader(title, href, confidence) %}
+  {% set confidenceValue = confidence | int %}
+  {% if confidenceValue >= 90 %}
+    {% set confidenceLabel = 'High' %}
+    {% set confidenceClass = 'govuk-tag--green' %}
+  {% elif confidenceValue >= 70 %}
+    {% set confidenceLabel = 'Medium' %}
+    {% set confidenceClass = 'govuk-tag--blue' %}
+  {% else %}
+    {% set confidenceLabel = 'Low' %}
+    {% set confidenceClass = 'govuk-tag--yellow' %}
+  {% endif %}
+  <div class="review-extraction-section-header govuk-!-margin-top-7">
+    <h2 class="govuk-heading-m">{{ title }}</h2>
+    <a class="govuk-link review-extraction-section-header__change" href="{{ href }}">Change</a>
+  </div>
+  <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-4">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Section extraction confidence</dt>
+      <dd class="govuk-summary-list__value">{{ confidence }}%</dd>
+      <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ confidenceClass }}">{{ confidenceLabel }}<span class="govuk-visually-hidden"> confidence</span></strong></dd>
+    </div>
+  </dl>
+{% endmacro %}
+
+{% set importFields = data['scenario-b-import-fields'] or [] %}
+{% set catchFields = data['scenario-b-catch-fields'] or [] %}
+{% set commodityFields = data['scenario-b-commodity-fields'] or [] %}
+{% set consignmentFields = data['scenario-b-consignment-fields'] or [] %}
+{% set processingFields = data['scenario-b-processing-fields'] or [] %}
+{% set exportFields = data['scenario-b-export-fields'] or [] %}
+{% set nmdFields = data['scenario-b-nmd-fields'] or [] %}
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
 
@@ -15,318 +64,89 @@
         <h2 class="govuk-notification-banner__title">Partial extraction</h2>
       </div>
       <div class="govuk-notification-banner__content">
-        <p class="govuk-body">We extracted some information from your uploaded documents. Some fields could not be extracted and must be entered manually.</p>
-        <p class="govuk-body">Check all extracted information is correct before continuing. You remain responsible for the accuracy of the information submitted.</p>
+        <p class="govuk-body">We extracted some information from your uploaded documents. Some fields were not extracted and must be completed manually.</p>
       </div>
     </div>
 
-    <p class="govuk-body">Review the information below. Where fields are missing, enter the correct values before continuing.</p>
-
     <form action="/review-extraction-b" method="post" novalidate>
-      {% set importFields = data['scenario-b-import-fields'] or fesDataDictionaryFields.byCategory.import %}
-      {% set catchFields = data['scenario-b-catch-fields'] or fesDataDictionaryFields.byCategory.catch %}
-      {% set commodityFields = data['scenario-b-commodity-fields'] or fesDataDictionaryFields.byCategory.commodity %}
-      {% set consignmentFields = data['scenario-b-consignment-fields'] or fesDataDictionaryFields.byCategory.consignment %}
-      {% set processingFields = data['scenario-b-processing-fields'] or fesDataDictionaryFields.byCategory.processing %}
-      {% set exportFields = data['scenario-b-export-fields'] or fesDataDictionaryFields.byCategory.export %}
-      {% set nmdFields = data['scenario-b-nmd-fields'] or fesDataDictionaryFields.byCategory.nmd %}
-
-      {# ================================================================ #}
-      {# SECTION 1: Importer Details                                      #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header govuk-!-margin-top-7">
-        <h2 class="govuk-heading-m">Importer details</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/importer-details">Change</a>
-      </div>
-
+      {{ sectionHeader('Importer details', '/importer-details', '87') }}
       <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Business name</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['importer-name'] or 'Nordic Sea Imports Ltd' }}
-
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">EORI number</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['importer-eori'] or 'GB123456789000' }}
-
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Business address</dt>
-          <dd class="govuk-summary-list__value">
-            {% if data['importer-address-line-1'] %}
-              {{ data['importer-address-line-1'] }}<br>
-              {% if data['importer-address-line-2'] %}{{ data['importer-address-line-2'] }}<br>{% endif %}
-              {{ data['importer-town'] }}<br>
-              {{ data['importer-postcode'] }}
-            {% else %}
-
-            {% endif %}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Contact email</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-email'] or '' }}</dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Contact telephone</dt>
-          <dd class="govuk-summary-list__value">{{ data['importer-phone'] or '' }}</dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Port of entry</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-port-of-entry'] or 'Grimsby (Associated British Ports)' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Estimated arrival</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-estimated-arrival'] or '28 July 2025, 08:30' }}
-            
-          </dd>
-        </div>
+        {{ extractionRow('Business name', data['importer-name']) }}
+        {{ extractionRow('EORI number', data['importer-eori']) }}
+        {{ extractionRow('Business address line 1', data['importer-address-line-1']) }}
+        {{ extractionRow('Business address line 2', data['importer-address-line-2']) }}
+        {{ extractionRow('Town or city', data['importer-town']) }}
+        {{ extractionRow('Postcode', data['importer-postcode']) }}
+        {{ extractionRow('Contact email', data['importer-email']) }}
+        {{ extractionRow('Contact telephone', data['importer-phone']) }}
+        {{ extractionRow('Port of entry', data['scenario-b-port-of-entry']) }}
+        {{ extractionRow('Estimated arrival', data['scenario-b-estimated-arrival']) }}
         {% for item in importFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 2: Catch Certificate                                     #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">Catch certificate</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/catch-certificates">Change</a>
-      </div>
-
+      {{ sectionHeader('Catch certificate', '/catch-certificates', '85') }}
       <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Catch Certificate reference</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-catch-certificate-reference'] or 'CC-IS-2025-0847' }}
-            
-          </dd>
-        </div>
+        {{ extractionRow('Catch Certificate reference', data['scenario-b-catch-certificate-reference']) }}
         {% for item in catchFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 3: Catch Details                                         #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">Catch details</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/catch-certificates">Change</a>
-      </div>
-
+      {{ sectionHeader('Catch details', '/catch-certificates', '78') }}
       <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Catch area</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-catch-area'] or 'FAO Area 27 — Northeast Atlantic (ICES Division Va)' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Catch date</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-catch-date'] or '' }}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Flag state</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-flag-state'] or 'Iceland (IS)' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Vessel name</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-vessel-name'] or 'FV Sigurður Ísfjörð' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Vessel IMO number</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-vessel-imo'] or '8821432' }}
-            
-          </dd>
-        </div>
+        {{ extractionRow('Catch area', data['scenario-b-catch-area']) }}
+        {{ extractionRow('Catch date', data['scenario-b-catch-date'], false) }}
+        {{ extractionRow('Flag state', data['scenario-b-flag-state']) }}
+        {{ extractionRow('Vessel name', data['scenario-b-vessel-name']) }}
+        {{ extractionRow('Vessel IMO number', data['scenario-b-vessel-imo']) }}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 4: Commodity Details                                     #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">Commodity details</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/species-details">Change</a>
-      </div>
-
+      {{ sectionHeader('Commodity details', '/species-details', '74') }}
       <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Species</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-species'] or 'Atlantic Cod (Gadus morhua)' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Commodity type</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-commodity-type'] or 'Chilled, gutted, head-on' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">CN code</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-cn-code'] or '0302 51 10' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Net weight</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-net-weight'] or '' }}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Product description</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-product-description'] or 'Chilled head-on gutted Atlantic Cod, packed in ice, 20 kg boxes' }}
-            
-          </dd>
-        </div>
+        {{ extractionRow('Species', data['scenario-b-species']) }}
+        {{ extractionRow('Commodity type', data['scenario-b-commodity-type']) }}
+        {{ extractionRow('CN code', data['scenario-b-cn-code']) }}
+        {{ extractionRow('Net weight', data['scenario-b-net-weight'], false) }}
+        {{ extractionRow('Product description', data['scenario-b-product-description']) }}
         {% for item in commodityFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 5: Consignment Details                                   #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">Consignment details</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/transport-details">Change</a>
-      </div>
+      {{ sectionHeader('Consignment details', '/transport-details', '66') }}
       <dl class="govuk-summary-list">
         {% for item in consignmentFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 6: Processing Details                                    #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">Processing details</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/processing-statement">Change</a>
-      </div>
-
+      {{ sectionHeader('Processing details', '/processing-statement', '70') }}
       <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing facility</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-processing-facility'] or 'Samherji hf. Processing Plant, Akureyri' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing country</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-processing-country'] or 'Iceland' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing Statement reference</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-processing-reference'] or '' }}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Processing date</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-processing-date'] or '15 July 2025' }}
-            
-          </dd>
-        </div>
+        {{ extractionRow('Processing facility', data['scenario-b-processing-facility']) }}
+        {{ extractionRow('Processing country', data['scenario-b-processing-country']) }}
+        {{ extractionRow('Processing Statement reference', data['scenario-b-processing-reference'], false) }}
+        {{ extractionRow('Processing date', data['scenario-b-processing-date']) }}
         {% for item in processingFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 7: NMD Information                                       #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">NMD information</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/non-manipulation-declaration">Change</a>
-      </div>
+      {{ sectionHeader('NMD information', '/non-manipulation-declaration', '45') }}
       <dl class="govuk-summary-list">
         {% for item in nmdFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
-      {# ================================================================ #}
-      {# SECTION 8: Exporter Details                                      #}
-      {# ================================================================ #}
-      <div class="review-extraction-section-header">
-        <h2 class="govuk-heading-m">Exporter details</h2>
-        <a class="govuk-link review-extraction-section-header__change" href="/processing-statement">Change</a>
-      </div>
-
+      {{ sectionHeader('Exporter details', '/processing-statement', '79') }}
       <dl class="govuk-summary-list">
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Exporter name</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-exporter-name'] or 'Samherji Export Ltd' }}
-            
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Export approval number</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-export-approval-number'] or '' }}
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key">Export country</dt>
-          <dd class="govuk-summary-list__value">
-            {{ data['scenario-b-export-country'] or 'Iceland' }}
-            
-          </dd>
-        </div>
+        {{ extractionRow('Exporter name', data['scenario-b-exporter-name']) }}
+        {{ extractionRow('Export approval number', data['scenario-b-export-approval-number'], false) }}
+        {{ extractionRow('Export country', data['scenario-b-export-country']) }}
         {% for item in exportFields %}
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">{{ item.field }}</dt>
-            <dd class="govuk-summary-list__value">{{ item.value or '' }}</dd>
-          </div>
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
       </dl>
 
@@ -334,14 +154,13 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
           <span class="govuk-visually-hidden">Warning</span>
-          You are responsible for ensuring all submitted information is accurate. Do not submit information you have not verified.
+          You are responsible for ensuring all submitted information is accurate.
         </strong>
       </div>
 
       <button class="govuk-button" data-module="govuk-button">
         Confirm and continue
       </button>
-
     </form>
 
   </div>
