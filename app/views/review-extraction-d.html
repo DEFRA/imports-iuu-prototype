@@ -1,0 +1,99 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Review extracted information" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Review extracted information</h1>
+
+    <div class="govuk-error-summary" data-module="govuk-error-summary">
+      <div role="alert">
+        <h2 class="govuk-error-summary__title">Validation failed between Catch Certificate and Processing Statement</h2>
+        <div class="govuk-error-summary__body">
+          <p class="govuk-body">The Processing Statement does not include all Catch Certificate references found in your uploaded Catch Certificate documents.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-m">Validation result</h2>
+    <p class="govuk-body">We compared each Catch Certificate uploaded against Catch Certificate references listed in the Processing Statement.</p>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Processing Statement checked</dt>
+        <dd class="govuk-summary-list__value">{{ data['validation-processing-statement-file'] }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Catch Certificate files checked</dt>
+        <dd class="govuk-summary-list__value">{{ data['validation-catch-certificate-files'] | join(', ') }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Catch Certificate references uploaded</dt>
+        <dd class="govuk-summary-list__value">{{ data['uploaded-catch-certificate-references'] | join(', ') }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">References found in Processing Statement</dt>
+        <dd class="govuk-summary-list__value">{{ data['processing-statement-catch-certificate-references'] | join(', ') }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Validation outcome</dt>
+        <dd class="govuk-summary-list__value">{{ data['missing-catch-certificate-reference-entries'] | length }} missing reference(s)</dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m">Catch Certificate comparison</h2>
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Catch Certificate file</th>
+          <th scope="col" class="govuk-table__header">Reference</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for result in data['catch-certificate-validation-results'] %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ result.filename }}</td>
+            <td class="govuk-table__cell">{{ result.reference }}</td>
+            <td class="govuk-table__cell">
+              {% if result.status == 'Matched' %}
+                <strong class="govuk-tag govuk-tag--green">Matched</strong>
+              {% else %}
+                <strong class="govuk-tag govuk-tag--red">Missing in PS</strong>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2 class="govuk-heading-m">Missing Catch Certificate references</h2>
+    <p class="govuk-body">Check that these references are present in the Processing Statement and match your uploaded Catch Certificate documents:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      {% for entry in data['missing-catch-certificate-reference-entries'] %}
+        <li>
+          <strong>{{ entry.reference }}</strong>
+          <br>
+          <span class="govuk-hint">From file: {{ entry.filename }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="govuk-inset-text">
+      <p class="govuk-body">You must correct this mismatch before continuing with your import notification.</p>
+    </div>
+
+    <form action="/review-extraction-d" method="post" novalidate>
+      <button class="govuk-button" data-module="govuk-button">
+        Check and re-upload documents
+      </button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

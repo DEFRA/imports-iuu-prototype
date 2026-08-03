@@ -1,0 +1,169 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Review extracted information" %}
+
+{% block content %}
+
+{% macro extractionStatus(extracted) %}
+  {% if extracted %}
+    <strong class="govuk-tag govuk-tag--green">Extracted</strong>
+  {% else %}
+    <strong class="govuk-tag govuk-tag--grey">Not&nbsp;extracted</strong>
+  {% endif %}
+{% endmacro %}
+
+{% macro extractionRow(label, value, extracted=true) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ label }}</dt>
+    <dd class="govuk-summary-list__value">{% if value %}{{ value }}{% else %}&nbsp;{% endif %}</dd>
+    <dd class="govuk-summary-list__actions extraction-status-cell">{{ extractionStatus(extracted) }}</dd>
+  </div>
+{% endmacro %}
+
+{% macro sectionHeader(title, href, confidence) %}
+  {% set confidenceValue = confidence | int %}
+  {% if confidenceValue >= 90 %}
+    {% set confidenceLabel = 'High' %}
+    {% set confidenceClass = 'govuk-tag--green' %}
+  {% elif confidenceValue >= 70 %}
+    {% set confidenceLabel = 'Medium' %}
+    {% set confidenceClass = 'govuk-tag--yellow' %}
+  {% else %}
+    {% set confidenceLabel = 'Low' %}
+    {% set confidenceClass = 'govuk-tag--red' %}
+  {% endif %}
+  <div class="review-extraction-section-header govuk-!-margin-top-7">
+    <h2 class="govuk-heading-m">{{ title }}</h2>
+    <a class="govuk-link review-extraction-section-header__change" href="{{ href }}">Change</a>
+  </div>
+  <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Section extraction confidence</dt>
+      <dd class="govuk-summary-list__value">{{ confidence }}%</dd>
+      <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ confidenceClass }}">{{ confidenceLabel }}<span class="govuk-visually-hidden"> confidence</span></strong></dd>
+    </div>
+  </dl>
+{% endmacro %}
+
+{% set importFields = data['scenario-b-import-fields'] or [] %}
+{% set catchFields = data['scenario-b-catch-fields'] or [] %}
+{% set commodityFields = data['scenario-b-commodity-fields'] or [] %}
+{% set consignmentFields = data['scenario-b-consignment-fields'] or [] %}
+{% set processingFields = data['scenario-b-processing-fields'] or [] %}
+{% set exportFields = data['scenario-b-export-fields'] or [] %}
+{% set nmdFields = data['scenario-b-nmd-fields'] or [] %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Review extracted information</h1>
+
+    <div class="govuk-notification-banner" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title">Partial extraction</h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <p class="govuk-body">We extracted some information from your uploaded documents. Some fields were not extracted and must be completed manually.</p>
+      </div>
+    </div>
+
+    <form action="/review-extraction-b" method="post" novalidate>
+      {{ sectionHeader('Importer details', '/importer-details', '87') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Business name', data['importer-name']) }}
+        {{ extractionRow('EORI number', data['importer-eori']) }}
+        {{ extractionRow('Business address line 1', data['importer-address-line-1']) }}
+        {{ extractionRow('Business address line 2', data['importer-address-line-2']) }}
+        {{ extractionRow('Town or city', data['importer-town']) }}
+        {{ extractionRow('Postcode', data['importer-postcode']) }}
+        {{ extractionRow('Contact email', data['importer-email']) }}
+        {{ extractionRow('Contact telephone', data['importer-phone']) }}
+        {{ extractionRow('Port of entry', data['scenario-b-port-of-entry']) }}
+        {{ extractionRow('Estimated arrival', data['scenario-b-estimated-arrival']) }}
+        {% for item in importFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Catch certificate', '/catch-certificates', '85') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Catch Certificate reference', data['scenario-b-catch-certificate-reference']) }}
+        {% for item in catchFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Catch details', '/catch-certificates', '78') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Catch area', data['scenario-b-catch-area']) }}
+        {{ extractionRow('Catch date', data['scenario-b-catch-date'], false) }}
+        {{ extractionRow('Flag state', data['scenario-b-flag-state']) }}
+        {{ extractionRow('Vessel name', data['scenario-b-vessel-name']) }}
+        {{ extractionRow('Vessel IMO number', data['scenario-b-vessel-imo']) }}
+      </dl>
+
+      {{ sectionHeader('Commodity details', '/species-details', '74') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Species', data['scenario-b-species']) }}
+        {{ extractionRow('Commodity type', data['scenario-b-commodity-type']) }}
+        {{ extractionRow('CN code', data['scenario-b-cn-code']) }}
+        {{ extractionRow('Net weight', data['scenario-b-net-weight'], false) }}
+        {{ extractionRow('Product description', data['scenario-b-product-description']) }}
+        {% for item in commodityFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Consignment details', '/transport-details', '66') }}
+      <dl class="govuk-summary-list">
+        {% for item in consignmentFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Processing details', '/processing-statement', '70') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Processing facility', data['scenario-b-processing-facility']) }}
+        {{ extractionRow('Processing country', data['scenario-b-processing-country']) }}
+        {{ extractionRow('Processing Statement reference', data['scenario-b-processing-reference'], false) }}
+        {{ extractionRow('Processing date', data['scenario-b-processing-date']) }}
+        {% for item in processingFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('NMD information', '/non-manipulation-declaration', '45') }}
+      <dl class="govuk-summary-list">
+        {% for item in nmdFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Exporter details', '/processing-statement', '79') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Exporter name', data['scenario-b-exporter-name']) }}
+        {{ extractionRow('Export approval number', data['scenario-b-export-approval-number'], false) }}
+        {{ extractionRow('Export country', data['scenario-b-export-country']) }}
+        {% for item in exportFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          You are responsible for ensuring all submitted information is accurate.
+        </strong>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Confirm and continue
+      </button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Fish species and products" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Add a fish species or product</h1>
+
+    <p class="govuk-body">You must add details for every species of fish or seafood product in this consignment.</p>
+
+    <form action="/species-details" method="post">
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="species-name">
+          Species name
+        </label>
+        <div id="species-name-hint" class="govuk-hint">
+          Enter the common or scientific name. For example, Atlantic Cod or <em>Gadus morhua</em>
+        </div>
+        <select class="govuk-select" id="species-name" name="species-name" aria-describedby="species-name-hint">
+          <option value="">Select a species</option>
+          <optgroup label="Demersal (bottom-dwelling)">
+            <option value="Atlantic Cod">Atlantic Cod (Gadus morhua)</option>
+            <option value="Haddock">Haddock (Melanogrammus aeglefinus)</option>
+            <option value="Atlantic Halibut">Atlantic Halibut (Hippoglossus hippoglossus)</option>
+            <option value="European Plaice">European Plaice (Pleuronectes platessa)</option>
+            <option value="Lemon Sole">Lemon Sole (Microstomus kitt)</option>
+            <option value="Dover Sole">Dover Sole (Solea solea)</option>
+            <option value="Monkfish">Monkfish/Anglerfish (Lophius piscatorius)</option>
+            <option value="Pollock">Pollock (Pollachius pollachius)</option>
+            <option value="Saithe">Saithe/Coalfish (Pollachius virens)</option>
+            <option value="Whiting">Whiting (Merlangius merlangus)</option>
+            <option value="Hake">European Hake (Merluccius merluccius)</option>
+            <option value="John Dory">John Dory (Zeus faber)</option>
+          </optgroup>
+          <optgroup label="Pelagic (open water)">
+            <option value="Atlantic Herring">Atlantic Herring (Clupea harengus)</option>
+            <option value="Atlantic Mackerel">Atlantic Mackerel (Scomber scombrus)</option>
+            <option value="European Sprat">European Sprat (Sprattus sprattus)</option>
+            <option value="Atlantic Horse Mackerel">Atlantic Horse Mackerel (Trachurus trachurus)</option>
+            <option value="European Pilchard">European Pilchard/Sardine (Sardina pilchardus)</option>
+            <option value="European Anchovy">European Anchovy (Engraulis encrasicolus)</option>
+          </optgroup>
+          <optgroup label="Tuna and billfish">
+            <option value="Yellowfin Tuna">Yellowfin Tuna (Thunnus albacares)</option>
+            <option value="Skipjack Tuna">Skipjack Tuna (Katsuwonus pelamis)</option>
+            <option value="Bigeye Tuna">Bigeye Tuna (Thunnus obesus)</option>
+            <option value="Albacore Tuna">Albacore Tuna (Thunnus alalunga)</option>
+            <option value="Atlantic Bluefin Tuna">Atlantic Bluefin Tuna (Thunnus thynnus)</option>
+            <option value="Swordfish">Swordfish (Xiphias gladius)</option>
+          </optgroup>
+          <optgroup label="Salmon and trout">
+            <option value="Atlantic Salmon">Atlantic Salmon (Salmo salar)</option>
+            <option value="Rainbow Trout">Rainbow Trout (Oncorhynchus mykiss)</option>
+            <option value="Brown Trout">Brown/Sea Trout (Salmo trutta)</option>
+          </optgroup>
+          <optgroup label="Shellfish and other seafood">
+            <option value="European Lobster">European Lobster (Homarus gammarus)</option>
+            <option value="Brown Crab">Brown/Edible Crab (Cancer pagurus)</option>
+            <option value="Common Prawn">Common Prawn (Palaemon serratus)</option>
+            <option value="Northern Shrimp">Northern Shrimp (Pandalus borealis)</option>
+            <option value="Great Scallop">Great Scallop (Pecten maximus)</option>
+            <option value="Common Octopus">Common Octopus (Octopus vulgaris)</option>
+            <option value="Common Squid">Common Squid (Loligo vulgaris)</option>
+            <option value="Common Cuttlefish">Common Cuttlefish (Sepia officinalis)</option>
+            <option value="Blue Mussel">Blue Mussel (Mytilus edulis)</option>
+            <option value="Pacific Oyster">Pacific Oyster (Crassostrea gigas)</option>
+          </optgroup>
+          <option value="other">Other (enter manually below)</option>
+        </select>
+      </div>
+
+      <div class="govuk-form-group" id="species-other-group" style="display:none;">
+        <label class="govuk-label" for="species-name-other">
+          Enter species name
+        </label>
+        <input class="govuk-input" id="species-name-other" name="species-name-other" type="text"
+          value="{{ data['species-name-other'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Product form
+          </legend>
+          <div id="product-form-hint" class="govuk-hint">
+            Select how the fish has been prepared or processed
+          </div>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-1" name="product-form" type="radio" value="Whole (live or dead)" {% if data['product-form'] == 'Whole (live or dead)' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-1">Whole (live or dead)</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-2" name="product-form" type="radio" value="Gutted" {% if data['product-form'] == 'Gutted' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-2">Gutted</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-3" name="product-form" type="radio" value="Headed and gutted" {% if data['product-form'] == 'Headed and gutted' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-3">Headed and gutted</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-4" name="product-form" type="radio" value="Fillets (fresh or chilled)" {% if data['product-form'] == 'Fillets (fresh or chilled)' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-4">Fillets (fresh or chilled)</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-5" name="product-form" type="radio" value="Frozen fillets" {% if data['product-form'] == 'Frozen fillets' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-5">Frozen fillets</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-6" name="product-form" type="radio" value="Frozen whole" {% if data['product-form'] == 'Frozen whole' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-6">Frozen whole</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-7" name="product-form" type="radio" value="Smoked" {% if data['product-form'] == 'Smoked' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-7">Smoked</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-8" name="product-form" type="radio" value="Salted or dried" {% if data['product-form'] == 'Salted or dried' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-8">Salted or dried</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-9" name="product-form" type="radio" value="Canned" {% if data['product-form'] == 'Canned' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-9">Canned</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-10" name="product-form" type="radio" value="Minced or ground" {% if data['product-form'] == 'Minced or ground' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-10">Minced or ground</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="product-form-11" name="product-form" type="radio" value="Other processed" {% if data['product-form'] == 'Other processed' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="product-form-11">Other processed</label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="commodity-code">
+          Commodity code (CN code)
+        </label>
+        <div id="commodity-code-hint" class="govuk-hint">
+          The 8-digit Combined Nomenclature code. For example, 03022100 for Atlantic Cod, fresh.
+        </div>
+        <input class="govuk-input govuk-input--width-10" id="commodity-code" name="commodity-code" type="text"
+          aria-describedby="commodity-code-hint" value="{{ data['commodity-code'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="net-weight">
+          Net weight (kg)
+        </label>
+        <div id="net-weight-hint" class="govuk-hint">
+          Enter the total net weight of this species in kilograms
+        </div>
+        <div class="govuk-input__wrapper">
+          <input class="govuk-input govuk-input--width-10" id="net-weight" name="net-weight" type="text"
+            inputmode="decimal" aria-describedby="net-weight-hint" value="{{ data['net-weight'] }}">
+          <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+        </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="gross-weight">
+          Gross weight (kg)
+        </label>
+        <div id="gross-weight-hint" class="govuk-hint">
+          Total weight including packaging
+        </div>
+        <div class="govuk-input__wrapper">
+          <input class="govuk-input govuk-input--width-10" id="gross-weight" name="gross-weight" type="text"
+            inputmode="decimal" aria-describedby="gross-weight-hint" value="{{ data['gross-weight'] }}">
+          <div class="govuk-input__suffix" aria-hidden="true">kg</div>
+        </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="number-of-packages">
+          Number of packages
+        </label>
+        <input class="govuk-input govuk-input--width-10" id="number-of-packages" name="number-of-packages" type="text"
+          inputmode="numeric" value="{{ data['number-of-packages'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Type of packaging
+          </legend>
+          <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="packaging-type-1" name="packaging-type" type="radio" value="Boxes" {% if data['packaging-type'] == 'Boxes' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="packaging-type-1">Boxes</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="packaging-type-2" name="packaging-type" type="radio" value="Cartons" {% if data['packaging-type'] == 'Cartons' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="packaging-type-2">Cartons</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="packaging-type-3" name="packaging-type" type="radio" value="Bags" {% if data['packaging-type'] == 'Bags' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="packaging-type-3">Bags</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="packaging-type-4" name="packaging-type" type="radio" value="Cans" {% if data['packaging-type'] == 'Cans' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="packaging-type-4">Cans</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="packaging-type-5" name="packaging-type" type="radio" value="Bulk" {% if data['packaging-type'] == 'Bulk' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="packaging-type-5">Bulk</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="packaging-type-6" name="packaging-type" type="radio" value="Other" {% if data['packaging-type'] == 'Other' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="packaging-type-6">Other</label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+
+    </form>
+
+  </div>
+</div>
+
+<script>
+  document.getElementById('species-name').addEventListener('change', function () {
+    var otherGroup = document.getElementById('species-other-group')
+    otherGroup.style.display = this.value === 'other' ? 'block' : 'none'
+  })
+</script>
+
+{% endblock %}

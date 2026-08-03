@@ -4,3 +4,27 @@
 // 
 
 // Add extra styles here
+
+.review-extraction-section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 1rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid #b1b4b6;
+}
+
+.review-extraction-section-header .govuk-heading-m {
+	margin-bottom: 0;
+}
+
+.review-extraction-section-header + .govuk-summary-list {
+	margin-bottom: 3rem;
+}
+
+.review-extraction-section-header__change {
+	flex: 0 0 auto;
+	font-size: 1.1875rem;
+	font-weight: 400;
+	white-space: nowrap;
+}

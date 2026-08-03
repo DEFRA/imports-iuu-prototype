@@ -1,0 +1,75 @@
+{% extends "layouts/main.html" %}
+{% set pageName = "Record the inspection outcome" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <form method="post">
+      <h1 class="govuk-heading-l">Record the inspection outcome</h1>
+      <div class="govuk-form-group{% if errorMap['inspection-outcome'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">What should happen to this consignment?</legend>
+          {% if errorMap['inspection-outcome'] %}<p class="govuk-error-message">{{ errorMap['inspection-outcome'] }}</p>{% endif %}
+          <div class="govuk-radios">
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-outcome" name="inspection-outcome" type="radio" value="release" {{ checked("inspection-outcome", "release") }}><label class="govuk-label govuk-radios__label" for="inspection-outcome">Release the consignment</label><div class="govuk-hint govuk-radios__hint">The inspection is complete and the consignment can proceed.</div></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-outcome-2" name="inspection-outcome" type="radio" value="hold" {{ checked("inspection-outcome", "hold") }}><label class="govuk-label govuk-radios__label" for="inspection-outcome-2">Keep the consignment on hold</label><div class="govuk-hint govuk-radios__hint">More evidence, checks or a decision from another authority is needed.</div></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-outcome-3" name="inspection-outcome" type="radio" value="refuse" {{ checked("inspection-outcome", "refuse") }}><label class="govuk-label govuk-radios__label" for="inspection-outcome-3">Refuse the consignment</label><div class="govuk-hint govuk-radios__hint">The consignment does not meet the requirements for import.</div></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <h2 class="govuk-heading-m">If outcome is hold</h2>
+      <div class="govuk-form-group{% if errorMap['hold-reason'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="hold-reason">Reason for the hold</label>
+        {% if errorMap['hold-reason'] %}<p class="govuk-error-message">{{ errorMap['hold-reason'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="hold-reason" name="hold-reason">{{ data['hold-reason'] }}</textarea>
+      </div>
+      <div class="govuk-form-group{% if errorMap['hold-required-action'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="hold-required-action">Evidence or action required</label>
+        {% if errorMap['hold-required-action'] %}<p class="govuk-error-message">{{ errorMap['hold-required-action'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="hold-required-action" name="hold-required-action">{{ data['hold-required-action'] }}</textarea>
+      </div>
+      <div class="govuk-form-group{% if errorMap['hold-responsible-organisation'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="hold-responsible-organisation">Responsible organisation or authority, if known</label>
+        {% if errorMap['hold-responsible-organisation'] %}<p class="govuk-error-message">{{ errorMap['hold-responsible-organisation'] }}</p>{% endif %}
+        <input class="govuk-input" id="hold-responsible-organisation" name="hold-responsible-organisation" value="{{ data['hold-responsible-organisation'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="hold-review-date">Review or follow-up date (optional)</label>
+        <input class="govuk-input govuk-input--width-20" id="hold-review-date" name="hold-review-date" value="{{ data['hold-review-date'] }}">
+      </div>
+
+      <h2 class="govuk-heading-m">If outcome is refuse</h2>
+      <div class="govuk-form-group{% if errorMap['refusal-reason'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="refusal-reason">Reason for refusal</label>
+        {% if errorMap['refusal-reason'] %}<p class="govuk-error-message">{{ errorMap['refusal-reason'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="refusal-reason" name="refusal-reason">{{ data['refusal-reason'] }}</textarea>
+      </div>
+      <div class="govuk-form-group{% if errorMap['refusal-non-compliance'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="refusal-non-compliance">Relevant non-compliance</label>
+        {% if errorMap['refusal-non-compliance'] %}<p class="govuk-error-message">{{ errorMap['refusal-non-compliance'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="refusal-non-compliance" name="refusal-non-compliance">{{ data['refusal-non-compliance'] }}</textarea>
+      </div>
+      <div class="govuk-form-group{% if errorMap['refusal-required-action'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="refusal-required-action">Action required</label>
+        {% if errorMap['refusal-required-action'] %}<p class="govuk-error-message">{{ errorMap['refusal-required-action'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="refusal-required-action" name="refusal-required-action">{{ data['refusal-required-action'] }}</textarea>
+      </div>
+      <div class="govuk-form-group{% if errorMap['refusal-reexport-considered'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Does re-export or another outcome need to be considered?</legend>
+          {% if errorMap['refusal-reexport-considered'] %}<p class="govuk-error-message">{{ errorMap['refusal-reexport-considered'] }}</p>{% endif %}
+          <div class="govuk-radios">
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="refusal-reexport-considered" name="refusal-reexport-considered" type="radio" value="yes" {{ checked("refusal-reexport-considered", "yes") }}><label class="govuk-label govuk-radios__label" for="refusal-reexport-considered">Yes</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="refusal-reexport-considered-2" name="refusal-reexport-considered" type="radio" value="no" {{ checked("refusal-reexport-considered", "no") }}><label class="govuk-label govuk-radios__label" for="refusal-reexport-considered-2">No</label></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
