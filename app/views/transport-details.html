@@ -1,0 +1,110 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Transport details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Transport details</h1>
+
+    <form action="/transport-details" method="post">
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            How is the consignment being transported?
+          </legend>
+          <div class="govuk-radios" data-module="govuk-radios" id="transport-type">
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="transport-type-1" name="transport-type" type="radio" value="vessel"
+                data-aria-controls="vessel-details"
+                {% if data['transport-type'] == 'vessel' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="transport-type-1">
+                Ship or vessel
+              </label>
+            </div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="vessel-details">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="vessel-name">
+                  Vessel name
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="vessel-name" name="vessel-name" type="text"
+                  value="{{ data['vessel-name'] }}">
+              </div>
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="vessel-flag">
+                  Flag state (country the vessel is registered in)
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="vessel-flag" name="vessel-flag" type="text"
+                  value="{{ data['vessel-flag'] }}">
+              </div>
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="bill-of-lading">
+                  Bill of lading reference number (optional)
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="bill-of-lading" name="bill-of-lading" type="text"
+                  value="{{ data['bill-of-lading'] }}">
+              </div>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="transport-type-2" name="transport-type" type="radio" value="air"
+                data-aria-controls="air-details"
+                {% if data['transport-type'] == 'air' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="transport-type-2">
+                Air freight
+              </label>
+            </div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="air-details">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="flight-number">
+                  Flight number or airway bill number
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="flight-number" name="flight-number" type="text"
+                  value="{{ data['flight-number'] }}">
+              </div>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="transport-type-3" name="transport-type" type="radio" value="road"
+                data-aria-controls="road-details"
+                {% if data['transport-type'] == 'road' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="transport-type-3">
+                Road vehicle
+              </label>
+            </div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="road-details">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="truck-registration">
+                  Vehicle registration number
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="truck-registration" name="truck-registration"
+                  type="text" value="{{ data['truck-registration'] }}">
+              </div>
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="container-number">
+                  Container number (if applicable)
+                </label>
+                <input class="govuk-input govuk-input--width-20" id="container-number" name="container-number"
+                  type="text" value="{{ data['container-number'] }}">
+              </div>
+            </div>
+
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

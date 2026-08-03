@@ -1,0 +1,70 @@
+{% extends "layouts/main.html" %}
+{% set pageName = "Check the inspection record" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <form method="post">
+      <h1 class="govuk-heading-l">Check the inspection record</h1>
+
+      <h2 class="govuk-heading-m">Inspection details</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Location</dt><dd class="govuk-summary-list__value">{{ data['inspection-location'] }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/confirm-details">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Date</dt><dd class="govuk-summary-list__value">{{ data['inspection-date-day'] }}/{{ data['inspection-date-month'] }}/{{ data['inspection-date-year'] }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/confirm-details">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Lead officer</dt><dd class="govuk-summary-list__value">{{ data['inspection-lead-officer'] }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/confirm-details">Change</a></dd></div>
+      </dl>
+
+      <h2 class="govuk-heading-m">Documentary checks</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Result</dt><dd class="govuk-summary-list__value">{% if data['documents-check-result'] == "acceptable" %}Yes, the documents are acceptable{% elif data['documents-check-result'] == "minor-discrepancy" %}There is a minor discrepancy{% elif data['documents-check-result'] == "not-acceptable" %}No, the documents are not acceptable{% else %}Not recorded{% endif %}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/check-documents">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Discrepancy details</dt><dd class="govuk-summary-list__value">{{ data['documents-discrepancy-details'] or "None recorded" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/check-documents">Change</a></dd></div>
+      </dl>
+
+      <h2 class="govuk-heading-m">Identity checks</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Result</dt><dd class="govuk-summary-list__value">{% if data['identity-check-result'] == "matches" %}Yes, it matches{% elif data['identity-check-result'] == "partly-matches" %}It partly matches{% elif data['identity-check-result'] == "no-match" %}No, it does not match{% else %}Not recorded{% endif %}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/identity-checks">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Seal found</dt><dd class="govuk-summary-list__value">{{ data['seal-number-found'] }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/identity-checks">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Discrepancy details</dt><dd class="govuk-summary-list__value">{{ data['identity-discrepancy-details'] or "None recorded" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/identity-checks">Change</a></dd></div>
+      </dl>
+
+      <h2 class="govuk-heading-m">Physical checks</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Result</dt><dd class="govuk-summary-list__value">{% if data['physical-check-result'] == "satisfactory" %}Satisfactory{% elif data['physical-check-result'] == "issues-found" %}Issues found{% elif data['physical-check-result'] == "not-completed" %}Physical checks were not completed{% else %}Not recorded{% endif %}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/physical-checks">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Temperature</dt><dd class="govuk-summary-list__value">{{ data['physical-temperature'] or "Not provided" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/physical-checks">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Evidence upload</dt><dd class="govuk-summary-list__value">{{ data['physical-evidence-file'] or "Prototype file upload (not persisted)" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/physical-checks">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Notes</dt><dd class="govuk-summary-list__value">{{ data['physical-check-notes'] or "None recorded" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/physical-checks">Change</a></dd></div>
+      </dl>
+
+      <h2 class="govuk-heading-m">Findings</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Inspection finding</dt><dd class="govuk-summary-list__value">{% if data['inspection-finding'] == "no-non-compliance" %}No non-compliance found{% elif data['inspection-finding'] == "resolved-discrepancy" %}A discrepancy was found and resolved{% elif data['inspection-finding'] == "non-compliance-found" %}Non-compliance found{% elif data['inspection-finding'] == "more-evidence-needed" %}More evidence or specialist advice is needed{% else %}Not recorded{% endif %}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/findings">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Supporting notes</dt><dd class="govuk-summary-list__value">{{ data['inspection-finding-notes'] }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/findings">Change</a></dd></div>
+      </dl>
+
+      <h2 class="govuk-heading-m">Outcome</h2>
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Outcome</dt><dd class="govuk-summary-list__value">{% if data['inspection-outcome'] == "release" %}Release the consignment{% elif data['inspection-outcome'] == "hold" %}Keep the consignment on hold{% elif data['inspection-outcome'] == "refuse" %}Refuse the consignment{% else %}Not recorded{% endif %}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/outcome">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Reason</dt><dd class="govuk-summary-list__value">{{ data['hold-reason'] or data['refusal-reason'] or "No additional reason recorded" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/outcome">Change</a></dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Follow-up requirements</dt><dd class="govuk-summary-list__value">{{ data['hold-required-action'] or data['refusal-required-action'] or "None recorded" }}</dd><dd class="govuk-summary-list__actions"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482/outcome">Change</a></dd></div>
+      </dl>
+
+      <div class="govuk-form-group{% if errorMap['inspection-record-confirmed'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Confirmation statement</legend>
+          {% if errorMap['inspection-record-confirmed'] %}<p class="govuk-error-message">{{ errorMap['inspection-record-confirmed'] }}</p>{% endif %}
+          <div class="govuk-checkboxes">
+            <div class="govuk-checkboxes__item">
+              <input class="govuk-checkboxes__input" id="inspection-record-confirmed" name="inspection-record-confirmed" type="checkbox" value="yes" {{ checked("inspection-record-confirmed", "yes") }}>
+              <label class="govuk-label govuk-checkboxes__label" for="inspection-record-confirmed">I confirm this inspection record is complete and accurate to the best of my knowledge.</label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">Submit inspection outcome</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

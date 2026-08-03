@@ -1,0 +1,169 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Review extracted information" %}
+
+{% block content %}
+
+{% macro extractionStatus(extracted) %}
+  {% if extracted %}
+    <strong class="govuk-tag govuk-tag--green">Extracted</strong>
+  {% else %}
+    <strong class="govuk-tag govuk-tag--grey">Not&nbsp;extracted</strong>
+  {% endif %}
+{% endmacro %}
+
+{% macro extractionRow(label, value, extracted=true) %}
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">{{ label }}</dt>
+    <dd class="govuk-summary-list__value">{% if value %}{{ value }}{% else %}&nbsp;{% endif %}</dd>
+    <dd class="govuk-summary-list__actions extraction-status-cell">{{ extractionStatus(extracted) }}</dd>
+  </div>
+{% endmacro %}
+
+{% macro sectionHeader(title, href, confidence) %}
+  {% set confidenceValue = confidence | int %}
+  {% if confidenceValue >= 90 %}
+    {% set confidenceLabel = 'High' %}
+    {% set confidenceClass = 'govuk-tag--green' %}
+  {% elif confidenceValue >= 70 %}
+    {% set confidenceLabel = 'Medium' %}
+    {% set confidenceClass = 'govuk-tag--yellow' %}
+  {% else %}
+    {% set confidenceLabel = 'Low' %}
+    {% set confidenceClass = 'govuk-tag--red' %}
+  {% endif %}
+  <div class="review-extraction-section-header govuk-!-margin-top-7">
+    <h2 class="govuk-heading-m">{{ title }}</h2>
+    <a class="govuk-link review-extraction-section-header__change" href="{{ href }}">Change</a>
+  </div>
+  <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Section extraction confidence</dt>
+      <dd class="govuk-summary-list__value">{{ confidence }}%</dd>
+      <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ confidenceClass }}">{{ confidenceLabel }}<span class="govuk-visually-hidden"> confidence</span></strong></dd>
+    </div>
+  </dl>
+{% endmacro %}
+
+{% set importFields = data['scenario-a-import-fields'] or [] %}
+{% set catchFields = data['scenario-a-catch-fields'] or [] %}
+{% set commodityFields = data['scenario-a-commodity-fields'] or [] %}
+{% set consignmentFields = data['scenario-a-consignment-fields'] or [] %}
+{% set processingFields = data['scenario-a-processing-fields'] or [] %}
+{% set exportFields = data['scenario-a-export-fields'] or [] %}
+{% set nmdFields = data['scenario-a-nmd-fields'] or [] %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Review extracted information</h1>
+
+    <div class="govuk-notification-banner govuk-notification-banner--success" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title">Extraction successful</h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <p class="govuk-body">We extracted information from your uploaded documents with high confidence.</p>
+        <p class="govuk-body">Check that all extracted information is correct before continuing.</p>
+      </div>
+    </div>
+
+    <form action="/review-extraction-a" method="post" novalidate>
+      {{ sectionHeader('Importer details', '/importer-details', '98') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Business name', data['importer-name'] or 'Nordic Sea Imports Ltd') }}
+        {{ extractionRow('EORI number', data['importer-eori'] or 'GB123456789000') }}
+        {{ extractionRow('Business address line 1', data['importer-address-line-1'] or '1 Harbour Way') }}
+        {{ extractionRow('Business address line 2', data['importer-address-line-2']) }}
+        {{ extractionRow('Town or city', data['importer-town'] or 'Hull') }}
+        {{ extractionRow('Postcode', data['importer-postcode'] or 'HU1 1AA') }}
+        {{ extractionRow('Contact email', data['importer-email'] or 'ops@blueocean.example') }}
+        {{ extractionRow('Contact telephone', data['importer-phone'] or '0207 123 4567') }}
+        {{ extractionRow('Port of entry', data['scenario-a-port-of-entry'] or 'Grimsby (Associated British Ports)') }}
+        {{ extractionRow('Estimated arrival', data['scenario-a-estimated-arrival'] or '28 July 2025, 08:30') }}
+        {% for item in importFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Catch certificate', '/catch-certificates', '99') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Catch Certificate reference', data['scenario-a-catch-certificate-reference'] or 'CC-IS-2025-0847') }}
+        {% for item in catchFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Catch details', '/catch-certificates', '97') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Catch area', data['scenario-a-catch-area'] or 'FAO Area 27 — Northeast Atlantic (ICES Division Va)') }}
+        {{ extractionRow('Catch date', data['scenario-a-catch-date'] or '14 July 2025') }}
+        {{ extractionRow('Flag state', data['scenario-a-flag-state'] or 'Iceland (IS)') }}
+        {{ extractionRow('Vessel name', data['scenario-a-vessel-name'] or 'FV Sigurður Ísfjörð') }}
+        {{ extractionRow('Vessel IMO number', data['scenario-a-vessel-imo'] or '8821432') }}
+      </dl>
+
+      {{ sectionHeader('Commodity details', '/species-details', '98') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Species', data['scenario-a-species'] or 'Atlantic Cod (Gadus morhua)') }}
+        {{ extractionRow('Commodity type', data['scenario-a-commodity-type'] or 'Chilled, gutted, head-on') }}
+        {{ extractionRow('CN code', data['scenario-a-cn-code'] or '0302 51 10') }}
+        {{ extractionRow('Net weight', data['scenario-a-net-weight'] or '2,450 kg') }}
+        {{ extractionRow('Product description', data['scenario-a-product-description'] or 'Chilled head-on gutted Atlantic Cod') }}
+        {% for item in commodityFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Consignment details', '/transport-details', '96') }}
+      <dl class="govuk-summary-list">
+        {% for item in consignmentFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Processing details', '/processing-statement', '97') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Processing facility', data['scenario-a-processing-facility'] or 'Samherji hf. Processing Plant, Akureyri') }}
+        {{ extractionRow('Processing country', data['scenario-a-processing-country'] or 'Iceland') }}
+        {{ extractionRow('Processing Statement reference', data['scenario-a-processing-reference'] or 'PS-IS-2025-00847') }}
+        {{ extractionRow('Processing date', data['scenario-a-processing-date'] or '15 July 2025') }}
+        {% for item in processingFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('NMD information', '/non-manipulation-declaration', '95') }}
+      <dl class="govuk-summary-list">
+        {% for item in nmdFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      {{ sectionHeader('Exporter details', '/processing-statement', '97') }}
+      <dl class="govuk-summary-list">
+        {{ extractionRow('Exporter name', data['scenario-a-exporter-name'] or 'Samherji Export Ltd') }}
+        {{ extractionRow('Export approval number', data['scenario-a-export-approval-number'] or 'IS-EXP-2025-00294') }}
+        {{ extractionRow('Export country', data['scenario-a-export-country'] or 'Iceland') }}
+        {% for item in exportFields %}
+          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+        {% endfor %}
+      </dl>
+
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          You are responsible for ensuring all submitted information is accurate.
+        </strong>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Confirm and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -5,6 +5,7 @@ the [GOV.UK Frontend](https://github.com/alphagov/govuk-frontend).
 
 > Basically the `GOV.UK Prototype Kit` and `GOV.UK Frontend` wrapped up and provided on the Core Delivery Platform
 
+- [Service-specific prototype journey](#service-specific-prototype-journey)
 - [Requirements](#requirements)
   - [Node.js](#nodejs)
 - [GOV.UK Prototype Kit and GOV.UK Frontend](#govuk-prototype-kit-and-govuk-frontend)
@@ -26,6 +27,75 @@ the [GOV.UK Frontend](https://github.com/alphagov/govuk-frontend).
   - [Debug docker](#debug-docker)
 - [Licence](#licence)
   - [About the licence](#about-the-licence)
+
+## Service-specific prototype journey
+
+This service prototype covers fish and fish product import notifications into Great Britain.
+
+### What this prototype covers
+
+1. Enter importer details
+2. Enter transport and arrival details
+3. Add one or more fish species/product lines
+4. Upload one or more Catch Certificates
+5. Confirm whether a Processing Statement is required, then upload one or more if needed
+6. Confirm whether a Non-Manipulation Declaration (NMD) is required, then upload one or more if needed
+7. Review details on a Check your answers page
+8. Submit and receive a confirmation reference
+
+### Service journey (current routes)
+
+- `/` Start page (also clears session data)
+- `/importer-details`
+- `/transport-details`
+- `/arrival-details`
+- `/species-details`
+- `/species-list`
+- `/catch-certificates`
+- `/processing-statement-required`
+- `/processing-statement` (if required)
+- `/non-manipulation-declaration-required`
+- `/non-manipulation-declaration` (if required)
+- `/check-answers`
+- `/confirmation`
+
+### Additional Alpha journey: inspection recording
+
+The prototype also includes a separate inspection journey for Port Health Authority officers.
+
+- Entry points:
+  - `/` Prototype selector
+  - `/inspections` Inspection work queue
+- Functional inspection case:
+  - `GB-IUU-2026-10482` at `/inspection/GB-IUU-2026-10482`
+- Inspection journey routes:
+  - `/inspection/GB-IUU-2026-10482/confirm-details`
+  - `/inspection/GB-IUU-2026-10482/check-documents`
+  - `/inspection/GB-IUU-2026-10482/identity-checks`
+  - `/inspection/GB-IUU-2026-10482/physical-checks`
+  - `/inspection/GB-IUU-2026-10482/findings`
+  - `/inspection/GB-IUU-2026-10482/outcome`
+  - `/inspection/GB-IUU-2026-10482/check-record`
+  - `/inspection/GB-IUU-2026-10482/confirmation`
+- Supporting research pages:
+  - `/inspection/GB-IUU-2026-10482/documents`
+  - `/inspection-assumptions`
+
+### Design notes
+
+- Uses GOV.UK styling/components (including Beta phase banner and back link pattern)
+- Supports multiple uploads for:
+  - Catch Certificates
+  - Processing Statements
+  - Non-Manipulation Declarations
+- Processing Statement and NMD flows use separate Yes/No decision pages before upload pages
+- Session data is reset when a user returns to the start page (`/`)
+
+### Important prototype limitations
+
+- File upload is currently simulated in session data (no real file persistence)
+- Validation is intentionally lightweight
+- Content and logic are designed for prototyping, not production use
 
 ## Requirements
 
@@ -227,7 +297,7 @@ Run:
 > Update the password field to your password
 
 ```bash
-docker run -e PASSWORD=beepBoopBeep -e PORT=3000 -p 3000:3000 imports-iuu-prototype
+docker run -e ****** -e PORT=3000 -p 3000:3000 imports-iuu-prototype
 ```
 
 ### Debug docker

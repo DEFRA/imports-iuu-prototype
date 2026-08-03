@@ -1,14 +1,11 @@
-.idea
-.vscode
-.git
-.DS_Store
-node_modules
-coverage
-.npm/
-npm-debug.log
+# Node.js ignores
+node_modules/
 
-# Prototype files/folders
+# Prototype ignores - per-user
 .tmp/
 .env
 migrate.log
-usage-data-config.json
+
+# General ignores
+.DS_Store
+.idea
