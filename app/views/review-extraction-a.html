@@ -8,15 +8,15 @@
   {% if extracted %}
     <strong class="govuk-tag govuk-tag--green">Extracted</strong>
   {% else %}
-    <strong class="govuk-tag govuk-tag--grey">Not extracted</strong>
+    <strong class="govuk-tag govuk-tag--grey">Not&nbsp;extracted</strong>
   {% endif %}
 {% endmacro %}
 
 {% macro extractionRow(label, value, extracted=true) %}
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">{{ label }}</dt>
-    <dd class="govuk-summary-list__value">{% if value %}{{ value }}{% elif extracted %}&nbsp;{% else %}Not extracted{% endif %}</dd>
-    <dd class="govuk-summary-list__actions">{{ extractionStatus(extracted) }}</dd>
+    <dd class="govuk-summary-list__value">{% if value %}{{ value }}{% else %}&nbsp;{% endif %}</dd>
+    <dd class="govuk-summary-list__actions extraction-status-cell">{{ extractionStatus(extracted) }}</dd>
   </div>
 {% endmacro %}
 
@@ -27,16 +27,16 @@
     {% set confidenceClass = 'govuk-tag--green' %}
   {% elif confidenceValue >= 70 %}
     {% set confidenceLabel = 'Medium' %}
-    {% set confidenceClass = 'govuk-tag--blue' %}
+    {% set confidenceClass = 'govuk-tag--yellow' %}
   {% else %}
     {% set confidenceLabel = 'Low' %}
-    {% set confidenceClass = 'govuk-tag--yellow' %}
+    {% set confidenceClass = 'govuk-tag--red' %}
   {% endif %}
   <div class="review-extraction-section-header govuk-!-margin-top-7">
     <h2 class="govuk-heading-m">{{ title }}</h2>
     <a class="govuk-link review-extraction-section-header__change" href="{{ href }}">Change</a>
   </div>
-  <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-4">
+  <dl class="govuk-summary-list govuk-!-margin-bottom-0">
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">Section extraction confidence</dt>
       <dd class="govuk-summary-list__value">{{ confidence }}%</dd>
