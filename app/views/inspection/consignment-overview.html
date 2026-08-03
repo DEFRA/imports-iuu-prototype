@@ -1,0 +1,51 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Consignment overview" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">IUU notification reference GB-IUU-2026-10482</span>
+    <h1 class="govuk-heading-xl">Consignment overview</h1>
+    <div class="govuk-inset-text">All information shown is fictional and for user research only.</div>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Importer</dt><dd class="govuk-summary-list__value">Atlantic Seafoods Ltd</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Commodity</dt><dd class="govuk-summary-list__value">Frozen yellowfin tuna (0303 42 12)</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Declared quantity</dt><dd class="govuk-summary-list__value">24,800 kg (catch certificate)</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Exporting country</dt><dd class="govuk-summary-list__value">Senegal</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">MV Ocean Star (IMO 9214567)</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">Port of Felixstowe, 3 August 2026 at 2:30pm</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Container and expected seal</dt><dd class="govuk-summary-list__value">MSCU 7391842, seal SN448901, 1,240 cartons expected</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">IUU documents received</dt><dd class="govuk-summary-list__value">Catch certificate (CC-SEN-2026-7784)<br>Processing statement (PS-SEN-2026-0441)<br>Non-manipulation declaration (NMD-MMO-2026-0093)</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Checks already performed</dt><dd class="govuk-summary-list__value">Notification to document comparison flagged a possible weight mismatch; authority verification pending</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Inspection reason</dt><dd class="govuk-summary-list__value">Possible data mismatch: weight declared in the import notification (26,200 kg) differs from the weight shown on the catch certificate (24,800 kg)</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Current regulatory status</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag govuk-tag--red">Inspection required</strong></dd></div>
+    </dl>
+
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        Possible discrepancy detected: notification declared weight 26,200 kg and attached catch certificate weight 24,800 kg (difference 1,400 kg, 5.6%).
+      </strong>
+    </div>
+
+    <h2 class="govuk-heading-m">Evidence status</h2>
+    <dl class="govuk-summary-list govuk-!-margin-bottom-7">
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Catch certificate</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag govuk-tag--green">Received</strong></dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Processing statement</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag govuk-tag--green">Received</strong></dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Non-manipulation declaration</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag govuk-tag--green">Received</strong></dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Notification to document comparison</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag govuk-tag--yellow">Possible mismatch</strong></dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Authority verification</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag govuk-tag--grey">Pending</strong></dd></div>
+    </dl>
+
+    <a href="/inspection/GB-IUU-2026-10482/confirm-details" role="button" draggable="false" class="govuk-button" data-module="govuk-button">Start inspection</a>
+    <p class="govuk-body"><a href="/inspection/GB-IUU-2026-10482/documents" class="govuk-link">View original documents</a></p>
+  </div>
+</div>
+{% endblock %}

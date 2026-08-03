@@ -1,0 +1,58 @@
+{% extends "layouts/main.html" %}
+{% set pageName = "View IUU documents" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-l">GB-IUU-2026-10482</span>
+    <h1 class="govuk-heading-l">View IUU documents</h1>
+    <div class="govuk-inset-text">Prototype placeholder: document summaries below are fictional. In a live service officers would be able to view the submitted documents here.</div>
+
+    <div class="govuk-grid-row govuk-!-margin-bottom-6">
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">Catch certificate</h2>
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Reference</dt><dd class="govuk-summary-list__value">CC-SEN-2026-7784</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Issuing authority</dt><dd class="govuk-summary-list__value">Direction des Pêches Maritimes, Senegal</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">MV Ocean Star (IMO 9214567)</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Species</dt><dd class="govuk-summary-list__value">Yellowfin tuna (Thunnus albacares)</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Net weight</dt><dd class="govuk-summary-list__value"><strong>24,800 kg</strong></dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Catch area</dt><dd class="govuk-summary-list__value">FAO 34 — Eastern Atlantic</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Catch dates</dt><dd class="govuk-summary-list__value">12 June 2026 – 2 July 2026</dd></div>
+        </dl>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">Processing statement</h2>
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Reference</dt><dd class="govuk-summary-list__value">PS-SEN-2026-0441</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Processing facility</dt><dd class="govuk-summary-list__value">Dakar Fish Processing SAS</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Country of processing</dt><dd class="govuk-summary-list__value">Senegal</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Product description</dt><dd class="govuk-summary-list__value">Frozen yellowfin tuna loins, IQF</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Net weight (processed)</dt><dd class="govuk-summary-list__value">24,800 kg</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Date processed</dt><dd class="govuk-summary-list__value">9 July 2026</dd></div>
+        </dl>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <h2 class="govuk-heading-m">Non-manipulation declaration</h2>
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Reference</dt><dd class="govuk-summary-list__value">NMD-MMO-2026-0093</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Declaring authority</dt><dd class="govuk-summary-list__value">Marine Management Organisation</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Exporter</dt><dd class="govuk-summary-list__value">Atlantic Seafoods Ltd</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Statement</dt><dd class="govuk-summary-list__value">Products have not been altered or re-packed since the processing statement was issued</dd></div>
+          <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Date issued</dt><dd class="govuk-summary-list__value">14 July 2026</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-m">Flagged comparison: notification versus catch certificate</h2>
+    <table class="govuk-table">
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row"><th class="govuk-table__header" scope="row">Weight declared in notification</th><td class="govuk-table__cell">26,200 kg</td></tr>
+        <tr class="govuk-table__row"><th class="govuk-table__header" scope="row">Weight on catch certificate</th><td class="govuk-table__cell">24,800 kg</td></tr>
+        <tr class="govuk-table__row"><th class="govuk-table__header" scope="row">Difference</th><td class="govuk-table__cell"><strong>1,400 kg (5.6%)</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p class="govuk-body"><a class="govuk-link" href="/inspection/GB-IUU-2026-10482">Return to consignment overview</a></p>
+  </div>
+</div>
+{% endblock %}

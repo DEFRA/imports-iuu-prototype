@@ -31,6 +31,28 @@ The prototype allows users to:
 - `/check-answers`
 - `/confirmation`
 
+## Additional Alpha journey: inspection recording
+
+The prototype now also includes a separate inspection journey for Port Health Authority officers.
+
+- Entry points:
+  - `/` Prototype selector
+  - `/inspections` Inspection work queue
+- Functional inspection case:
+  - `GB-IUU-2026-10482` at `/inspection/GB-IUU-2026-10482`
+- Inspection journey routes:
+  - `/inspection/GB-IUU-2026-10482/confirm-details`
+  - `/inspection/GB-IUU-2026-10482/check-documents`
+  - `/inspection/GB-IUU-2026-10482/identity-checks`
+  - `/inspection/GB-IUU-2026-10482/physical-checks`
+  - `/inspection/GB-IUU-2026-10482/findings`
+  - `/inspection/GB-IUU-2026-10482/outcome`
+  - `/inspection/GB-IUU-2026-10482/check-record`
+  - `/inspection/GB-IUU-2026-10482/confirmation`
+- Supporting research pages:
+  - `/inspection/GB-IUU-2026-10482/documents`
+  - `/inspection-assumptions`
+
 ## Design notes
 
 - Uses GOV.UK styling/components (including Beta phase banner and back link pattern)
@@ -65,4 +87,3 @@ Then open:
 - File upload is currently simulated in session data (no real file persistence)
 - Validation is intentionally lightweight
 - Content and logic are designed for prototyping, not production use
-
