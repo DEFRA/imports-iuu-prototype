@@ -770,7 +770,7 @@ router.post('/processing', (req, res) => {
     }))
   }
 
-  res.redirect('/review-extraction-' + variant)
+  res.redirect('/extracting')
 })
 
 // -------------------------------------------------------
