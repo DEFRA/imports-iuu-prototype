@@ -20,7 +20,7 @@
   </div>
 {% endmacro %}
 
-{% macro sectionHeader(title, href, confidence) %}
+{% macro sectionCard(title, href, confidence, uploadHref='') %}
   {% set confidenceValue = confidence | int %}
   {% if confidenceValue >= 90 %}
     {% set confidenceLabel = 'High' %}
@@ -32,17 +32,31 @@
     {% set confidenceLabel = 'Low' %}
     {% set confidenceClass = 'govuk-tag--red' %}
   {% endif %}
-  <div class="review-extraction-section-header govuk-!-margin-top-7">
-    <h2 class="govuk-heading-m">{{ title }}</h2>
-    <a class="govuk-link review-extraction-section-header__change" href="{{ href }}">Change</a>
-  </div>
-  <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-summary-list__key">Section extraction confidence</dt>
-      <dd class="govuk-summary-list__value">{{ confidence }}%</dd>
-      <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ confidenceClass }}">{{ confidenceLabel }}<span class="govuk-visually-hidden"> confidence</span></strong></dd>
+  <div class="govuk-summary-card">
+    <div class="govuk-summary-card__title-wrapper">
+      <h2 class="govuk-summary-card__title">{{ title }}</h2>
+      <ul class="govuk-summary-card__actions">
+        {% if uploadHref %}
+          <li class="govuk-summary-card__action">
+            <a class="govuk-link" href="{{ uploadHref }}">Upload another<span class="govuk-visually-hidden"> {{ title | lower }}</span></a>
+          </li>
+        {% endif %}
+        <li class="govuk-summary-card__action">
+          <a class="govuk-link" href="{{ href }}">Change<span class="govuk-visually-hidden"> {{ title | lower }}</span></a>
+        </li>
+      </ul>
     </div>
-  </dl>
+    <div class="govuk-summary-card__content">
+      <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">Section extraction confidence</dt>
+          <dd class="govuk-summary-list__value">{{ confidence }}%</dd>
+          <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ confidenceClass }}">{{ confidenceLabel }}<span class="govuk-visually-hidden"> confidence</span></strong></dd>
+        </div>
+        {{ caller() }}
+      </dl>
+    </div>
+  </div>
 {% endmacro %}
 
 {% set importFields = data['scenario-a-import-fields'] or [] %}
@@ -52,6 +66,21 @@
 {% set processingFields = data['scenario-a-processing-fields'] or [] %}
 {% set exportFields = data['scenario-a-export-fields'] or [] %}
 {% set nmdFields = data['scenario-a-nmd-fields'] or [] %}
+
+{% set catchCertificateNumber = data['catch-certificate-number'] or '' %}
+{% set vesselValidationSummary = data['vessel-validation-summary'] or '' %}
+{% set catchDescription = data['catch-description'] or '' %}
+{% for item in catchFields %}
+  {% if item.field == 'Catch certificate number' and not catchCertificateNumber %}
+    {% set catchCertificateNumber = item.value %}
+  {% endif %}
+  {% if item.field == 'Vessel name(s), flag(s), validation date(s)' and not vesselValidationSummary %}
+    {% set vesselValidationSummary = item.value %}
+  {% endif %}
+  {% if item.field == 'Catch description' and not catchDescription %}
+    {% set catchDescription = item.value %}
+  {% endif %}
+{% endfor %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -70,8 +99,7 @@
     </div>
 
     <form action="/review-extraction-a" method="post" novalidate>
-      {{ sectionHeader('Importer details', '/importer-details', '98') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('Importer details', '/importer-details', '98') %}
         {{ extractionRow('Business name', data['importer-name'] or 'Nordic Sea Imports Ltd') }}
         {{ extractionRow('EORI number', data['importer-eori'] or 'GB123456789000') }}
         {{ extractionRow('Business address line 1', data['importer-address-line-1'] or '1 Harbour Way') }}
@@ -85,27 +113,29 @@
         {% for item in importFields %}
           {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('Catch certificate', '/catch-certificates', '99') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('Catch certificate', '/change-catch-certificate-details', '99', '/catch-certificates') %}
         {{ extractionRow('Catch Certificate reference', data['scenario-a-catch-certificate-reference'] or 'CC-IS-2025-0847') }}
+        {{ extractionRow('Catch certificate number', catchCertificateNumber) }}
+        {{ extractionRow('Vessel name(s), flag(s), validation date(s)', vesselValidationSummary) }}
+        {{ extractionRow('Catch description', catchDescription) }}
         {% for item in catchFields %}
-          {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+          {% if item.field != 'Catch certificate number' and item.field != 'Vessel name(s), flag(s), validation date(s)' and item.field != 'Catch description' %}
+            {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
+          {% endif %}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('Catch details', '/catch-certificates', '97') }}
-      <dl class="govuk-summary-list">
-        {{ extractionRow('Catch area', data['scenario-a-catch-area'] or 'FAO Area 27 — Northeast Atlantic (ICES Division Va)') }}
+      {% call sectionCard('Catch details', '/catch-certificates', '97') %}
+        {{ extractionRow('Catch area', data['scenario-a-catch-area'] or 'FAO Area 27 - Northeast Atlantic (ICES Division Va)') }}
         {{ extractionRow('Catch date', data['scenario-a-catch-date'] or '14 July 2025') }}
         {{ extractionRow('Flag state', data['scenario-a-flag-state'] or 'Iceland (IS)') }}
-        {{ extractionRow('Vessel name', data['scenario-a-vessel-name'] or 'FV Sigurður Ísfjörð') }}
+        {{ extractionRow('Vessel name', data['scenario-a-vessel-name'] or 'FV Sigurdur Isfjord') }}
         {{ extractionRow('Vessel IMO number', data['scenario-a-vessel-imo'] or '8821432') }}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('Commodity details', '/species-details', '98') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('Commodity details', '/species-details', '98') %}
         {{ extractionRow('Species', data['scenario-a-species'] or 'Atlantic Cod (Gadus morhua)') }}
         {{ extractionRow('Commodity type', data['scenario-a-commodity-type'] or 'Chilled, gutted, head-on') }}
         {{ extractionRow('CN code', data['scenario-a-cn-code'] or '0302 51 10') }}
@@ -114,17 +144,15 @@
         {% for item in commodityFields %}
           {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('Consignment details', '/transport-details', '96') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('Consignment details', '/transport-details', '96') %}
         {% for item in consignmentFields %}
           {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('Processing details', '/processing-statement', '97') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('Processing details', '/processing-statement', '97', '/processing-statement') %}
         {{ extractionRow('Processing facility', data['scenario-a-processing-facility'] or 'Samherji hf. Processing Plant, Akureyri') }}
         {{ extractionRow('Processing country', data['scenario-a-processing-country'] or 'Iceland') }}
         {{ extractionRow('Processing Statement reference', data['scenario-a-processing-reference'] or 'PS-IS-2025-00847') }}
@@ -132,24 +160,22 @@
         {% for item in processingFields %}
           {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('NMD information', '/non-manipulation-declaration', '95') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('NMD information', '/non-manipulation-declaration', '95', '/non-manipulation-declaration') %}
         {% for item in nmdFields %}
           {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
-      {{ sectionHeader('Exporter details', '/processing-statement', '97') }}
-      <dl class="govuk-summary-list">
+      {% call sectionCard('Exporter details', '/processing-statement', '97') %}
         {{ extractionRow('Exporter name', data['scenario-a-exporter-name'] or 'Samherji Export Ltd') }}
         {{ extractionRow('Export approval number', data['scenario-a-export-approval-number'] or 'IS-EXP-2025-00294') }}
         {{ extractionRow('Export country', data['scenario-a-export-country'] or 'Iceland') }}
         {% for item in exportFields %}
           {{ extractionRow(item.field, item.value, item.extracted if item.extracted is defined else true) }}
         {% endfor %}
-      </dl>
+      {% endcall %}
 
       <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -163,6 +189,7 @@
         Confirm and continue
       </button>
     </form>
+
   </div>
 </div>
 

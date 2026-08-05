@@ -18,6 +18,20 @@ const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
 
+const upsertSummaryField = (fields, label, value) => {
+  const nextFields = Array.isArray(fields) ? [...fields] : []
+  const index = nextFields.findIndex((item) => item && item.field === label)
+  const entry = { field: label, value: value || '', extracted: true }
+
+  if (index >= 0) {
+    nextFields[index] = { ...nextFields[index], ...entry }
+    return nextFields
+  }
+
+  nextFields.push(entry)
+  return nextFields
+}
+
 const listSampleDocumentFiles = () => {
   if (!fs.existsSync(sampleDocumentsPath)) {
     return []
@@ -771,6 +785,30 @@ router.post('/processing', (req, res) => {
   }
 
   res.redirect('/extracting')
+})
+
+// -------------------------------------------------------
+// Change catch certificate details
+// -------------------------------------------------------
+router.post('/change-catch-certificate-details', (req, res) => {
+  const data = req.session.data
+  const variant = data['extraction-variant'] || 'a'
+  const scenarioPrefix = variant === 'b' ? 'scenario-b' : 'scenario-a'
+
+  data[scenarioPrefix + '-catch-certificate-reference'] = data['catch-certificate-reference'] || ''
+
+  const catchFieldKey = scenarioPrefix + '-catch-fields'
+  let updatedCatchFields = data[catchFieldKey]
+  updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Catch certificate number', data['catch-certificate-number'])
+  updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Vessel name(s), flag(s), validation date(s)', data['vessel-validation-summary'])
+  updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Catch description', data['catch-description'])
+  data[catchFieldKey] = updatedCatchFields
+
+  if (variant === 'b') {
+    return res.redirect('/review-extraction-b')
+  }
+
+  return res.redirect('/review-extraction-a')
 })
 
 // -------------------------------------------------------
