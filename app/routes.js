@@ -554,19 +554,21 @@ router.post('/catch-certificates', (req, res) => {
     data['catch-certificates'] = []
   }
 
-  const ref = buildGeneratedDocumentReference('CATCH.CC.UPLOAD', data['catch-certificates'].length + 1)
-  let certificateSaved = false
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const hasSelectedFile = Boolean(uploadedFile || body['catch-certificate-selected'] === 'true')
 
-  data['catch-certificates'].push({
-    filename: ref + '.pdf',
-    reference: ref
-  })
-  certificateSaved = true
+  if (hasSelectedFile) {
+    const ref = buildGeneratedDocumentReference('CATCH.CC.UPLOAD', data['catch-certificates'].length + 1)
+    data['catch-certificates'].push({
+      filename: ref + '.pdf',
+      reference: ref
+    })
+  }
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
 
   // Do not progress until at least one certificate entry has been saved
-  if (!certificateSaved) {
+  if (data['catch-certificates'].length === 0) {
     return res.redirect('/catch-certificates')
   }
 
@@ -610,17 +612,19 @@ router.post('/processing-statement', (req, res) => {
     data['processing-statement'] = []
   }
 
-  const ref = buildGeneratedDocumentReference('CATCH.PS.UPLOAD', data['processing-statement'].length + 1)
-  let statementSaved = false
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const hasSelectedFile = Boolean(uploadedFile || body['processing-statement-selected'] === 'true')
 
-  data['processing-statement'].push({
-    filename: ref + '.pdf',
-    reference: ref
-  })
-  statementSaved = true
+  if (hasSelectedFile) {
+    const ref = buildGeneratedDocumentReference('CATCH.PS.UPLOAD', data['processing-statement'].length + 1)
+    data['processing-statement'].push({
+      filename: ref + '.pdf',
+      reference: ref
+    })
+  }
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
-  if (!statementSaved) {
+  if (data['processing-statement'].length === 0) {
     return res.redirect('/processing-statement')
   }
 
@@ -664,17 +668,19 @@ router.post('/non-manipulation-declaration', (req, res) => {
     data['non-manipulation-documents'] = []
   }
 
-  const ref = buildGeneratedDocumentReference('CATCH.NMD.UPLOAD', data['non-manipulation-documents'].length + 1)
-  let nmdSaved = false
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const hasSelectedFile = Boolean(uploadedFile || body['nmd-selected'] === 'true')
 
-  data['non-manipulation-documents'].push({
-    filename: ref + '.pdf',
-    reference: ref
-  })
-  nmdSaved = true
+  if (hasSelectedFile) {
+    const ref = buildGeneratedDocumentReference('CATCH.NMD.UPLOAD', data['non-manipulation-documents'].length + 1)
+    data['non-manipulation-documents'].push({
+      filename: ref + '.pdf',
+      reference: ref
+    })
+  }
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
-  if (!nmdSaved) {
+  if (data['non-manipulation-documents'].length === 0) {
     return res.redirect('/non-manipulation-declaration')
   }
 
