@@ -1,0 +1,161 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Uploading and extracting your documents" %}
+
+{% block content %}
+
+<style>
+  .extracting-spinner {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    border: 5px solid #b1b4b6;
+    border-top-color: #1d70b8;
+    border-radius: 50%;
+    animation: extracting-spin 0.9s linear infinite;
+    vertical-align: middle;
+    margin-right: 1rem;
+  }
+
+  @keyframes extracting-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .extracting-status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .extracting-status-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #b1b4b6;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .extracting-status-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .extracting-status-icon--done {
+    color: #00703c;
+    font-size: 1.2rem;
+    line-height: 24px;
+    text-align: center;
+  }
+
+  .extracting-status-icon--pending {
+    border: 3px solid #b1b4b6;
+    border-top-color: #1d70b8;
+    border-radius: 50%;
+    animation: extracting-spin 0.9s linear infinite;
+  }
+
+  .extracting-status-icon--waiting {
+    border: 3px solid #b1b4b6;
+    border-radius: 50%;
+  }
+</style>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+
+    <h1 class="govuk-heading-l">
+      <span class="extracting-spinner" aria-hidden="true"></span>
+      Uploading and extracting your documents
+    </h1>
+
+    <p class="govuk-body-l" id="extracting-status-message">Uploading your documents&hellip;</p>
+
+    <ul class="extracting-status-list" aria-live="polite" aria-label="Upload and extraction progress">
+      <li id="step-upload">
+        <span class="extracting-status-icon extracting-status-icon--pending" aria-hidden="true"></span>
+        <span>Uploading documents</span>
+      </li>
+      <li id="step-validate">
+        <span class="extracting-status-icon extracting-status-icon--waiting" aria-hidden="true"></span>
+        <span>Validating document formats</span>
+      </li>
+      <li id="step-extract">
+        <span class="extracting-status-icon extracting-status-icon--waiting" aria-hidden="true"></span>
+        <span>Extracting information</span>
+      </li>
+      <li id="step-complete">
+        <span class="extracting-status-icon extracting-status-icon--waiting" aria-hidden="true"></span>
+        <span>Preparing your review</span>
+      </li>
+    </ul>
+
+    <p class="govuk-body govuk-!-margin-top-6">
+      <noscript>
+        <a href="/review-extraction-{{ data['extraction-variant'] or 'a' }}" class="govuk-link">
+          Continue to review extracted information
+        </a>
+      </noscript>
+    </p>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var destination = '/review-extraction-{{ data["extraction-variant"] or "a" }}'
+
+    function markDone(stepId) {
+      var li = document.getElementById(stepId)
+      if (!li) return
+      var icon = li.querySelector('.extracting-status-icon')
+      icon.className = 'extracting-status-icon extracting-status-icon--done'
+      icon.textContent = '✓'
+    }
+
+    function markActive(stepId) {
+      var li = document.getElementById(stepId)
+      if (!li) return
+      var icon = li.querySelector('.extracting-status-icon')
+      icon.className = 'extracting-status-icon extracting-status-icon--pending'
+      icon.textContent = ''
+    }
+
+    function setMessage(text) {
+      var el = document.getElementById('extracting-status-message')
+      if (el) el.textContent = text
+    }
+
+    // Step 1: uploading (0–1.2s)
+    setTimeout(function () {
+      markDone('step-upload')
+      markActive('step-validate')
+      setMessage('Validating document formats\u2026')
+    }, 1200)
+
+    // Step 2: validating (1.2–2.4s)
+    setTimeout(function () {
+      markDone('step-validate')
+      markActive('step-extract')
+      setMessage('Extracting information from your documents\u2026')
+    }, 2400)
+
+    // Step 3: extracting (2.4–3.8s)
+    setTimeout(function () {
+      markDone('step-extract')
+      markActive('step-complete')
+      setMessage('Preparing your review\u2026')
+    }, 3800)
+
+    // Step 4: redirect (3.8–4.8s)
+    setTimeout(function () {
+      markDone('step-complete')
+      window.location.href = destination
+    }, 4800)
+  })()
+</script>
+
+{% endblock %}

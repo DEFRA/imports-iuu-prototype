@@ -18,6 +18,20 @@ const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
 
+const upsertSummaryField = (fields, label, value) => {
+  const nextFields = Array.isArray(fields) ? [...fields] : []
+  const index = nextFields.findIndex((item) => item && item.field === label)
+  const entry = { field: label, value: value || '', extracted: true }
+
+  if (index >= 0) {
+    nextFields[index] = { ...nextFields[index], ...entry }
+    return nextFields
+  }
+
+  nextFields.push(entry)
+  return nextFields
+}
+
 const listSampleDocumentFiles = () => {
   if (!fs.existsSync(sampleDocumentsPath)) {
     return []
@@ -540,19 +554,21 @@ router.post('/catch-certificates', (req, res) => {
     data['catch-certificates'] = []
   }
 
-  const ref = buildGeneratedDocumentReference('CATCH.CC.UPLOAD', data['catch-certificates'].length + 1)
-  let certificateSaved = false
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const hasSelectedFile = Boolean(uploadedFile || body['catch-certificate-selected'] === 'true')
 
-  data['catch-certificates'].push({
-    filename: ref + '.pdf',
-    reference: ref
-  })
-  certificateSaved = true
+  if (hasSelectedFile) {
+    const ref = buildGeneratedDocumentReference('CATCH.CC.UPLOAD', data['catch-certificates'].length + 1)
+    data['catch-certificates'].push({
+      filename: ref + '.pdf',
+      reference: ref
+    })
+  }
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
 
   // Do not progress until at least one certificate entry has been saved
-  if (!certificateSaved) {
+  if (data['catch-certificates'].length === 0) {
     return res.redirect('/catch-certificates')
   }
 
@@ -596,17 +612,19 @@ router.post('/processing-statement', (req, res) => {
     data['processing-statement'] = []
   }
 
-  const ref = buildGeneratedDocumentReference('CATCH.PS.UPLOAD', data['processing-statement'].length + 1)
-  let statementSaved = false
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const hasSelectedFile = Boolean(uploadedFile || body['processing-statement-selected'] === 'true')
 
-  data['processing-statement'].push({
-    filename: ref + '.pdf',
-    reference: ref
-  })
-  statementSaved = true
+  if (hasSelectedFile) {
+    const ref = buildGeneratedDocumentReference('CATCH.PS.UPLOAD', data['processing-statement'].length + 1)
+    data['processing-statement'].push({
+      filename: ref + '.pdf',
+      reference: ref
+    })
+  }
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
-  if (!statementSaved) {
+  if (data['processing-statement'].length === 0) {
     return res.redirect('/processing-statement')
   }
 
@@ -650,17 +668,19 @@ router.post('/non-manipulation-declaration', (req, res) => {
     data['non-manipulation-documents'] = []
   }
 
-  const ref = buildGeneratedDocumentReference('CATCH.NMD.UPLOAD', data['non-manipulation-documents'].length + 1)
-  let nmdSaved = false
+  const uploadedFile = req.file || (Array.isArray(req.files) ? req.files[0] : null)
+  const hasSelectedFile = Boolean(uploadedFile || body['nmd-selected'] === 'true')
 
-  data['non-manipulation-documents'].push({
-    filename: ref + '.pdf',
-    reference: ref
-  })
-  nmdSaved = true
+  if (hasSelectedFile) {
+    const ref = buildGeneratedDocumentReference('CATCH.NMD.UPLOAD', data['non-manipulation-documents'].length + 1)
+    data['non-manipulation-documents'].push({
+      filename: ref + '.pdf',
+      reference: ref
+    })
+  }
 
   const wantsAnother = action === 'upload-another' || body['upload-another'] === 'true'
-  if (!nmdSaved) {
+  if (data['non-manipulation-documents'].length === 0) {
     return res.redirect('/non-manipulation-declaration')
   }
 
@@ -770,7 +790,31 @@ router.post('/processing', (req, res) => {
     }))
   }
 
-  res.redirect('/review-extraction-' + variant)
+  res.redirect('/extracting')
+})
+
+// -------------------------------------------------------
+// Change catch certificate details
+// -------------------------------------------------------
+router.post('/change-catch-certificate-details', (req, res) => {
+  const data = req.session.data
+  const variant = data['extraction-variant'] || 'a'
+  const scenarioPrefix = variant === 'b' ? 'scenario-b' : 'scenario-a'
+
+  data[scenarioPrefix + '-catch-certificate-reference'] = data['catch-certificate-reference'] || ''
+
+  const catchFieldKey = scenarioPrefix + '-catch-fields'
+  let updatedCatchFields = data[catchFieldKey]
+  updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Catch certificate number', data['catch-certificate-number'])
+  updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Vessel name(s), flag(s), validation date(s)', data['vessel-validation-summary'])
+  updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Catch description', data['catch-description'])
+  data[catchFieldKey] = updatedCatchFields
+
+  if (variant === 'b') {
+    return res.redirect('/review-extraction-b')
+  }
+
+  return res.redirect('/review-extraction-a')
 })
 
 // -------------------------------------------------------
