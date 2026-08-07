@@ -14,6 +14,7 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
+const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b'])
 
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
@@ -545,6 +546,18 @@ router.get('/remove-species', (req, res) => {
 // -------------------------------------------------------
 // Catch Certificates
 // -------------------------------------------------------
+router.get('/catch-certificates', (req, res) => {
+  const data = req.session.data
+  const returnTo = req.query.returnTo
+
+  if (typeof returnTo === 'string') {
+    const normalizedReturnTo = returnTo.startsWith('/') ? returnTo : '/' + returnTo
+    data['catch-certificates-return-to'] = reviewExtractionReturnPaths.has(normalizedReturnTo) ? normalizedReturnTo : ''
+  }
+
+  res.render('catch-certificates')
+})
+
 router.post('/catch-certificates', (req, res) => {
   const data = req.session.data
   const body = req.body || {}
@@ -575,6 +588,11 @@ router.post('/catch-certificates', (req, res) => {
   if (wantsAnother) {
     res.redirect('/catch-certificates')
   } else {
+    const returnTo = data['catch-certificates-return-to']
+    if (reviewExtractionReturnPaths.has(returnTo)) {
+      data['catch-certificates-return-to'] = ''
+      return res.redirect(returnTo)
+    }
     res.redirect('/processing-statement-required')
   }
 })
