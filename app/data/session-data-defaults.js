@@ -21,6 +21,7 @@ module.exports = {
   'bill-of-lading': '',
 
   // Port & arrival
+  'destination-port': '',
   'port-of-entry': '',
   'arrival-date-day': '',
   'arrival-date-month': '',
@@ -39,6 +40,16 @@ module.exports = {
   'non-manipulation-documents': [],
 
   // Submission
-  'declaration-confirmed': ''
+  'declaration-confirmed': '',
+
+  // Structured review fields
+  'review-catch-certificate-number': '',
+  'review-species': '',
+  'review-catch-area': '',
+  'review-vessel-id-flag-state': '',
+  'review-weight-quantity': '',
+  'review-importer-exporter-agent-details': '',
+  'review-processing-storage-reference-numbers': '',
+  'review-transport-details': ''
 
 }

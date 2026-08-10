@@ -69,6 +69,22 @@ const buildCatchCertificateReferenceEntries = (catchCertificateFiles) => catchCe
   reference: extractCatchCertificateReference(filename)
 }))
 
+const getUploadedFilesFromRequest = (req, fieldName) => {
+  const files = []
+
+  if (Array.isArray(req.files)) {
+    files.push(...req.files)
+  } else if (req.files && Array.isArray(req.files[fieldName])) {
+    files.push(...req.files[fieldName])
+  } else if (req.files && req.files[fieldName]) {
+    files.push(req.files[fieldName])
+  } else if (req.file) {
+    files.push(req.file)
+  }
+
+  return files.filter(Boolean)
+}
+
 const extractProcessingStatementCatchReferences = (filename) => {
   const references = []
   const pattern = /\(Exp\.\s*([^)]+)\)/gi
@@ -284,10 +300,42 @@ const buildScenarioBExtractionData = () => {
       ],
       'scenario-b-nmd-fields': fesDataDictionaryFields.byCategory.nmd.map((item) => ({ field: item.field, value: '', extracted: false }))
     }
+
   } catch (error) {
     console.error('Failed to parse Scenario B extraction JSON:', extractionJsonFile, error)
     return null
   }
+}
+
+const seedReviewSummaryData = (data) => {
+  data['review-catch-certificate-number'] = data['review-catch-certificate-number'] || data['scenario-a-catch-certificate-reference'] || data['scenario-b-catch-certificate-reference'] || 'CATCH.CC.IS.2026.000148'
+  data['review-species'] = data['review-species'] || data['scenario-a-species'] || data['scenario-b-species'] || 'Atlantic cod (Gadus morhua)'
+  data['review-catch-area'] = data['review-catch-area'] || data['scenario-a-catch-area'] || data['scenario-b-catch-area'] || 'FAO Area 27, Northeast Atlantic'
+  data['review-vessel-id-flag-state'] = data['review-vessel-id-flag-state'] || [data['scenario-a-vessel-name'] || data['scenario-b-vessel-name'] || 'FV Nordic Star', data['scenario-a-flag-state'] || data['scenario-b-flag-state'] || 'Iceland (IS)'].filter(Boolean).join(' - ')
+  data['review-weight-quantity'] = data['review-weight-quantity'] || data['scenario-a-net-weight'] || data['scenario-b-net-weight'] || '2,450 kg'
+  data['review-importer-exporter-agent-details'] = data['review-importer-exporter-agent-details'] || [data['importer-name'] || 'Nordic Sea Imports Ltd', data['scenario-a-exporter-name'] || data['scenario-b-exporter-name'] || 'Samherji Export Ltd'].join('; ')
+  data['review-processing-storage-reference-numbers'] = data['review-processing-storage-reference-numbers'] || [data['scenario-a-processing-reference'] || data['scenario-b-processing-reference'] || 'PS-IS-2026-01149', 'NMD-IS-2026-00372'].join('; ')
+  data['review-transport-details'] = data['review-transport-details'] || 'Vessel transport via Reykjavik to ' + (data['destination-port'] || 'Grimsby') + ', ETA ' + [data['arrival-date-day'], data['arrival-date-month'], data['arrival-date-year']].filter(Boolean).join('/')
+}
+
+const applyExtractionVariantData = (data) => {
+  const variant = data['extraction-variant'] || 'a'
+
+  if (variant === 'a' || variant === 'c') {
+    const scenarioAExtractionData = buildScenarioAExtractionData()
+    if (scenarioAExtractionData) {
+      Object.assign(data, scenarioAExtractionData)
+    }
+  }
+
+  if (variant === 'b') {
+    const scenarioBExtractionData = buildScenarioBExtractionData()
+    if (scenarioBExtractionData) {
+      Object.assign(data, scenarioBExtractionData)
+    }
+  }
+
+  seedReviewSummaryData(data)
 }
 
 const scenarioDCatchCertificateFiles = [
@@ -470,7 +518,12 @@ router.post('/transport-details', (req, res) => {
 // Arrival details
 // -------------------------------------------------------
 router.post('/arrival-details', (req, res) => {
-  res.redirect('/species-details')
+  const data = req.session.data
+  const hasVariantFlow = Boolean(data['extraction-variant'])
+  if (hasVariantFlow) {
+    return res.redirect('/upload-documents')
+  }
+  return res.redirect('/species-details')
 })
 
 // -------------------------------------------------------
@@ -747,67 +800,54 @@ router.get('/upload-guidance', (req, res, next) => {
 // Sign in
 // -------------------------------------------------------
 router.get('/sign-in', (req, res) => {
-  res.redirect('/catch-certificates')
+  res.redirect('/arrival-details')
 })
 
 router.post('/sign-in', (req, res) => {
-  res.redirect('/catch-certificates')
+  res.redirect('/arrival-details')
 })
 
 // -------------------------------------------------------
-// Legacy upload-documents route — redirect to multi-page flow
+// Single document upload page for extraction prototype
 // -------------------------------------------------------
 router.get('/upload-documents', (req, res) => {
-  res.redirect('/catch-certificates')
+  res.render('upload-documents')
 })
 
 router.post('/upload-documents', (req, res) => {
-  res.redirect('/catch-certificates')
+  const data = req.session.data
+  const files = getUploadedFilesFromRequest(req, 'documents')
+  const selectedViaClient = req.body['documents-selected'] === 'true'
+  const clientFileNamesRaw = req.body['documents-file-names'] || ''
+  const clientFileNames = String(clientFileNamesRaw)
+    .split('|')
+    .map((name) => name.trim())
+    .filter(Boolean)
+  const existingUploads = Array.isArray(data['uploaded-documents']) ? data['uploaded-documents'] : []
+
+  if (files.length > 0) {
+    data['uploaded-documents'] = files.map((file, index) => ({
+      filename: file.originalname || file.filename || ('uploaded-document-' + (index + 1) + '.pdf')
+    }))
+  } else if (clientFileNames.length > 0) {
+    data['uploaded-documents'] = clientFileNames.map((filename) => ({ filename }))
+  } else if (existingUploads.length > 0) {
+    data['uploaded-documents'] = existingUploads
+  } else {
+    data['uploaded-documents'] = [{ filename: 'uploaded-document-1.pdf' }]
+  }
+
+  data['catch-cert-uploaded-files'] = data['uploaded-documents'].map((item) => item.filename)
+  applyExtractionVariantData(data)
+  return res.redirect('/extracting')
 })
 
 // -------------------------------------------------------
 // Processing — route to the correct review variant
 // -------------------------------------------------------
 router.post('/processing', (req, res) => {
-  const variant = req.session.data['extraction-variant'] || 'a'
   const data = req.session.data
-
-  if (variant === 'a') {
-    const scenarioAExtractionData = buildScenarioAExtractionData()
-    if (scenarioAExtractionData) {
-      Object.assign(data, scenarioAExtractionData)
-    }
-  }
-
-  if (variant === 'b') {
-    const scenarioBExtractionData = buildScenarioBExtractionData()
-    if (scenarioBExtractionData) {
-      Object.assign(data, scenarioBExtractionData)
-    }
-  }
-
-  if (variant === 'd') {
-    const catchCertificateFiles = data['catch-cert-uploaded-files'] || scenarioDCatchCertificateFiles
-    const processingStatementFile = data['processing-statement-filename'] || 'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
-
-    const catchCertificateReferenceEntries = buildCatchCertificateReferenceEntries(catchCertificateFiles)
-    data['validation-catch-certificate-files'] = catchCertificateFiles
-    data['validation-processing-statement-file'] = processingStatementFile
-    data['uploaded-catch-certificate-references'] = catchCertificateReferenceEntries.map((entry) => entry.reference)
-    data['processing-statement-catch-certificate-references'] = scenarioDProcessingStatementReferences
-    data['missing-catch-certificate-references'] = getMissingValues(
-      data['uploaded-catch-certificate-references'],
-      data['processing-statement-catch-certificate-references']
-    )
-    data['missing-catch-certificate-reference-entries'] = catchCertificateReferenceEntries
-      .filter((entry) => data['missing-catch-certificate-references'].includes(entry.reference))
-    data['catch-certificate-validation-results'] = catchCertificateReferenceEntries.map((entry) => ({
-      filename: entry.filename,
-      reference: entry.reference,
-      status: data['processing-statement-catch-certificate-references'].includes(entry.reference) ? 'Matched' : 'Missing'
-    }))
-  }
-
+  applyExtractionVariantData(data)
   res.redirect('/extracting')
 })
 
@@ -835,32 +875,58 @@ router.post('/change-catch-certificate-details', (req, res) => {
   return res.redirect('/review-extraction-a')
 })
 
+router.get('/change-extracted-details', (req, res) => {
+  const returnTo = req.query.returnTo
+  const normalizedReturnTo = typeof returnTo === 'string' && returnTo.startsWith('/') ? returnTo : '/review-extraction-a'
+  req.session.data['change-extracted-details-return-to'] = normalizedReturnTo
+  res.render('change-extracted-details')
+})
+
+router.post('/change-extracted-details', (req, res) => {
+  const data = req.session.data
+  seedReviewSummaryData(data)
+  const returnTo = data['change-extracted-details-return-to'] || '/review-extraction-a'
+  delete data['change-extracted-details-return-to']
+  res.redirect(returnTo)
+})
+
 // -------------------------------------------------------
 // Review extraction — Variant A (high confidence)
 // -------------------------------------------------------
 router.post('/review-extraction-a', (req, res) => {
-  res.redirect('/upload-confirmation')
+  res.redirect('/declaration')
 })
 
 // -------------------------------------------------------
 // Review extraction — Variant B (partial)
 // -------------------------------------------------------
 router.post('/review-extraction-b', (req, res) => {
-  res.redirect('/upload-confirmation')
+  res.redirect('/declaration')
 })
 
 // -------------------------------------------------------
 // Review extraction — Variant C (failed)
 // -------------------------------------------------------
 router.post('/review-extraction-c', (req, res) => {
-  res.redirect('/importer-details')
+  res.redirect('/declaration')
 })
 
 // -------------------------------------------------------
 // Review extraction — Variant D (cross-document validation failed)
 // -------------------------------------------------------
 router.post('/review-extraction-d', (req, res) => {
-  res.redirect('/catch-certificates')
+  res.redirect('/upload-documents')
+})
+
+router.post('/declaration', (req, res) => {
+  const data = req.session.data
+  data['declaration-confirmed'] = req.body['declaration-confirmed'] || ''
+
+  if (!data['reference-number']) {
+    data['reference-number'] = 'IUU-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000)
+  }
+
+  res.redirect('/confirmation')
 })
 
 // =======================================================

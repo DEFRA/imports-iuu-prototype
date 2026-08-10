@@ -1,6 +1,6 @@
 {% extends "layouts/main.html" %}
 
-{% set pageName="Port of entry and arrival details" %}
+{% set pageName="Arrival details" %}
 
 {% block content %}
 
@@ -8,195 +8,60 @@
   <div class="govuk-grid-column-two-thirds">
 
     <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">Port of entry and arrival details</h1>
+    <h1 class="govuk-heading-l">Where are you importing to?</h1>
 
     <form action="/arrival-details" method="post">
-
       <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--m" for="port-of-entry">
-          Port or border control post of entry
+        <label class="govuk-label govuk-label--m" for="destination-port">
+          Destination port
         </label>
-        <div id="port-of-entry-hint" class="govuk-hint">
-          Select the designated border inspection post where the consignment will arrive
-        </div>
-        <select class="govuk-select" id="port-of-entry" name="port-of-entry" aria-describedby="port-of-entry-hint">
-          <option value="">Select a port</option>
-          <optgroup label="England">
-            <option value="dover" {% if data['port-of-entry'] == 'dover' %}selected{% endif %}>Dover (Port of Dover BCP)</option>
-            <option value="grimsby" {% if data['port-of-entry'] == 'grimsby' %}selected{% endif %}>Grimsby (Associated British Ports)</option>
-            <option value="hull" {% if data['port-of-entry'] == 'hull' %}selected{% endif %}>Hull (King George Dock)</option>
-            <option value="immingham" {% if data['port-of-entry'] == 'immingham' %}selected{% endif %}>Immingham (Port of Immingham)</option>
-            <option value="tilbury" {% if data['port-of-entry'] == 'tilbury' %}selected{% endif %}>Tilbury (Port of Tilbury)</option>
-            <option value="liverpool" {% if data['port-of-entry'] == 'liverpool' %}selected{% endif %}>Liverpool (Liverpool Freeport)</option>
-            <option value="portsmouth" {% if data['port-of-entry'] == 'portsmouth' %}selected{% endif %}>Portsmouth (Portsmouth International Port)</option>
-            <option value="felixstowe" {% if data['port-of-entry'] == 'felixstowe' %}selected{% endif %}>Felixstowe (Port of Felixstowe)</option>
-            <option value="heathrow" {% if data['port-of-entry'] == 'heathrow' %}selected{% endif %}>London Heathrow Airport</option>
-            <option value="gatwick" {% if data['port-of-entry'] == 'gatwick' %}selected{% endif %}>London Gatwick Airport</option>
-            <option value="manchester-airport" {% if data['port-of-entry'] == 'manchester-airport' %}selected{% endif %}>Manchester Airport</option>
-          </optgroup>
-          <optgroup label="Scotland">
-            <option value="aberdeen" {% if data['port-of-entry'] == 'aberdeen' %}selected{% endif %}>Aberdeen (Port of Aberdeen)</option>
-            <option value="peterhead" {% if data['port-of-entry'] == 'peterhead' %}selected{% endif %}>Peterhead (Peterhead Harbour)</option>
-            <option value="leith" {% if data['port-of-entry'] == 'leith' %}selected{% endif %}>Leith (Port of Leith)</option>
-            <option value="glasgow-airport" {% if data['port-of-entry'] == 'glasgow-airport' %}selected{% endif %}>Glasgow Airport</option>
-          </optgroup>
-          <optgroup label="Wales">
-            <option value="holyhead" {% if data['port-of-entry'] == 'holyhead' %}selected{% endif %}>Holyhead (Port of Holyhead)</option>
-            <option value="milford-haven" {% if data['port-of-entry'] == 'milford-haven' %}selected{% endif %}>Milford Haven</option>
-          </optgroup>
+        <select class="govuk-select" id="destination-port" name="destination-port">
+          <option value="">Select a destination port</option>
+          <option value="Dover" {% if data['destination-port'] == 'Dover' %}selected{% endif %}>Dover</option>
+          <option value="Felixstowe" {% if data['destination-port'] == 'Felixstowe' %}selected{% endif %}>Felixstowe</option>
+          <option value="Grimsby" {% if data['destination-port'] == 'Grimsby' %}selected{% endif %}>Grimsby</option>
+          <option value="Hull" {% if data['destination-port'] == 'Hull' %}selected{% endif %}>Hull</option>
+          <option value="Immingham" {% if data['destination-port'] == 'Immingham' %}selected{% endif %}>Immingham</option>
+          <option value="Liverpool" {% if data['destination-port'] == 'Liverpool' %}selected{% endif %}>Liverpool</option>
+          <option value="Portsmouth" {% if data['destination-port'] == 'Portsmouth' %}selected{% endif %}>Portsmouth</option>
+          <option value="Tilbury" {% if data['destination-port'] == 'Tilbury' %}selected{% endif %}>Tilbury</option>
         </select>
       </div>
 
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" role="group" aria-describedby="arrival-date-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            Estimated date of arrival
+            Expected date of arrival
           </legend>
           <div id="arrival-date-hint" class="govuk-hint">
-            For example, 27 3 2025
+            For example, 27 3 2026
           </div>
           <div class="govuk-date-input" id="arrival-date">
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
                 <label class="govuk-label govuk-date-input__label" for="arrival-date-day">Day</label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-day"
-                  name="arrival-date-day" type="text" inputmode="numeric" value="{{ data['arrival-date-day'] }}">
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-day" name="arrival-date-day" type="text" inputmode="numeric" value="{{ data['arrival-date-day'] }}">
               </div>
             </div>
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
                 <label class="govuk-label govuk-date-input__label" for="arrival-date-month">Month</label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-month"
-                  name="arrival-date-month" type="text" inputmode="numeric" value="{{ data['arrival-date-month'] }}">
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-month" name="arrival-date-month" type="text" inputmode="numeric" value="{{ data['arrival-date-month'] }}">
               </div>
             </div>
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
                 <label class="govuk-label govuk-date-input__label" for="arrival-date-year">Year</label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="arrival-date-year"
-                  name="arrival-date-year" type="text" inputmode="numeric" value="{{ data['arrival-date-year'] }}">
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="arrival-date-year" name="arrival-date-year" type="text" inputmode="numeric" value="{{ data['arrival-date-year'] }}">
               </div>
             </div>
           </div>
         </fieldset>
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset" role="group" aria-describedby="arrival-time-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            Estimated time of arrival
-          </legend>
-          <div id="arrival-time-hint" class="govuk-hint">
-            Use 24-hour format. For example, 14 30
-          </div>
-          <div class="govuk-date-input" id="arrival-time">
-            <div class="govuk-date-input__item">
-              <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label" for="arrival-time-hour">Hour</label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-time-hour"
-                  name="arrival-time-hour" type="text" inputmode="numeric" value="{{ data['arrival-time-hour'] }}">
-              </div>
-            </div>
-            <div class="govuk-date-input__item">
-              <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label" for="arrival-time-minute">Minute</label>
-                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-time-minute"
-                  name="arrival-time-minute" type="text" inputmode="numeric" value="{{ data['arrival-time-minute'] }}">
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--m" for="country-of-origin">
-          Country where the fish was caught or farmed
-        </label>
-        <div id="country-of-origin-hint" class="govuk-hint">
-          Enter the country of origin as stated on the Catch Certificate
-        </div>
-        <input class="govuk-input govuk-input--width-20" id="country-of-origin" name="country-of-origin" type="text"
-          aria-describedby="country-of-origin-hint" value="{{ data['country-of-origin'] }}">
-      </div>
-
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--m" for="country-of-export">
-          Country of export
-        </label>
-        <div id="country-of-export-hint" class="govuk-hint">
-          The last country the goods were in before being imported into Great Britain
-        </div>
-        <input class="govuk-input govuk-input--width-20" id="country-of-export" name="country-of-export" type="text"
-          aria-describedby="country-of-export-hint" value="{{ data['country-of-export'] }}">
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            How is the consignment being landed?
-          </legend>
-          <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="landing-type-1" name="landing-type" type="radio"
-                value="containerised" {% if data['landing-type'] == 'containerised' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="landing-type-1">Containerised</label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="landing-type-2" name="landing-type" type="radio"
-                value="direct-landing" {% if data['landing-type'] == 'direct-landing' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="landing-type-2">Direct landing</label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="landing-type-3" name="landing-type" type="radio"
-                value="other" {% if data['landing-type'] == 'other' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="landing-type-3">Other</label>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            Is this a Rest of World (RoW) consignment subject to SPS checks?
-          </legend>
-          <div id="row-hint" class="govuk-hint">
-            RoW consignments from countries outside the EU must be pre-notified on TRACES NT
-          </div>
-          <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios"
-            aria-describedby="row-hint" id="is-row">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="is-row-1" name="is-row" type="radio" value="yes"
-                data-aria-controls="ched-section"
-                {% if data['is-row'] == 'yes' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="is-row-1">Yes</label>
-            </div>
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="is-row-2" name="is-row" type="radio" value="no"
-                {% if data['is-row'] == 'no' %}checked{% endif %}>
-              <label class="govuk-label govuk-radios__label" for="is-row-2">No</label>
-            </div>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="ched-section">
-        <div class="govuk-form-group">
-          <label class="govuk-label" for="ched-reference">
-            TRACES NT CHED reference number
-          </label>
-          <div id="ched-reference-hint" class="govuk-hint">
-            The Common Health Entry Document reference from TRACES NT. For example, GBCHD2025.0123456.
-          </div>
-          <input class="govuk-input govuk-input--width-20" id="ched-reference" name="ched-reference" type="text"
-            aria-describedby="ched-reference-hint" value="{{ data['ched-reference'] }}">
-        </div>
       </div>
 
       <button class="govuk-button" data-module="govuk-button">
-        Save and continue
+        Continue
       </button>
-
     </form>
 
   </div>
