@@ -37,27 +37,28 @@
 
     <p class="govuk-body">The Port Health Authority may ask for additional information if further evidence is needed.</p>
 
-    <h2 class="govuk-heading-m">Upload your documents</h2>
-
-    <p class="govuk-body">Upload files in PDF, JPEG or PNG format.</p>
-
-    <p class="govuk-body">Maximum file size: 10MB per file.</p>
-
     <form action="/upload-documents" method="post" enctype="multipart/form-data">
       <input type="hidden" name="documents-selected" id="documents-selected" value="false">
       <input type="hidden" name="documents-file-names" id="documents-file-names" value="">
 
       <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--m" for="documents">
-          Choose files
-        </label>
-        <div id="documents-hint" class="govuk-hint">
-          No files selected
-        </div>
-        <div class="prototype-upload-drop-zone">
-          <p class="govuk-body govuk-!-margin-bottom-3">Drag and drop files in this box, or choose files.</p>
-          <input class="govuk-file-upload" id="documents" name="documents" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" aria-describedby="documents-hint">
-        </div>
+        {{ govukFileUpload({
+          id: "file-upload-1",
+          name: "fileUpload1",
+          label: {
+            text: "Upload your documents",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
+          },
+          chooseFilesButtonText: "Choose files",
+          multiple: true,
+          attributes: {
+            accept: ".pdf,.jpg,.jpeg,.png"
+          },
+          javascript: true
+        }) }}
       </div>
 
       {% if data['uploaded-documents'] and (data['uploaded-documents'] | length) %}
@@ -85,7 +86,7 @@
 
 <script>
   (function () {
-    var fileInput = document.getElementById('documents')
+    var fileInput = document.getElementById('file-upload-1')
     var selectedField = document.getElementById('documents-selected')
     var namesField = document.getElementById('documents-file-names')
 
