@@ -1,0 +1,35 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Documents ready" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Documents ready</h1>
+
+    <p class="govuk-body">We've analysed the documents you uploaded and added any information that can be used to complete your notification.</p>
+
+    <h2 class="govuk-heading-m">Documents received</h2>
+
+    <p class="govuk-body">5 documents received:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>2 Catch Certificates</li>
+      <li>1 Processing Statement</li>
+      <li>1 Non-Manipulation Declaration</li>
+      <li>1 Additional document</li>
+    </ul>
+
+    <p class="govuk-body">You can now check the information added and make any changes needed before you submit the notification.</p>
+
+    <p class="govuk-body">You must check that all information is correct before submitting your import notification. Providing inaccurate information may result in delays to your consignment and could lead to enforcement action.</p>
+
+    <a href="/review-extraction-{{ data['extraction-variant'] or 'a' }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+      Continue to review your information
+    </a>
+  </div>
+</div>
+
+{% endblock %}
