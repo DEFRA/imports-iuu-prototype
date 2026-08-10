@@ -7,14 +7,18 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">We are analysing your uploaded documents</h1>
-    <p class="govuk-body">Please wait while we extract information from your files. This can take a few moments.</p>
-    <div class="govuk-inset-text">
-      We are checking your uploaded documents and preparing a structured review for you.
-    </div>
+    <h1 class="govuk-heading-l">Analysing your documents</h1>
+    <p class="govuk-body">We're reviewing your documents and identifying information that can be used to complete your notification.</p>
+    <p class="govuk-body">This may take a few moments. Do not close or refresh this page.</p>
+    <ul class="govuk-list">
+      <li>✅ Catch Certificate analysed</li>
+      <li>✅ Processing Statement analysed</li>
+      <li>⏳ Non-Manipulation Declaration being analysed</li>
+    </ul>
+    <p class="govuk-body">You can review and confirm all extracted information before submitting your notification.</p>
     <noscript>
       <p class="govuk-body">
-        <a href="/review-extraction-{{ data['extraction-variant'] or 'a' }}" class="govuk-link">Continue to review extracted information</a>
+        <a href="/documents-ready" class="govuk-link">Continue</a>
       </p>
     </noscript>
   </div>
@@ -22,7 +26,7 @@
 
 <script>
   setTimeout(function () {
-    window.location.href = '/review-extraction-{{ data["extraction-variant"] or "a" }}'
+    window.location.href = '/documents-ready'
   }, 2200)
 </script>
 

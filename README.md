@@ -89,7 +89,7 @@ The prototype also includes a separate inspection journey for Port Health Author
 
 ### Design notes
 
-- Uses GOV.UK styling/components (including Beta phase banner and back link pattern)
+- Uses GOV.UK styling/components (including Alpha phase banner and back link pattern)
 - Supports multiple uploads for:
   - Catch Certificates
   - Processing Statements

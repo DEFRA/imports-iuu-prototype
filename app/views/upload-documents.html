@@ -16,27 +16,49 @@
   <div class="govuk-grid-column-two-thirds">
 
     <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">Upload your documents</h1>
+    <h1 class="govuk-heading-l">Supporting documents</h1>
 
-    <p class="govuk-body">Upload all documents for this notification in one step. You can upload Catch Certificates, Processing Statements, Non-Manipulation Declarations and additional supporting documents.</p>
+    <p class="govuk-body">Upload the documents that support your seafood import notification.</p>
 
-    <p class="govuk-body">Accepted file types are PDF, JPG and PNG.</p>
+    <p class="govuk-body">We'll use your documents to help complete parts of your notification automatically.</p>
+
+    <p class="govuk-body">You can upload one or more documents at the same time.</p>
+
+    <h2 class="govuk-heading-m">Documents to upload</h2>
+
+    <p class="govuk-body">You should upload any documents that support this import, including:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Catch Certificates</li>
+      <li>Processing Statements</li>
+      <li>Non-Manipulation Declarations</li>
+      <li>any other relevant supporting documentation</li>
+    </ul>
+
+    <p class="govuk-body">The Port Health Authority may ask for additional information if further evidence is needed.</p>
 
     <form action="/upload-documents" method="post" enctype="multipart/form-data">
       <input type="hidden" name="documents-selected" id="documents-selected" value="false">
       <input type="hidden" name="documents-file-names" id="documents-file-names" value="">
 
       <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--m" for="documents">
-          Upload documents
-        </label>
-        <div id="documents-hint" class="govuk-hint">
-          Drag and drop multiple files into the upload box, or choose files from your device.
-        </div>
-        <div class="prototype-upload-drop-zone">
-          <p class="govuk-body govuk-!-margin-bottom-3">Drag and drop files in this box, or choose files.</p>
-          <input class="govuk-file-upload" id="documents" name="documents" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" aria-describedby="documents-hint">
-        </div>
+        {{ govukFileUpload({
+          id: "file-upload-1",
+          name: "fileUpload1",
+          label: {
+            text: "Upload your documents",
+            classes: "govuk-label--m"
+          },
+          hint: {
+            html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
+          },
+          chooseFilesButtonText: "Choose files",
+          multiple: true,
+          attributes: {
+            accept: ".pdf,.jpg,.jpeg,.png"
+          },
+          javascript: true
+        }) }}
       </div>
 
       {% if data['uploaded-documents'] and (data['uploaded-documents'] | length) %}
@@ -48,8 +70,14 @@
         </ul>
       {% endif %}
 
+      <h2 class="govuk-heading-m">After you upload</h2>
+
+      <p class="govuk-body">We'll analyse your documents and extract information where possible.</p>
+
+      <p class="govuk-body">You'll be able to check and confirm the information used is correct before submitting your import notification.</p>
+
       <button class="govuk-button" data-module="govuk-button">
-        Continue
+        Save and continue
       </button>
     </form>
 
@@ -58,7 +86,7 @@
 
 <script>
   (function () {
-    var fileInput = document.getElementById('documents')
+    var fileInput = document.getElementById('file-upload-1')
     var selectedField = document.getElementById('documents-selected')
     var namesField = document.getElementById('documents-file-names')
 

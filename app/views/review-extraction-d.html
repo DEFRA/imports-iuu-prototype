@@ -1,30 +1,75 @@
 {% extends "layouts/main.html" %}
 
-{% set pageName="Extraction failed" %}
+{% set pageName="We could not process your documents" %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">We could not extract information from your documents</h1>
+    <h1 class="govuk-heading-l">We could not process your documents</h1>
 
     <div class="govuk-error-summary" data-module="govuk-error-summary">
       <div role="alert">
-        <h2 class="govuk-error-summary__title">Scenario D: extraction failed</h2>
+        <h2 class="govuk-error-summary__title">Extraction failed</h2>
         <div class="govuk-error-summary__body">
-          We could not confidently read your uploaded files. You can upload the documents again.
+          We were unable to read one or more of the documents you uploaded.
         </div>
       </div>
     </div>
 
-    <p class="govuk-body">Check that files are clear, complete and in a supported format before uploading again.</p>
+    <h2 class="govuk-heading-m">This may be because:</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>the documents uploaded are not the correct documents for this import</li>
+      <li>the document quality is too poor to read</li>
+      <li>the files are incomplete or damaged</li>
+      <li>there was a technical problem while processing the documents</li>
+    </ul>
 
-    <form action="/review-extraction-d" method="post">
-      <button class="govuk-button" data-module="govuk-button">
-        Upload documents again
-      </button>
+    <h2 class="govuk-heading-m">Try uploading your documents again</h2>
+    <p class="govuk-body">Before you continue, check that:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>you have uploaded the correct documents for this import</li>
+      <li>all pages are included</li>
+      <li>scanned documents are clear and easy to read</li>
+      <li>photographs are in focus and show the whole document</li>
+      <li>the information is visible and not cut off</li>
+    </ul>
+
+    <h2 class="govuk-heading-m">Submit your notification manually</h2>
+    <p class="govuk-body">If you cannot upload documents successfully, you can continue with a manual notification and enter the information yourself.</p>
+    <p class="govuk-body">You should only continue if you have all the required documents available.</p>
+    <p class="govuk-body">If the documents are missing, incorrect or cannot be read by the Port Health Authority, your consignment may be delayed, held for inspection or refused entry.</p>
+
+    <form action="/review-extraction-d" method="post" class="govuk-!-margin-top-6">
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button" name="action" value="upload-again">
+          Upload documents again
+        </button>
+        <button class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="manual-notification">
+          Continue with a manual notification
+        </button>
+      </div>
     </form>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <aside class="govuk-related-items" style="border-top: 2px solid #1d70b8; padding-top: 15px;">
+      <h2 class="govuk-heading-m" id="subsection-title">Need help preparing your documents?</h2>
+      <p class="govuk-body">You can review the guidance below before trying again.</p>
+      <nav role="navigation" aria-labelledby="subsection-title">
+        <h3 class="govuk-heading-s">Related content</h3>
+        <ul class="govuk-list govuk-list--spaced" style="font-size: 16px;">
+          <li><a href="#">Importing or moving fish to the UK</a></li>
+          <li><a href="#">Preparing documents for processed seafood products</a></li>
+          <li><a href="#">Making sure your documents can be accepted</a></li>
+          <li><a href="#">Catch Certificates: what you need to provide</a></li>
+          <li><a href="#">Processing Statements: when they are required</a></li>
+          <li><a href="#">Non-Manipulation Declarations: when they are required</a></li>
+          <li><a href="#">Understanding seafood import documentation</a></li>
+        </ul>
+      </nav>
+    </aside>
   </div>
 </div>
 

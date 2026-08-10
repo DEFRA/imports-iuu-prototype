@@ -8,12 +8,16 @@
   <div class="govuk-grid-column-two-thirds">
 
     <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">Where are you importing to?</h1>
+    <h1 class="govuk-heading-l">Arrival details</h1>
+
+    <p class="govuk-body">
+      Provide your port of entry and expected date of arrival.
+    </p>
 
     <form action="/arrival-details" method="post">
       <div class="govuk-form-group">
         <label class="govuk-label govuk-label--m" for="destination-port">
-          Destination port
+          What is the port of entry?
         </label>
         <select class="govuk-select" id="destination-port" name="destination-port">
           <option value="">Select a destination port</option>
@@ -31,7 +35,7 @@
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" role="group" aria-describedby="arrival-date-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            Expected date of arrival
+            What is the expected date of arrival?
           </legend>
           <div id="arrival-date-hint" class="govuk-hint">
             For example, 27 3 2026
@@ -60,7 +64,7 @@
       </div>
 
       <button class="govuk-button" data-module="govuk-button">
-        Continue
+        Save and continue
       </button>
     </form>
 
