@@ -115,7 +115,7 @@
         {% endfor %}
       {% endcall %}
 
-      {% call sectionCard('Catch certificate', '/change-catch-certificate-details', '99', '/catch-certificates') %}
+      {% call sectionCard('Catch certificate', '/change-catch-certificate-details', '99', '/catch-certificates?returnTo=review-extraction-a') %}
         {{ extractionRow('Catch Certificate reference', data['scenario-a-catch-certificate-reference'] or 'CC-IS-2025-0847') }}
         {{ extractionRow('Catch certificate number', catchCertificateNumber) }}
         {{ extractionRow('Vessel name(s), flag(s), validation date(s)', vesselValidationSummary) }}
