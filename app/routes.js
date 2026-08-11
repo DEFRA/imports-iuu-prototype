@@ -1148,11 +1148,6 @@ router.get('/review-extraction-f', (req, res) => {
 
   const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
   const totalDocuments = documents.length
-  const requestedDocumentIndex = parseInt(req.query.document, 10)
-  const currentDocumentIndex = Number.isNaN(requestedDocumentIndex)
-    ? 1
-    : Math.min(Math.max(requestedDocumentIndex, 1), Math.max(totalDocuments, 1))
-  const currentDocument = documents[currentDocumentIndex - 1] || null
   const documentsPerPage = 10
   const tableStatusPriority = {
     'manual-check': 1,
@@ -1177,9 +1172,8 @@ router.get('/review-extraction-f', (req, res) => {
   const tableStart = (tablePage - 1) * documentsPerPage
   const tableDocuments = sortedTableDocuments.slice(tableStart, tableStart + documentsPerPage)
 
-  const buildReviewExtractionFUrl = (documentIndex, summaryPage) => {
+  const buildReviewExtractionFUrl = (summaryPage) => {
     const query = []
-    if (documentIndex > 1) query.push('document=' + documentIndex)
     if (summaryPage > 1) query.push('tablePage=' + summaryPage)
     return '/review-extraction-f' + (query.length ? '?' + query.join('&') : '')
   }
@@ -1189,25 +1183,19 @@ router.get('/review-extraction-f', (req, res) => {
     tablePaginationItems.push({
       number: pageNumber,
       current: pageNumber === tablePage,
-      href: buildReviewExtractionFUrl(currentDocumentIndex, pageNumber) + '#document-summary'
+      href: buildReviewExtractionFUrl(pageNumber) + '#document-summary'
     })
   }
 
   res.render('review-extraction-f', {
-    currentDocument,
-    currentDocumentIndex,
     totalDocuments,
-    hasPreviousDocument: currentDocumentIndex > 1,
-    hasNextDocument: currentDocumentIndex < totalDocuments,
-    previousDocumentUrl: buildReviewExtractionFUrl(currentDocumentIndex - 1, tablePage),
-    nextDocumentUrl: buildReviewExtractionFUrl(currentDocumentIndex + 1, tablePage),
     tableDocuments,
     tablePage,
     totalTablePages,
     showTablePagination: totalDocuments > documentsPerPage,
     tablePaginationItems,
-    tablePreviousUrl: tablePage > 1 ? buildReviewExtractionFUrl(currentDocumentIndex, tablePage - 1) + '#document-summary' : '',
-    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionFUrl(currentDocumentIndex, tablePage + 1) + '#document-summary' : ''
+    tablePreviousUrl: tablePage > 1 ? buildReviewExtractionFUrl(tablePage - 1) + '#document-summary' : '',
+    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionFUrl(tablePage + 1) + '#document-summary' : ''
   })
 })
 
@@ -1235,8 +1223,7 @@ router.get('/review-extraction-f/document/:documentId', (req, res) => {
   res.render('review-extraction-f-document', {
     document,
     documentIndex,
-    totalDocuments: documents.length,
-    returnToReviewUrl: '/review-extraction-f' + (req.query.tablePage ? '?tablePage=' + req.query.tablePage : '') + '#document-summary'
+    totalDocuments: documents.length
   })
 })
 
