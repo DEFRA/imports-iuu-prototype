@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-full">
     <span class="govuk-caption-l">Import notification</span>
     <h1 class="govuk-heading-l">Review extracted information</h1>
 
@@ -21,7 +21,7 @@
     <form action="/review-extraction-b" method="post">
       <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">
-          <h2 class="govuk-summary-card__title">Extracted notification details</h2>
+          <h2 class="govuk-summary-card__title">Extraction review overview</h2>
           <ul class="govuk-summary-card__actions">
             <li class="govuk-summary-card__action">
               <a class="govuk-link" href="/change-extracted-details?returnTo=/review-extraction-b">Change<span class="govuk-visually-hidden"> extracted details</span></a>
@@ -32,54 +32,59 @@
           <dl class="govuk-summary-list govuk-!-margin-bottom-0">
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Section extraction confidence</dt>
-              <dd class="govuk-summary-list__value">74%</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Medium</strong></dd>
+              <dd class="govuk-summary-list__value">{{ data['review-extraction-confidence-value'] }}</dd>
+              <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ data['review-extraction-confidence-tag-class'] }}">{{ data['review-extraction-confidence-tag-label'] }}</strong></dd>
             </div>
             <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Catch certificate number</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-catch-certificate-number'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Medium</strong></dd>
+              <dt class="govuk-summary-list__key">Extracted fields</dt>
+              <dd class="govuk-summary-list__value">{{ data['review-extraction-extracted-fields'] }} of {{ data['review-extraction-total-fields'] }}</dd>
+              <dd class="govuk-summary-list__actions"></dd>
             </div>
             <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Species</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-species'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Catch area</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-catch-area'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Medium</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Vessel ID and flag State</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-vessel-id-flag-state'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Medium</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Weight/quantity</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-weight-quantity'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--grey">Not extracted</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Importer/exporter/agent details</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-importer-exporter-agent-details'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Medium</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Processing/storage statement reference numbers</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-processing-storage-reference-numbers'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--grey">Not extracted</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Transport details</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-transport-details'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Medium</strong></dd>
+              <dt class="govuk-summary-list__key">Not extracted</dt>
+              <dd class="govuk-summary-list__value">{{ data['review-extraction-not-extracted-fields'] }}</dd>
+              <dd class="govuk-summary-list__actions"></dd>
             </div>
           </dl>
+          <p class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-0">Some fields were not extracted. Check all sections and complete missing values before submission.</p>
         </div>
       </div>
 
-      <button class="govuk-button" data-module="govuk-button">
+      {% for section in data['review-extraction-sections'] %}
+      <div class="govuk-summary-card govuk-!-margin-top-6">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">{{ section.name }}</h2>
+        </div>
+        <div class="govuk-summary-card__content">
+          <table class="govuk-table govuk-!-margin-bottom-0">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header govuk-!-width-one-third">Field</th>
+                <th scope="col" class="govuk-table__header">Extracted value</th>
+                <th scope="col" class="govuk-table__header govuk-!-width-one-quarter">Confidence</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for row in section.rows %}
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{{ row.fieldName }}</th>
+                <td class="govuk-table__cell">
+                  {% if row.value %}
+                    {{ row.value }}
+                  {% else %}
+                    <span class="govuk-hint govuk-!-margin-bottom-0">Not extracted</span>
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell"><strong class="govuk-tag {{ row.tagClass }}">{{ row.tagLabel }}</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+
+      <button class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
         Save and continue
       </button>
     </form>

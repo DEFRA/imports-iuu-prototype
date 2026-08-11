@@ -16,6 +16,53 @@ const getMissingValues = (requiredValues, actualValues) => {
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
 const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b'])
 
+const reviewExtractionFieldDefinitions = [
+  { section: 'Transport details from CC', fieldName: 'Port of Landing', key: 'review-port-of-landing' },
+  { section: 'Transport details from CC', fieldName: 'Date of Landing', key: 'review-date-of-landing' },
+  { section: 'Catch certificate number', fieldName: 'Document number', key: 'review-cc-document-number' },
+  { section: 'Catch certificate number', fieldName: 'Validating Authority Name', key: 'review-validating-authority-name' },
+  { section: 'Catch certificate number', fieldName: 'Validating Authority Address', key: 'review-validating-authority-address' },
+  { section: 'Species', fieldName: 'Species', key: 'review-species' },
+  { section: 'Species', fieldName: 'Product code', key: 'review-product-code' },
+  { section: 'Catch area', fieldName: 'Catch Area', key: 'review-catch-area' },
+  { section: 'Catch area', fieldName: 'Catch Date from', key: 'review-catch-date-from' },
+  { section: 'Catch area', fieldName: 'Catch Date to', key: 'review-catch-date-to' },
+  { section: 'Fishing gear', fieldName: 'Fishing License No.', key: 'review-fishing-license-number' },
+  { section: 'Fishing gear', fieldName: 'Fishing Gear', key: 'review-fishing-gear' },
+  { section: 'Weight/quantity', fieldName: 'Estimated weight to be landed in kg', key: 'review-estimated-weight-to-be-landed-kg' },
+  { section: 'Weight/quantity', fieldName: 'Net catch weight in kg', key: 'review-net-catch-weight-kg' },
+  { section: 'Weight/quantity', fieldName: 'Verified weight landed in kg', key: 'review-verified-weight-landed-kg' },
+  { section: 'Vessel ID and flag State', fieldName: 'Vessel Name', key: 'review-vessel-name' },
+  { section: 'Vessel ID and flag State', fieldName: 'Flag - home port and registration number', key: 'review-vessel-flag-home-port-registration-number' },
+  { section: 'Vessel ID and flag State', fieldName: 'Call sign', key: 'review-vessel-call-sign' },
+  { section: 'Vessel ID and flag State', fieldName: 'IMO number or other unique identifier', key: 'review-vessel-imo-or-other-identifier' },
+  { section: 'exporter details', fieldName: 'Name of Exporter', key: 'review-name-of-exporter' },
+  { section: 'exporter details', fieldName: 'Exporter Address', key: 'review-exporter-address' },
+  { section: 'Importer details', fieldName: 'Importer Company', key: 'review-importer-company' },
+  { section: 'Importer details', fieldName: 'Importer Name', key: 'review-importer-name' },
+  { section: 'Importer details', fieldName: 'Importer address', key: 'review-importer-address' },
+  { section: 'Importer details', fieldName: 'Importer EORI number', key: 'review-importer-eori-number' },
+  { section: 'Importer details', fieldName: 'Importer contact details', key: 'review-importer-contact-details' },
+  { section: 'Importer agent details', fieldName: 'Importer Representative Company', key: 'review-importer-representative-company' },
+  { section: 'Importer agent details', fieldName: 'Importer Representative Name', key: 'review-importer-representative-name' },
+  { section: 'Importer agent details', fieldName: 'Importer Representative address', key: 'review-importer-representative-address' },
+  { section: 'Importer agent details', fieldName: 'Importer Representative EORI number', key: 'review-importer-representative-eori-number' },
+  { section: 'Importer agent details', fieldName: 'Importer Representative contact details', key: 'review-importer-representative-contact-details' },
+  { section: 'Importer Declaration', fieldName: 'Product Description', key: 'review-importer-declaration-product-description' },
+  { section: 'Importer Declaration', fieldName: 'CN code', key: 'review-importer-declaration-cn-code' },
+  { section: 'Importer Declaration', fieldName: 'Net weight in kg', key: 'review-importer-declaration-net-weight-kg' },
+  { section: 'Importer Declaration', fieldName: 'Net fishery product weight in kg', key: 'review-importer-declaration-net-fishery-product-weight-kg' },
+  { section: 'Transport details', fieldName: 'Name', key: 'review-transport-name' },
+  { section: 'Transport details', fieldName: 'Address', key: 'review-transport-address' },
+  { section: 'Transport details', fieldName: 'Means of transport upon arrival', key: 'review-means-of-transport-upon-arrival' },
+  { section: 'Transport details', fieldName: 'Transport document reference', key: 'review-transport-document-reference' },
+  { section: 'Transport details', fieldName: 'Country of exportation Port/airport/other point of departure', key: 'review-country-of-exportation-port-airport-other-point-of-departure' },
+  { section: 'Transport details', fieldName: 'Point of destination', key: 'review-point-of-destination' },
+  { section: 'Transport details', fieldName: 'Container Numbers', key: 'review-container-numbers' },
+  { section: 'Storage statement reference numbers', fieldName: 'Document number', key: 'review-nmd-document-number' },
+  { section: 'Processing statement reference numbers', fieldName: 'Document number', key: 'review-ps-document-number' }
+]
+
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
 
@@ -48,6 +95,11 @@ const findSampleExtractionJsonFile = () => listSampleDocumentFiles().find((filen
 const isCatchCertificateFile = (filename) => filename.toUpperCase().includes('CATCH.CC')
 
 const isProcessingStatementFile = (filename) => filename.toUpperCase().includes('CATCH.PS')
+
+const isNonManipulationDocumentFile = (filename) => {
+  const upperFilename = filename.toUpperCase()
+  return upperFilename.includes('NON-MANIPULATION') || /(^|[\s._-])NMD([\s._-]|$)/i.test(filename) || /-N\.[^.]+$/i.test(filename)
+}
 
 const buildGeneratedDocumentReference = (prefix, count) => {
   const year = new Date().getFullYear()
@@ -103,6 +155,46 @@ const buildExtractionFieldLookup = (fields) => {
     lookup[field.fieldName] = String(field.value).trim()
   }
   return lookup
+}
+
+const getSampleExtractionFieldLookup = () => {
+  const extractionJsonFile = findSampleExtractionJsonFile()
+  if (!extractionJsonFile) return {}
+
+  try {
+    const raw = fs.readFileSync(path.join(sampleDocumentsPath, extractionJsonFile), 'utf8')
+    const parsed = JSON.parse(raw)
+    return buildExtractionFieldLookup(parsed.fields)
+  } catch (error) {
+    console.error('Failed to parse extraction JSON for review fields:', extractionJsonFile, error)
+    return {}
+  }
+}
+
+const extractDocumentReference = (filename) => {
+  const withoutExtension = filename.replace(/\.[^/.]+$/, '')
+  const psReferenceMatch = withoutExtension.match(/CATCH\.PS\.[A-Z]{2}\.\d{4}\.\d+/i)
+  if (psReferenceMatch && psReferenceMatch[0]) return psReferenceMatch[0]
+  return withoutExtension.split(' - ')[0].trim()
+}
+
+const extractCnCodeFromDescription = (description) => {
+  if (!description) return ''
+  const matches = String(description).match(/\b\d{8}\b/g)
+  if (matches && matches.length) return matches[matches.length - 1]
+  return ''
+}
+
+const extractCommodityWeight = (commodityValue, label) => {
+  if (!commodityValue) return ''
+  const match = String(commodityValue).match(new RegExp(label + '\\s+([\\d.]+\\s*kg)', 'i'))
+  return match && match[1] ? match[1] : ''
+}
+
+const findCommodityLinkedToDocument = (field, documentNumber) => {
+  if (!field || !documentNumber) return ''
+  const keys = Object.keys(field).filter((key) => key.startsWith('catchCertificateCommodity.')).sort()
+  return keys.map((key) => field[key]).find((value) => String(value).includes(documentNumber)) || ''
 }
 
 const splitAddressForDisplay = (address) => {
@@ -308,14 +400,147 @@ const buildScenarioBExtractionData = () => {
 }
 
 const seedReviewSummaryData = (data) => {
-  data['review-catch-certificate-number'] = data['review-catch-certificate-number'] || data['scenario-a-catch-certificate-reference'] || data['scenario-b-catch-certificate-reference'] || 'CATCH.CC.IS.2026.000148'
-  data['review-species'] = data['review-species'] || data['scenario-a-species'] || data['scenario-b-species'] || 'Atlantic cod (Gadus morhua)'
-  data['review-catch-area'] = data['review-catch-area'] || data['scenario-a-catch-area'] || data['scenario-b-catch-area'] || 'FAO Area 27, Northeast Atlantic'
-  data['review-vessel-id-flag-state'] = data['review-vessel-id-flag-state'] || [data['scenario-a-vessel-name'] || data['scenario-b-vessel-name'] || 'FV Nordic Star', data['scenario-a-flag-state'] || data['scenario-b-flag-state'] || 'Iceland (IS)'].filter(Boolean).join(' - ')
-  data['review-weight-quantity'] = data['review-weight-quantity'] || data['scenario-a-net-weight'] || data['scenario-b-net-weight'] || '2,450 kg'
-  data['review-importer-exporter-agent-details'] = data['review-importer-exporter-agent-details'] || [data['importer-name'] || 'Nordic Sea Imports Ltd', data['scenario-a-exporter-name'] || data['scenario-b-exporter-name'] || 'Samherji Export Ltd'].join('; ')
-  data['review-processing-storage-reference-numbers'] = data['review-processing-storage-reference-numbers'] || [data['scenario-a-processing-reference'] || data['scenario-b-processing-reference'] || 'PS-IS-2026-01149', 'NMD-IS-2026-00372'].join('; ')
-  data['review-transport-details'] = data['review-transport-details'] || 'Vessel transport via Reykjavik to ' + (data['destination-port'] || 'Grimsby') + ', ETA ' + [data['arrival-date-day'], data['arrival-date-month'], data['arrival-date-year']].filter(Boolean).join('/')
+  const field = getSampleExtractionFieldLookup()
+  const sampleFiles = listSampleDocumentFiles()
+  const processingFiles = sampleFiles.filter(isProcessingStatementFile)
+  const nonManipulationFiles = sampleFiles.filter(isNonManipulationDocumentFile)
+  const linkedCommodity = findCommodityLinkedToDocument(field, field['catchCertificate.documentNumber'])
+  const importerRepresentativePhones = [field['importerRepresentative.phone1'], field['importerRepresentative.phone2']].filter(Boolean).join('; ')
+  const importerRepresentativeContactDetails = [importerRepresentativePhones, field['importerRepresentative.email']].filter(Boolean).join(' | ')
+
+  const initialValues = {
+    'review-port-of-landing': field['memberStateOfficeOfImport'] || '',
+    'review-date-of-landing': field['arrivalTransport.estimatedArrivalTime'] || '',
+    'review-cc-document-number': field['catchCertificate.documentNumber'] || '',
+    'review-validating-authority-name': field['validatingAuthority.name'] || '',
+    'review-validating-authority-address': field['validatingAuthority.address'] || '',
+    'review-species': field['product.1.species'] || '',
+    'review-product-code': field['product.1.productCode'] || '',
+    'review-catch-area': [field['product.1.faoArea'], field['product.1.eezOrHighSeas'], field['product.1.rfmo']].filter(Boolean).join(' | '),
+    'review-catch-date-from': field['product.1.catchDateFrom'] || '',
+    'review-catch-date-to': field['product.1.catchDateTo'] || '',
+    'review-fishing-license-number': field['fishingVessel.fishingLicences'] || '',
+    'review-fishing-gear': '',
+    'review-estimated-weight-to-be-landed-kg': field['product.1.estimatedWeightKg'] || '',
+    'review-net-catch-weight-kg': field['product.1.netCatchWeightKg'] || '',
+    'review-verified-weight-landed-kg': field['product.1.verifiedWeightLandedKg'] || '',
+    'review-vessel-name': field['fishingVessel.name'] || '',
+    'review-vessel-flag-home-port-registration-number': [field['fishingVessel.flagHomePort'], field['fishingVessel.registrationNumber']].filter(Boolean).join(' | '),
+    'review-vessel-call-sign': field['fishingVessel.callSign'] || '',
+    'review-vessel-imo-or-other-identifier': field['fishingVessel.imoNumber'] || '',
+    'review-name-of-exporter': field['exporter.name'] || '',
+    'review-exporter-address': field['exporter.address'] || '',
+    'review-importer-company': field['importer.name'] || '',
+    'review-importer-name': field['importer.name'] || '',
+    'review-importer-address': field['importer.address'] || '',
+    'review-importer-eori-number': field['importer.eori'] || '',
+    'review-importer-contact-details': [field['importer.phone'], field['importerRepresentative.email']].filter(Boolean).join(' | '),
+    'review-importer-representative-company': field['importerRepresentative.name'] || '',
+    'review-importer-representative-name': field['importerRepresentative.name'] || '',
+    'review-importer-representative-address': field['importerRepresentative.address'] || '',
+    'review-importer-representative-eori-number': field['importerRepresentative.eori'] || '',
+    'review-importer-representative-contact-details': importerRepresentativeContactDetails,
+    'review-importer-declaration-product-description': field['importerProduct.cnDescription'] || '',
+    'review-importer-declaration-cn-code': extractCnCodeFromDescription(field['importerProduct.cnDescription']) || field['product.1.productCode'] || '',
+    'review-importer-declaration-net-weight-kg': extractCommodityWeight(linkedCommodity, 'net weight') || field['product.1.netCatchWeightKg'] || '',
+    'review-importer-declaration-net-fishery-product-weight-kg': extractCommodityWeight(linkedCommodity, 'net fishery product weight') || field['product.1.netCatchWeightKg'] || '',
+    'review-transport-name': field['transportDetails.exporter'] || field['exporter.name'] || '',
+    'review-transport-address': field['exporter.address'] || '',
+    'review-means-of-transport-upon-arrival': [field['arrivalTransport.mode'], field['arrivalTransport.identification']].filter(Boolean).join(' | '),
+    'review-transport-document-reference': field['arrivalTransport.transportDocumentReference'] || field['transportDetails.documentNumber'] || '',
+    'review-country-of-exportation-port-airport-other-point-of-departure': [field['transportDetails.countryOfExportation'], field['transportDetails.placeOfDeparture']].filter(Boolean).join(' | '),
+    'review-point-of-destination': field['memberStateOfficeOfImport'] || '',
+    'review-container-numbers': field['arrivalTransport.containerNumbers'] || '',
+    'review-nmd-document-number': nonManipulationFiles.map(extractDocumentReference).join('; '),
+    'review-ps-document-number': processingFiles.map(extractDocumentReference).join('; ')
+  }
+
+  for (const definition of reviewExtractionFieldDefinitions) {
+    const key = definition.key
+    data[key] = data[key] || initialValues[key] || ''
+  }
+}
+
+const buildReviewExtractionConfidence = (variant) => {
+  if (variant === 'b') return { value: '74%', tagLabel: 'Medium', tagClass: 'govuk-tag--yellow' }
+  if (variant === 'c') return { value: '41%', tagLabel: 'Low', tagClass: 'govuk-tag--red' }
+  return { value: '97%', tagLabel: 'High', tagClass: 'govuk-tag--green' }
+}
+
+const buildReviewExtractionTag = (variant, value) => {
+  if (variant === 'c') return { label: 'Low', className: 'govuk-tag--red' }
+  if (variant === 'b') {
+    if (!value) return { label: 'Not extracted', className: 'govuk-tag--grey' }
+    return { label: 'Medium', className: 'govuk-tag--yellow' }
+  }
+  return { label: 'High', className: 'govuk-tag--green' }
+}
+
+const buildReviewExtractionSections = (data) => {
+  const variant = data['extraction-variant'] || 'a'
+  const sections = []
+
+  for (const definition of reviewExtractionFieldDefinitions) {
+    const existingSection = sections.find((section) => section.name === definition.section)
+    const value = data[definition.key] || ''
+    const tag = buildReviewExtractionTag(variant, value)
+    const row = {
+      section: definition.section,
+      fieldName: definition.fieldName,
+      key: definition.key,
+      value,
+      tagLabel: tag.label,
+      tagClass: tag.className
+    }
+
+    if (existingSection) {
+      existingSection.rows.push(row)
+    } else {
+      sections.push({ name: definition.section, rows: [row] })
+    }
+  }
+
+  return sections
+}
+
+const buildReviewExtractionStats = (sections) => {
+  const stats = {
+    totalFields: 0,
+    extractedFields: 0,
+    highCount: 0,
+    mediumCount: 0,
+    lowCount: 0,
+    notExtractedCount: 0
+  }
+
+  for (const section of sections) {
+    for (const row of section.rows || []) {
+      stats.totalFields += 1
+      if (row.value) stats.extractedFields += 1
+      if (row.tagLabel === 'High') stats.highCount += 1
+      if (row.tagLabel === 'Medium') stats.mediumCount += 1
+      if (row.tagLabel === 'Low') stats.lowCount += 1
+      if (row.tagLabel === 'Not extracted') stats.notExtractedCount += 1
+    }
+  }
+
+  return stats
+}
+
+const applyReviewExtractionViewModel = (data) => {
+  const variant = data['extraction-variant'] || 'a'
+  const confidence = buildReviewExtractionConfidence(variant)
+  const sections = buildReviewExtractionSections(data)
+  const stats = buildReviewExtractionStats(sections)
+  data['review-extraction-confidence-value'] = confidence.value
+  data['review-extraction-confidence-tag-label'] = confidence.tagLabel
+  data['review-extraction-confidence-tag-class'] = confidence.tagClass
+  data['review-extraction-sections'] = sections
+  data['review-extraction-total-fields'] = stats.totalFields
+  data['review-extraction-extracted-fields'] = stats.extractedFields
+  data['review-extraction-not-extracted-fields'] = stats.notExtractedCount
+  data['review-extraction-low-confidence-fields'] = stats.lowCount
+  data['review-extraction-medium-confidence-fields'] = stats.mediumCount
 }
 
 const applyExtractionVariantData = (data) => {
@@ -336,6 +561,7 @@ const applyExtractionVariantData = (data) => {
   }
 
   seedReviewSummaryData(data)
+  applyReviewExtractionViewModel(data)
 }
 
 const scenarioDCatchCertificateFiles = [
@@ -879,12 +1105,15 @@ router.get('/change-extracted-details', (req, res) => {
   const returnTo = req.query.returnTo
   const normalizedReturnTo = typeof returnTo === 'string' && returnTo.startsWith('/') ? returnTo : '/review-extraction-a'
   req.session.data['change-extracted-details-return-to'] = normalizedReturnTo
+  seedReviewSummaryData(req.session.data)
+  applyReviewExtractionViewModel(req.session.data)
   res.render('change-extracted-details')
 })
 
 router.post('/change-extracted-details', (req, res) => {
   const data = req.session.data
   seedReviewSummaryData(data)
+  applyReviewExtractionViewModel(data)
   const returnTo = data['change-extracted-details-return-to'] || '/review-extraction-a'
   delete data['change-extracted-details-return-to']
   res.redirect(returnTo)
