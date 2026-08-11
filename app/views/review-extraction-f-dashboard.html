@@ -10,6 +10,29 @@
     <span class="govuk-caption-l">Import notification</span>
     <h1 class="govuk-heading-l">Document extraction dashboard</h1>
 
+    <div class="govuk-grid-row govuk-!-margin-bottom-4">
+      <div class="govuk-grid-column-one-fifth">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Documents Uploaded</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-2">{{ scenarioFSummary.documentsUploaded }}</p>
+      </div>
+      <div class="govuk-grid-column-one-fifth">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Documents Analysed</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-2">{{ scenarioFSummary.documentsAnalysed }}</p>
+      </div>
+      <div class="govuk-grid-column-one-fifth">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Complete</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-2">{{ scenarioFSummary.complete }}</p>
+      </div>
+      <div class="govuk-grid-column-one-fifth">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Needs Review</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-2">{{ scenarioFSummary.reviewRequiredTotal }}</p>
+      </div>
+      <div class="govuk-grid-column-one-fifth">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Manual Check Required</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-2">{{ scenarioFSummary.manualCheckRequired }}</p>
+      </div>
+    </div>
+
     <p class="govuk-body">Showing {{ documents.length }} of {{ totalDocuments }} extracted documents.</p>
 
     <form action="/review-extraction-f/dashboard" method="get" class="govuk-!-margin-bottom-6">
@@ -37,9 +60,10 @@
             <label class="govuk-label" for="status">Status</label>
             <select class="govuk-select" id="status" name="status">
               <option value="">All statuses</option>
-              <option value="High confidence" {% if statusFilter == 'High confidence' %}selected{% endif %}>High confidence</option>
-              <option value="Needs review" {% if statusFilter == 'Needs review' %}selected{% endif %}>Needs review</option>
-              <option value="Incomplete" {% if statusFilter == 'Incomplete' %}selected{% endif %}>Incomplete</option>
+              <option value="complete" {% if statusFilter == 'complete' %}selected{% endif %}>Complete</option>
+              <option value="needs-review" {% if statusFilter == 'needs-review' %}selected{% endif %}>Needs Review</option>
+              <option value="incomplete" {% if statusFilter == 'incomplete' %}selected{% endif %}>Incomplete</option>
+              <option value="manual-check" {% if statusFilter == 'manual-check' %}selected{% endif %}>Manual Check Required</option>
             </select>
           </div>
         </div>
@@ -54,12 +78,11 @@
       <table class="govuk-table">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Document type</th>
-            <th scope="col" class="govuk-table__header">Reference number</th>
-            <th scope="col" class="govuk-table__header">Species</th>
-            <th scope="col" class="govuk-table__header">Vessel</th>
-            <th scope="col" class="govuk-table__header">Catch area</th>
+            <th scope="col" class="govuk-table__header">Reference</th>
+            <th scope="col" class="govuk-table__header">Document Number</th>
+            <th scope="col" class="govuk-table__header">Document Type</th>
             <th scope="col" class="govuk-table__header">Extraction confidence</th>
+            <th scope="col" class="govuk-table__header">Fields Extracted</th>
             <th scope="col" class="govuk-table__header">Status</th>
             <th scope="col" class="govuk-table__header">View</th>
           </tr>
@@ -67,12 +90,11 @@
         <tbody class="govuk-table__body">
           {% for document in documents %}
             <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ document.reference }}</td>
+              <td class="govuk-table__cell">{{ document.documentNumber }}</td>
               <td class="govuk-table__cell">{{ document.documentType }}</td>
-              <td class="govuk-table__cell">{{ document.referenceNumber }}</td>
-              <td class="govuk-table__cell">{{ document.species }}</td>
-              <td class="govuk-table__cell">{{ document.vessel }}</td>
-              <td class="govuk-table__cell">{{ document.catchArea }}</td>
               <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.extractionConfidence }}%</strong></td>
+              <td class="govuk-table__cell">{{ document.fieldsExtractedDisplay }}</td>
               <td class="govuk-table__cell"><strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
               <td class="govuk-table__cell"><a class="govuk-link" href="/review-extraction-f/document/{{ document.id }}">View</a></td>
             </tr>

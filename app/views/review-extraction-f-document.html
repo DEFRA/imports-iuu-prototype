@@ -6,26 +6,51 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <a href="/review-extraction-f/dashboard" class="govuk-back-link">Back</a>
+    <a href="{{ returnToReviewUrl or '/review-extraction-f#document-summary' }}" class="govuk-back-link">Back</a>
     <span class="govuk-caption-l">Document {{ documentIndex }} of {{ totalDocuments }}</span>
-    <h1 class="govuk-heading-l">{{ document.referenceNumber }}</h1>
+    <h1 class="govuk-heading-l">{{ document.reference }} — {{ document.documentNumber }}</h1>
 
-    <div class="govuk-summary-card">
-      <div class="govuk-summary-card__title-wrapper">
-        <h2 class="govuk-summary-card__title">Extracted document details</h2>
+    {% if document.statusKey == 'incomplete' or document.statusKey == 'manual-check' %}
+      <div class="govuk-inset-text">
+        Some values are missing or low confidence. Check this document before submission.
       </div>
-      <div class="govuk-summary-card__content">
-        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-          {% for field in document.detailFields %}
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">{{ field.label }}</dt>
-              <dd class="govuk-summary-list__value">{{ field.value }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ field.confidenceTagClass }}">{{ field.confidence }}</strong></dd>
-            </div>
-          {% endfor %}
-        </dl>
+    {% endif %}
+
+    {% for section in document.detailSections %}
+      <div class="govuk-summary-card govuk-!-margin-bottom-6">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">{{ section.title }}</h2>
+          <ul class="govuk-summary-card__actions">
+            <li class="govuk-summary-card__action">
+              <strong class="govuk-tag {{ section.confidenceTagClass }}">{{ section.confidenceLabel }}</strong>
+            </li>
+          </ul>
+        </div>
+        <div class="govuk-summary-card__content">
+          <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+            {% for row in section.rows %}
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">{{ row.label }}</dt>
+                <dd class="govuk-summary-list__value">
+                  {% if row.isMissing %}
+                    <span class="govuk-error-message govuk-!-margin-bottom-0">Missing</span>
+                  {% else %}
+                    {{ row.value }}
+                  {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  {% if row.isMissing %}
+                    <strong class="govuk-tag govuk-tag--red">Missing</strong>
+                  {% else %}
+                    <strong class="govuk-tag {{ row.fieldConfidenceTagClass }}">{{ row.fieldConfidenceLabel }}</strong>
+                  {% endif %}
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </div>
       </div>
-    </div>
+    {% endfor %}
   </div>
 </div>
 
