@@ -1,0 +1,90 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Document extraction dashboard" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <a href="/review-extraction-f" class="govuk-back-link">Back</a>
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Document extraction dashboard</h1>
+
+    <p class="govuk-body">Showing {{ documents.length }} of {{ totalDocuments }} extracted documents.</p>
+
+    <form action="/review-extraction-f/dashboard" method="get" class="govuk-!-margin-bottom-6">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-third">
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="search">Search</label>
+            <input class="govuk-input" id="search" name="search" type="text" value="{{ searchTerm }}">
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="documentType">Document type</label>
+            <select class="govuk-select" id="documentType" name="documentType">
+              <option value="">All document types</option>
+              <option value="Catch Certificate" {% if documentTypeFilter == 'Catch Certificate' %}selected{% endif %}>Catch Certificate</option>
+              <option value="Processing Statement" {% if documentTypeFilter == 'Processing Statement' %}selected{% endif %}>Processing Statement</option>
+              <option value="Non-Manipulation Declaration" {% if documentTypeFilter == 'Non-Manipulation Declaration' %}selected{% endif %}>Non-Manipulation Declaration</option>
+              <option value="Additional document" {% if documentTypeFilter == 'Additional document' %}selected{% endif %}>Additional document</option>
+            </select>
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="status">Status</label>
+            <select class="govuk-select" id="status" name="status">
+              <option value="">All statuses</option>
+              <option value="High confidence" {% if statusFilter == 'High confidence' %}selected{% endif %}>High confidence</option>
+              <option value="Needs review" {% if statusFilter == 'Needs review' %}selected{% endif %}>Needs review</option>
+              <option value="Incomplete" {% if statusFilter == 'Incomplete' %}selected{% endif %}>Incomplete</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">Apply filters</button>
+        <a href="/review-extraction-f/dashboard" class="govuk-link">Clear filters</a>
+      </div>
+    </form>
+
+    {% if documents.length %}
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Document type</th>
+            <th scope="col" class="govuk-table__header">Reference number</th>
+            <th scope="col" class="govuk-table__header">Species</th>
+            <th scope="col" class="govuk-table__header">Vessel</th>
+            <th scope="col" class="govuk-table__header">Catch area</th>
+            <th scope="col" class="govuk-table__header">Extraction confidence</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+            <th scope="col" class="govuk-table__header">View</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for document in documents %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ document.documentType }}</td>
+              <td class="govuk-table__cell">{{ document.referenceNumber }}</td>
+              <td class="govuk-table__cell">{{ document.species }}</td>
+              <td class="govuk-table__cell">{{ document.vessel }}</td>
+              <td class="govuk-table__cell">{{ document.catchArea }}</td>
+              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.extractionConfidence }}%</strong></td>
+              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
+              <td class="govuk-table__cell"><a class="govuk-link" href="/review-extraction-f/document/{{ document.id }}">View</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="govuk-inset-text">
+        No documents match your current filters.
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -11,7 +11,12 @@
     <h1 class="govuk-heading-l">Catch certificate</h1>
 
     {% set variant = data['extraction-variant'] or 'a' %}
-    {% set cancelPath = '/review-extraction-b' if variant == 'b' else '/review-extraction-a' %}
+    {% set cancelPath = '/review-extraction-a' %}
+    {% if variant == 'b' %}
+      {% set cancelPath = '/review-extraction-b' %}
+    {% elif variant == 'f' %}
+      {% set cancelPath = '/review-extraction-f' %}
+    {% endif %}
 
     <form action="/change-catch-certificate-details" method="post">
 

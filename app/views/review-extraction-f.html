@@ -1,0 +1,79 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Review extracted information" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Review extracted information</h1>
+
+    <div class="govuk-notification-banner govuk-notification-banner--success" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title">Scenario F: multiple document extraction</h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        We analysed multiple supporting documents. This summary keeps the main journey simple while allowing deeper document review when needed.
+      </div>
+    </div>
+
+    <div class="govuk-summary-card">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Extraction summary</h2>
+      </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Documents analysed</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['documentsAnalysed'] }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Catch Certificates</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['catchCertificates'] }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Processing Statements</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['processingStatements'] }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Non-Manipulation Declarations</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['nonManipulationDeclarations'] }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Additional documents</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['additionalDocuments'] }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="govuk-summary-card govuk-!-margin-top-6">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Document 1 of {{ data['scenario-f-summary']['documentsAnalysed'] }}</h2>
+      </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          {% for field in data['scenario-f-representative-document']['summaryFields'] %}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ field.label }}</dt>
+              <dd class="govuk-summary-list__value">{{ field.value }}</dd>
+              <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ field.confidenceTagClass }}">{{ field.confidence }}</strong></dd>
+            </div>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+
+    <div class="govuk-button-group govuk-!-margin-top-6">
+      <a href="/review-extraction-f/dashboard" class="govuk-button govuk-button--secondary">View all extracted documents</a>
+      <form action="/review-extraction-f" method="post">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and continue
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

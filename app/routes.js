@@ -14,7 +14,7 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
-const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b'])
+const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b', '/review-extraction-f'])
 
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
@@ -121,6 +121,136 @@ const splitAddressForDisplay = (address) => {
     town,
     postcode
   }
+}
+
+const getConfidenceTagClass = (confidence) => {
+  if (confidence >= 90) return 'govuk-tag--green'
+  if (confidence >= 70) return 'govuk-tag--yellow'
+  return 'govuk-tag--red'
+}
+
+const getConfidenceLabel = (confidence) => {
+  if (confidence >= 90) return 'High'
+  if (confidence >= 70) return 'Medium'
+  return 'Low'
+}
+
+const getExtractionStatus = (confidence) => {
+  if (confidence >= 90) return { label: 'High confidence', className: 'govuk-tag--green' }
+  if (confidence >= 70) return { label: 'Needs review', className: 'govuk-tag--yellow' }
+  return { label: 'Incomplete', className: 'govuk-tag--red' }
+}
+
+const buildScenarioFDocumentReference = (prefix, sequence) => {
+  const year = new Date().getFullYear()
+  return prefix + '.' + year + '.' + String(sequence).padStart(4, '0')
+}
+
+const buildScenarioFDocumentTypeMetadata = (documentType) => {
+  if (documentType === 'Catch Certificate') {
+    return { prefix: 'CATCH.CC.IS', productCode: '03036390', processingReference: 'Not applicable' }
+  }
+
+  if (documentType === 'Processing Statement') {
+    return { prefix: 'CATCH.PS.IS', productCode: '03036611', processingReference: buildScenarioFDocumentReference('PS-IS', 1149) }
+  }
+
+  if (documentType === 'Non-Manipulation Declaration') {
+    return { prefix: 'CATCH.NMD.GB', productCode: '03038920', processingReference: buildScenarioFDocumentReference('NMD-IS', 372) }
+  }
+
+  return { prefix: 'CATCH.ADD.GB', productCode: 'N/A', processingReference: 'Not applicable' }
+}
+
+const createScenarioFDocument = (index, documentType, confidence, seedData) => {
+  const metadata = buildScenarioFDocumentTypeMetadata(documentType)
+  const sequence = index + 1
+  const referenceNumber = buildScenarioFDocumentReference(metadata.prefix, sequence)
+  const status = getExtractionStatus(confidence)
+  const confidenceLabel = getConfidenceLabel(confidence)
+  const confidenceTagClass = getConfidenceTagClass(confidence)
+  const vesselName = seedData['scenario-a-vessel-name'] || 'FV Nordic Star'
+  const flagState = seedData['scenario-a-flag-state'] || 'Iceland (IS)'
+  const species = seedData['scenario-a-species'] || 'Atlantic cod (Gadus morhua)'
+  const catchArea = seedData['scenario-a-catch-area'] || 'FAO Area 27, Northeast Atlantic'
+  const catchDates = seedData['scenario-a-catch-date'] || '11/01/2026 to 18/01/2026'
+  const netWeight = seedData['scenario-a-net-weight'] || '2,450 kg'
+  const importerName = seedData['importer-name'] || 'Nordic Sea Imports Ltd'
+  const exporterName = seedData['scenario-a-exporter-name'] || 'Samherji Export Ltd'
+  const transportReference = 'REF-RKV-GB-' + String(sequence).padStart(4, '0')
+
+  return {
+    id: 'doc-' + sequence,
+    documentType,
+    referenceNumber,
+    species,
+    vessel: vesselName,
+    flagState,
+    catchArea,
+    extractionConfidence: confidence,
+    extractionConfidenceLabel: confidenceLabel,
+    extractionConfidenceTagClass: confidenceTagClass,
+    statusLabel: status.label,
+    statusTagClass: status.className,
+    summaryFields: [
+      { label: 'Catch certificate reference', value: referenceNumber, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Species', value: species, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Catch area', value: catchArea, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Vessel name and flag state', value: vesselName + ' - ' + flagState, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Weight', value: netWeight, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Importer/exporter', value: importerName + '; ' + exporterName, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Transport reference', value: transportReference, confidence: confidenceLabel, confidenceTagClass }
+    ],
+    detailFields: [
+      { label: 'Document type', value: documentType, confidence: 'N/A', confidenceTagClass: 'govuk-tag--grey' },
+      { label: 'Certificate reference', value: referenceNumber, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Vessel name and flag state', value: vesselName + ' - ' + flagState, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Species', value: species, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Product code / CN code', value: metadata.productCode, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'FAO catch area', value: catchArea, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Catch dates', value: catchDates, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Catch / net weight', value: netWeight, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Importer details', value: importerName, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Exporter details', value: exporterName, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Processing statement reference', value: metadata.processingReference, confidence: documentType === 'Processing Statement' ? confidenceLabel : 'N/A', confidenceTagClass: documentType === 'Processing Statement' ? confidenceTagClass : 'govuk-tag--grey' },
+      { label: 'Shipment / transport reference', value: transportReference, confidence: confidenceLabel, confidenceTagClass }
+    ]
+  }
+}
+
+const buildScenarioFDocuments = (seedData) => {
+  const documents = []
+  const confidenceByType = {
+    'Catch Certificate': [98, 97, 96, 95, 94, 92, 91, 89, 86, 83, 78, 64],
+    'Processing Statement': [93, 88, 76, 62],
+    'Non-Manipulation Declaration': [91, 73],
+    'Additional document': [68, 55]
+  }
+
+  for (const [documentType, confidenceValues] of Object.entries(confidenceByType)) {
+    for (const confidence of confidenceValues) {
+      documents.push(createScenarioFDocument(documents.length, documentType, confidence, seedData))
+    }
+  }
+
+  return documents
+}
+
+const buildScenarioFExtractionSummary = (documents) => {
+  return {
+    documentsAnalysed: documents.length,
+    catchCertificates: documents.filter((item) => item.documentType === 'Catch Certificate').length,
+    processingStatements: documents.filter((item) => item.documentType === 'Processing Statement').length,
+    nonManipulationDeclarations: documents.filter((item) => item.documentType === 'Non-Manipulation Declaration').length,
+    additionalDocuments: documents.filter((item) => item.documentType === 'Additional document').length
+  }
+}
+
+const applyScenarioFExtractionData = (data) => {
+  const documents = buildScenarioFDocuments(data)
+  data['scenario-f-documents'] = documents
+  data['scenario-f-summary'] = buildScenarioFExtractionSummary(documents)
+  data['scenario-f-representative-document'] = documents[0]
 }
 
 const buildScenarioAExtractionData = () => {
@@ -321,7 +451,7 @@ const seedReviewSummaryData = (data) => {
 const applyExtractionVariantData = (data) => {
   const variant = data['extraction-variant'] || 'a'
 
-  if (variant === 'a' || variant === 'c') {
+  if (variant === 'a' || variant === 'c' || variant === 'f') {
     const scenarioAExtractionData = buildScenarioAExtractionData()
     if (scenarioAExtractionData) {
       Object.assign(data, scenarioAExtractionData)
@@ -336,6 +466,10 @@ const applyExtractionVariantData = (data) => {
   }
 
   seedReviewSummaryData(data)
+
+  if (variant === 'f') {
+    applyScenarioFExtractionData(data)
+  }
 }
 
 const scenarioDCatchCertificateFiles = [
@@ -872,6 +1006,10 @@ router.post('/change-catch-certificate-details', (req, res) => {
     return res.redirect('/review-extraction-b')
   }
 
+  if (variant === 'f') {
+    return res.redirect('/review-extraction-f')
+  }
+
   return res.redirect('/review-extraction-a')
 })
 
@@ -888,6 +1026,67 @@ router.post('/change-extracted-details', (req, res) => {
   const returnTo = data['change-extracted-details-return-to'] || '/review-extraction-a'
   delete data['change-extracted-details-return-to']
   res.redirect(returnTo)
+})
+
+router.get('/review-extraction-f', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+  res.render('review-extraction-f')
+})
+
+router.get('/review-extraction-f/dashboard', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+
+  const allDocuments = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const searchTerm = String(req.query.search || '').trim().toLowerCase()
+  const documentTypeFilter = String(req.query.documentType || '')
+  const statusFilter = String(req.query.status || '')
+
+  const filteredDocuments = allDocuments.filter((document) => {
+    const matchesType = !documentTypeFilter || document.documentType === documentTypeFilter
+    const matchesStatus = !statusFilter || document.statusLabel === statusFilter
+    const searchHaystack = [
+      document.referenceNumber,
+      document.species,
+      document.vessel,
+      document.catchArea
+    ].join(' ').toLowerCase()
+    const matchesSearch = !searchTerm || searchHaystack.includes(searchTerm)
+    return matchesType && matchesStatus && matchesSearch
+  })
+
+  res.render('review-extraction-f-dashboard', {
+    scenarioFSummary: data['scenario-f-summary'],
+    documents: filteredDocuments,
+    totalDocuments: allDocuments.length,
+    searchTerm: req.query.search || '',
+    documentTypeFilter,
+    statusFilter
+  })
+})
+
+router.get('/review-extraction-f/document/:documentId', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+
+  if (!document) {
+    return res.redirect('/review-extraction-f/dashboard')
+  }
+
+  const documentIndex = documents.findIndex((item) => item.id === document.id) + 1
+
+  res.render('review-extraction-f-document', {
+    document,
+    documentIndex,
+    totalDocuments: documents.length
+  })
 })
 
 // -------------------------------------------------------
@@ -916,6 +1115,10 @@ router.post('/review-extraction-c', (req, res) => {
 // -------------------------------------------------------
 router.post('/review-extraction-d', (req, res) => {
   res.redirect('/upload-documents')
+})
+
+router.post('/review-extraction-f', (req, res) => {
+  res.redirect('/declaration')
 })
 
 router.post('/declaration', (req, res) => {

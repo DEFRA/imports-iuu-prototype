@@ -1,0 +1,32 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Extracted document details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a href="/review-extraction-f/dashboard" class="govuk-back-link">Back</a>
+    <span class="govuk-caption-l">Document {{ documentIndex }} of {{ totalDocuments }}</span>
+    <h1 class="govuk-heading-l">{{ document.referenceNumber }}</h1>
+
+    <div class="govuk-summary-card">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Extracted document details</h2>
+      </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          {% for field in document.detailFields %}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ field.label }}</dt>
+              <dd class="govuk-summary-list__value">{{ field.value }}</dd>
+              <dd class="govuk-summary-list__actions"><strong class="govuk-tag {{ field.confidenceTagClass }}">{{ field.confidence }}</strong></dd>
+            </div>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
