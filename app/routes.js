@@ -1171,6 +1171,16 @@ router.get('/review-extraction-f', (req, res) => {
     : Math.min(Math.max(requestedTablePage, 1), totalTablePages)
   const tableStart = (tablePage - 1) * documentsPerPage
   const tableDocuments = sortedTableDocuments.slice(tableStart, tableStart + documentsPerPage)
+  const fallbackPortOfEntry = 'Grimsby'
+  const fallbackExpectedArrivalDate = '12/12/2026'
+  const arrivalDay = String(data['arrival-date-day'] || '').trim()
+  const arrivalMonth = String(data['arrival-date-month'] || '').trim()
+  const arrivalYear = String(data['arrival-date-year'] || '').trim()
+  const hasEnteredArrivalDate = Boolean(arrivalDay && arrivalMonth && arrivalYear)
+  const expectedDateOfArrival = hasEnteredArrivalDate
+    ? [arrivalDay.padStart(2, '0'), arrivalMonth.padStart(2, '0'), arrivalYear].join('/')
+    : fallbackExpectedArrivalDate
+  const portOfEntry = data['destination-port'] || fallbackPortOfEntry
 
   const buildReviewExtractionFUrl = (summaryPage) => {
     const query = []
@@ -1195,7 +1205,11 @@ router.get('/review-extraction-f', (req, res) => {
     showTablePagination: totalDocuments > documentsPerPage,
     tablePaginationItems,
     tablePreviousUrl: tablePage > 1 ? buildReviewExtractionFUrl(tablePage - 1) + '#document-summary' : '',
-    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionFUrl(tablePage + 1) + '#document-summary' : ''
+    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionFUrl(tablePage + 1) + '#document-summary' : '',
+    arrivalDetails: {
+      portOfEntry,
+      expectedDateOfArrival
+    }
   })
 })
 

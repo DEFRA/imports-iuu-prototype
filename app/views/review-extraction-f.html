@@ -18,29 +18,35 @@
       </div>
     </div>
 
+    <div class="govuk-summary-card govuk-!-margin-bottom-6">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Arrival details</h2>
+      </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Port of entry</dt>
+            <dd class="govuk-summary-list__value">{{ arrivalDetails.portOfEntry }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Expected date of arrival</dt>
+            <dd class="govuk-summary-list__value">{{ arrivalDetails.expectedDateOfArrival }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
     <div class="govuk-summary-card">
       <div class="govuk-summary-card__title-wrapper">
         <h2 class="govuk-summary-card__title">Extraction summary</h2>
       </div>
       <div class="govuk-summary-card__content">
-        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Documents analysed</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['documentsAnalysed'] }}</dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Documents complete</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['complete'] }}</dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Documents need review</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['reviewRequiredTotal'] }}</dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Documents require manual checking</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['manualCheckRequired'] }}</dd>
-          </div>
-        </dl>
+        <p class="govuk-body govuk-!-margin-bottom-3"><strong>{{ data['scenario-f-summary']['documentsAnalysed'] }}</strong> documents analysed</p>
+        <ul class="govuk-list govuk-!-margin-bottom-0">
+          <li class="govuk-!-margin-bottom-1"><strong class="govuk-tag govuk-tag--green govuk-!-margin-right-2">{{ data['scenario-f-summary']['complete'] }}</strong>Complete</li>
+          <li class="govuk-!-margin-bottom-1"><strong class="govuk-tag govuk-tag--yellow govuk-!-margin-right-2">{{ data['scenario-f-summary']['reviewRequiredTotal'] }}</strong>Need review</li>
+          <li><strong class="govuk-tag govuk-tag--blue govuk-!-margin-right-2">{{ data['scenario-f-summary']['manualCheckRequired'] }}</strong>Manual check required</li>
+        </ul>
       </div>
     </div>
 
