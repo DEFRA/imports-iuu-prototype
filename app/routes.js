@@ -137,9 +137,9 @@ const getConfidenceLabel = (confidence) => {
 
 const buildScenarioFStatusMeta = (statusKey) => {
   if (statusKey === 'complete') return { label: 'Complete', className: 'govuk-tag--green' }
-  if (statusKey === 'needs-review') return { label: 'Needs Review', className: 'govuk-tag--yellow' }
-  if (statusKey === 'incomplete') return { label: 'Incomplete', className: 'govuk-tag--red' }
-  return { label: 'Manual Check Required', className: 'govuk-tag--blue' }
+  if (statusKey === 'needs-review') return { label: 'Needs review', className: 'govuk-tag--yellow' }
+  if (statusKey === 'incomplete') return { label: 'Manual check required', className: 'govuk-tag--red' }
+  return { label: 'Manual check required', className: 'govuk-tag--red' }
 }
 
 const buildScenarioFDocumentReference = (prefix, sequence) => {
@@ -175,6 +175,70 @@ const createScenarioFDetailSection = (title, confidenceLabel, confidenceTagClass
       fieldConfidenceLabel: row.fieldConfidenceLabel || confidenceLabel,
       fieldConfidenceTagClass: row.fieldConfidenceTagClass || confidenceTagClass
     }))
+  }
+}
+
+const buildScenarioFDocumentPresentation = (document) => {
+  const confidenceLabel = document.extractionConfidenceLabel
+  const confidenceTagClass = document.extractionConfidenceTagClass
+  const vesselAndFlag = [document.vessel, document.flagState].filter(Boolean).join(' - ')
+  const importerExporterValue = [document.importerDetails, document.exporterDetails].filter(Boolean).join('; ')
+  const hasBothCommercialParties = Boolean(document.importerDetails && document.exporterDetails)
+  const processingReferenceValue = document.processingStatementReference || 'Missing'
+  const processingConfidenceLabel = processingReferenceValue === 'Not applicable'
+    ? 'N/A'
+    : (document.processingStatementReference ? confidenceLabel : 'Missing')
+  const processingConfidenceTagClass = processingReferenceValue === 'Not applicable'
+    ? 'govuk-tag--grey'
+    : (document.processingStatementReference ? confidenceTagClass : 'govuk-tag--red')
+
+  return {
+    summaryFields: [
+      { label: 'Document type', value: document.documentType, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Document/certificate reference', value: document.documentNumber, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Vessel name and flag state', value: vesselAndFlag || 'Missing', confidence: vesselAndFlag ? confidenceLabel : 'Missing', confidenceTagClass: vesselAndFlag ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Species', value: document.species || 'Missing', confidence: document.species ? confidenceLabel : 'Missing', confidenceTagClass: document.species ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'FAO catch area', value: document.catchArea || 'Missing', confidence: document.catchArea ? confidenceLabel : 'Missing', confidenceTagClass: document.catchArea ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Catch/net weight', value: document.catchNetWeight || 'Missing', confidence: document.catchNetWeight ? confidenceLabel : 'Missing', confidenceTagClass: document.catchNetWeight ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Importer/exporter details', value: importerExporterValue || 'Missing', confidence: hasBothCommercialParties ? confidenceLabel : 'Needs review', confidenceTagClass: hasBothCommercialParties ? confidenceTagClass : 'govuk-tag--yellow' },
+      { label: 'Processing statement reference (where applicable)', value: processingReferenceValue, confidence: processingConfidenceLabel, confidenceTagClass: processingConfidenceTagClass },
+      { label: 'Shipment/transport reference', value: document.shipmentTransportReference || 'Missing', confidence: document.shipmentTransportReference ? confidenceLabel : 'Missing', confidenceTagClass: document.shipmentTransportReference ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Extraction confidence', value: document.extractionConfidence + '%', confidence: confidenceLabel, confidenceTagClass }
+    ],
+    detailSections: [
+      createScenarioFDetailSection('Document information', confidenceLabel, confidenceTagClass, [
+        { label: 'Document type', value: document.documentType },
+        { label: 'Document/certificate reference', value: document.documentNumber }
+      ]),
+      createScenarioFDetailSection('Vessel information', confidenceLabel, confidenceTagClass, [
+        { label: 'Vessel name', value: document.vessel },
+        { label: 'Flag state', value: document.flagState }
+      ]),
+      createScenarioFDetailSection('Species information', confidenceLabel, confidenceTagClass, [
+        { label: 'Species', value: document.species },
+        { label: 'Scientific name', value: document.scientificName }
+      ]),
+      createScenarioFDetailSection('Commodity information', confidenceLabel, confidenceTagClass, [
+        { label: 'Product code / CN code', value: document.productCode }
+      ]),
+      createScenarioFDetailSection('Catch information', confidenceLabel, confidenceTagClass, [
+        { label: 'FAO catch area', value: document.catchArea },
+        { label: 'Catch dates', value: document.catchDates }
+      ]),
+      createScenarioFDetailSection('Weight information', confidenceLabel, confidenceTagClass, [
+        { label: 'Catch weight / net weight', value: document.catchNetWeight }
+      ]),
+      createScenarioFDetailSection('Commercial parties', confidenceLabel, confidenceTagClass, [
+        { label: 'Importer details', value: document.importerDetails },
+        { label: 'Exporter details', value: document.exporterDetails }
+      ]),
+      createScenarioFDetailSection('Processing information', confidenceLabel, confidenceTagClass, [
+        { label: 'Processing statement reference', value: processingReferenceValue === 'Not applicable' ? 'Not applicable' : document.processingStatementReference }
+      ]),
+      createScenarioFDetailSection('Consignment information', confidenceLabel, confidenceTagClass, [
+        { label: 'Shipment / transport reference', value: document.shipmentTransportReference }
+      ])
+    ]
   }
 }
 
@@ -241,7 +305,7 @@ const createScenarioFDocument = (index, documentType, confidence, statusKey, see
     baseRows.transportReference = ''
   }
 
-  return {
+  const baseDocument = {
     id: 'doc-' + sequence,
     reference,
     documentNumber: referenceNumber,
@@ -261,52 +325,45 @@ const createScenarioFDocument = (index, documentType, confidence, statusKey, see
     statusKey,
     statusLabel: status.label,
     statusTagClass: status.className,
-    summaryFields: [
-      { label: 'Document type', value: documentType, confidence: confidenceLabel, confidenceTagClass },
-      { label: 'Document/certificate reference', value: referenceNumber, confidence: confidenceLabel, confidenceTagClass },
-      { label: 'Vessel name and flag state', value: vesselName + ' - ' + flagState, confidence: confidenceLabel, confidenceTagClass },
-      { label: 'Species', value: species, confidence: confidenceLabel, confidenceTagClass },
-      { label: 'FAO catch area', value: baseRows.catchArea || 'Missing', confidence: baseRows.catchArea ? confidenceLabel : 'Missing', confidenceTagClass: baseRows.catchArea ? confidenceTagClass : 'govuk-tag--red' },
-      { label: 'Catch/net weight', value: baseRows.netWeight || 'Missing', confidence: baseRows.netWeight ? confidenceLabel : 'Missing', confidenceTagClass: baseRows.netWeight ? confidenceTagClass : 'govuk-tag--red' },
-      { label: 'Importer/exporter details', value: [importerName, baseRows.exporterName].filter(Boolean).join('; ') || 'Missing', confidence: baseRows.exporterName ? confidenceLabel : 'Needs review', confidenceTagClass: baseRows.exporterName ? confidenceTagClass : 'govuk-tag--yellow' },
-      { label: 'Processing statement reference (where applicable)', value: baseRows.processingReference || 'Missing', confidence: baseRows.processingReference && baseRows.processingReference !== 'Not applicable' ? confidenceLabel : (baseRows.processingReference === 'Not applicable' ? 'N/A' : 'Missing'), confidenceTagClass: baseRows.processingReference && baseRows.processingReference !== 'Not applicable' ? confidenceTagClass : (baseRows.processingReference === 'Not applicable' ? 'govuk-tag--grey' : 'govuk-tag--red') },
-      { label: 'Shipment/transport reference', value: baseRows.transportReference || 'Missing', confidence: baseRows.transportReference ? confidenceLabel : 'Missing', confidenceTagClass: baseRows.transportReference ? confidenceTagClass : 'govuk-tag--red' },
-      { label: 'Extraction confidence', value: confidence + '%', confidence: confidenceLabel, confidenceTagClass }
-    ],
-    detailSections: [
-      createScenarioFDetailSection('Document information', confidenceLabel, confidenceTagClass, [
-        { label: 'Document type', value: baseRows.documentType },
-        { label: 'Document/certificate reference', value: baseRows.certificateReference }
-      ]),
-      createScenarioFDetailSection('Vessel information', confidenceLabel, confidenceTagClass, [
-        { label: 'Vessel name', value: baseRows.vesselName },
-        { label: 'Flag state', value: baseRows.flagState }
-      ]),
-      createScenarioFDetailSection('Species information', confidenceLabel, confidenceTagClass, [
-        { label: 'Species', value: baseRows.species },
-        { label: 'Scientific name', value: baseRows.scientificName }
-      ]),
-      createScenarioFDetailSection('Commodity information', confidenceLabel, confidenceTagClass, [
-        { label: 'Product code / CN code', value: baseRows.productCode }
-      ]),
-      createScenarioFDetailSection('Catch information', confidenceLabel, confidenceTagClass, [
-        { label: 'FAO catch area', value: baseRows.catchArea },
-        { label: 'Catch dates', value: baseRows.catchDates }
-      ]),
-      createScenarioFDetailSection('Weight information', confidenceLabel, confidenceTagClass, [
-        { label: 'Catch weight / net weight', value: baseRows.netWeight }
-      ]),
-      createScenarioFDetailSection('Commercial parties', confidenceLabel, confidenceTagClass, [
-        { label: 'Importer details', value: baseRows.importerName },
-        { label: 'Exporter details', value: baseRows.exporterName }
-      ]),
-      createScenarioFDetailSection('Processing information', confidenceLabel, confidenceTagClass, [
-        { label: 'Processing statement reference', value: baseRows.processingReference === 'Not applicable' ? 'Not applicable' : baseRows.processingReference }
-      ]),
-      createScenarioFDetailSection('Consignment information', confidenceLabel, confidenceTagClass, [
-        { label: 'Shipment / transport reference', value: baseRows.transportReference }
-      ])
-    ]
+    productCode: baseRows.productCode,
+    catchDates: baseRows.catchDates,
+    catchNetWeight: baseRows.netWeight,
+    importerDetails: baseRows.importerName,
+    exporterDetails: baseRows.exporterName,
+    processingStatementReference: baseRows.processingReference,
+    shipmentTransportReference: baseRows.transportReference
+  }
+
+  return {
+    ...baseDocument,
+    ...buildScenarioFDocumentPresentation(baseDocument)
+  }
+}
+
+const applyScenarioFDocumentOverride = (document, override = null) => {
+  if (!override || typeof override !== 'object') return document
+
+  const updatedDocument = {
+    ...document,
+    documentNumber: Object.prototype.hasOwnProperty.call(override, 'documentNumber') ? override.documentNumber : document.documentNumber,
+    referenceNumber: Object.prototype.hasOwnProperty.call(override, 'documentNumber') ? override.documentNumber : document.referenceNumber,
+    vessel: Object.prototype.hasOwnProperty.call(override, 'vessel') ? override.vessel : document.vessel,
+    flagState: Object.prototype.hasOwnProperty.call(override, 'flagState') ? override.flagState : document.flagState,
+    species: Object.prototype.hasOwnProperty.call(override, 'species') ? override.species : document.species,
+    scientificName: Object.prototype.hasOwnProperty.call(override, 'scientificName') ? override.scientificName : document.scientificName,
+    productCode: Object.prototype.hasOwnProperty.call(override, 'productCode') ? override.productCode : document.productCode,
+    catchArea: Object.prototype.hasOwnProperty.call(override, 'catchArea') ? override.catchArea : document.catchArea,
+    catchDates: Object.prototype.hasOwnProperty.call(override, 'catchDates') ? override.catchDates : document.catchDates,
+    catchNetWeight: Object.prototype.hasOwnProperty.call(override, 'catchNetWeight') ? override.catchNetWeight : document.catchNetWeight,
+    importerDetails: Object.prototype.hasOwnProperty.call(override, 'importerDetails') ? override.importerDetails : document.importerDetails,
+    exporterDetails: Object.prototype.hasOwnProperty.call(override, 'exporterDetails') ? override.exporterDetails : document.exporterDetails,
+    processingStatementReference: Object.prototype.hasOwnProperty.call(override, 'processingStatementReference') ? override.processingStatementReference : document.processingStatementReference,
+    shipmentTransportReference: Object.prototype.hasOwnProperty.call(override, 'shipmentTransportReference') ? override.shipmentTransportReference : document.shipmentTransportReference
+  }
+
+  return {
+    ...updatedDocument,
+    ...buildScenarioFDocumentPresentation(updatedDocument)
   }
 }
 
@@ -346,7 +403,8 @@ const buildScenarioFExtractionSummary = (documents) => {
   const complete = documents.filter((item) => item.statusKey === 'complete').length
   const needsReview = documents.filter((item) => item.statusKey === 'needs-review').length
   const incomplete = documents.filter((item) => item.statusKey === 'incomplete').length
-  const manualCheckRequired = documents.filter((item) => item.statusKey === 'manual-check').length
+  const manualCheckOnly = documents.filter((item) => item.statusKey === 'manual-check').length
+  const manualCheckRequired = manualCheckOnly + incomplete
 
   return {
     documentsUploaded: documents.length,
@@ -355,12 +413,16 @@ const buildScenarioFExtractionSummary = (documents) => {
     needsReview,
     incomplete,
     manualCheckRequired,
-    reviewRequiredTotal: needsReview + incomplete
+    reviewRequiredTotal: needsReview
   }
 }
 
 const applyScenarioFExtractionData = (data) => {
-  const documents = buildScenarioFDocuments(data)
+  const generatedDocuments = buildScenarioFDocuments(data)
+  const documentOverrides = (data['scenario-f-document-overrides'] && typeof data['scenario-f-document-overrides'] === 'object')
+    ? data['scenario-f-document-overrides']
+    : {}
+  const documents = generatedDocuments.map((document) => applyScenarioFDocumentOverride(document, documentOverrides[document.id]))
   data['scenario-f-documents'] = documents
   data['scenario-f-summary'] = buildScenarioFExtractionSummary(documents)
   data['scenario-f-representative-document'] = documents[0]
@@ -1233,12 +1295,78 @@ router.get('/review-extraction-f/document/:documentId', (req, res) => {
   }
 
   const documentIndex = documents.findIndex((item) => item.id === document.id) + 1
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+  const reviewPageUrl = '/review-extraction-f' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
   res.render('review-extraction-f-document', {
     document,
     documentIndex,
-    totalDocuments: documents.length
+    totalDocuments: documents.length,
+    tablePage,
+    reviewPageUrl,
+    showBackLink: false
   })
+})
+
+router.get('/review-extraction-f/document/:documentId/change', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+  if (!document) {
+    return res.redirect('/review-extraction-f#document-summary')
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  res.render('review-extraction-f-document-change', {
+    document,
+    tablePage
+  })
+})
+
+router.post('/review-extraction-f/document/:documentId/change', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+  if (!document) {
+    return res.redirect('/review-extraction-f#document-summary')
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  const normalizeValue = (value) => String(value || '').trim()
+  const override = {
+    documentNumber: normalizeValue(req.body.documentNumber),
+    vessel: normalizeValue(req.body.vessel),
+    flagState: normalizeValue(req.body.flagState),
+    species: normalizeValue(req.body.species),
+    scientificName: normalizeValue(req.body.scientificName),
+    productCode: normalizeValue(req.body.productCode),
+    catchArea: normalizeValue(req.body.catchArea),
+    catchDates: normalizeValue(req.body.catchDates),
+    catchNetWeight: normalizeValue(req.body.catchNetWeight),
+    importerDetails: normalizeValue(req.body.importerDetails),
+    exporterDetails: normalizeValue(req.body.exporterDetails),
+    processingStatementReference: normalizeValue(req.body.processingStatementReference),
+    shipmentTransportReference: normalizeValue(req.body.shipmentTransportReference)
+  }
+
+  if (!data['scenario-f-document-overrides'] || typeof data['scenario-f-document-overrides'] !== 'object') {
+    data['scenario-f-document-overrides'] = {}
+  }
+  data['scenario-f-document-overrides'][document.id] = override
+
+  const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+  return res.redirect('/review-extraction-f/document/' + document.id + tablePageQuery)
 })
 
 // -------------------------------------------------------

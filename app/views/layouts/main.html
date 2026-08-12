@@ -18,7 +18,7 @@ https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
   {% if showBackLink %}
     {{ govukBackLink({
       text: "Back",
-      href: "javascript:history.back()"
+      href: backLinkHref or "javascript:history.back()"
     }) }}
   {% endif %}
 {% endblock %}

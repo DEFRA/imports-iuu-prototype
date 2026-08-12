@@ -11,10 +11,10 @@
 
     <div class="govuk-notification-banner govuk-notification-banner--success" data-module="govuk-notification-banner">
       <div class="govuk-notification-banner__header">
-        <h2 class="govuk-notification-banner__title">Scenario F: multiple document extraction</h2>
+        <h2 class="govuk-notification-banner__title">Documents ready to review</h2>
       </div>
       <div class="govuk-notification-banner__content">
-        We analysed multiple supporting documents. This summary keeps the main journey simple while allowing deeper document review when needed.
+        We have analysed your uploaded documents. Check the summary and review any documents that need attention before you continue.
       </div>
     </div>
 
@@ -41,12 +41,27 @@
         <h2 class="govuk-summary-card__title">Extraction summary</h2>
       </div>
       <div class="govuk-summary-card__content">
-        <p class="govuk-body govuk-!-margin-bottom-3"><strong>{{ data['scenario-f-summary']['documentsAnalysed'] }}</strong> documents analysed</p>
-        <ul class="govuk-list govuk-!-margin-bottom-0">
-          <li class="govuk-!-margin-bottom-1"><strong class="govuk-tag govuk-tag--green govuk-!-margin-right-2">{{ data['scenario-f-summary']['complete'] }}</strong>Complete</li>
-          <li class="govuk-!-margin-bottom-1"><strong class="govuk-tag govuk-tag--yellow govuk-!-margin-right-2">{{ data['scenario-f-summary']['reviewRequiredTotal'] }}</strong>Need review</li>
-          <li><strong class="govuk-tag govuk-tag--blue govuk-!-margin-right-2">{{ data['scenario-f-summary']['manualCheckRequired'] }}</strong>Manual check required</li>
-        </ul>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Documents analysed</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['documentsAnalysed'] }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Manual check required</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['manualCheckRequired'] }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--red">Manual check required</strong></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Needs review</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['reviewRequiredTotal'] }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Needs review</strong></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Complete</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-f-summary']['complete'] }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">Complete</strong></dd>
+          </div>
+        </dl>
       </div>
     </div>
 
@@ -63,19 +78,19 @@
             <th scope="col" class="govuk-table__header">Extraction confidence</th>
             <th scope="col" class="govuk-table__header">Fields Extracted</th>
             <th scope="col" class="govuk-table__header">Status</th>
-            <th scope="col" class="govuk-table__header">View</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
           {% for document in tableDocuments %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ document.reference }}</td>
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/review-extraction-f/document/{{ document.id }}?tablePage={{ tablePage }}">{{ document.reference }}</a>
+              </td>
               <td class="govuk-table__cell">{{ document.documentNumber }}</td>
               <td class="govuk-table__cell">{{ document.documentType }}</td>
               <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.extractionConfidence }}%</strong></td>
               <td class="govuk-table__cell">{{ document.fieldsExtractedDisplay }}</td>
               <td class="govuk-table__cell"><strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
-              <td class="govuk-table__cell"><a class="govuk-link" href="/review-extraction-f/document/{{ document.id }}?tablePage={{ tablePage }}">View</a></td>
             </tr>
           {% endfor %}
         </tbody>
