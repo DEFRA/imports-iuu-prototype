@@ -10,11 +10,20 @@
     <h1 class="govuk-heading-l">Analysing your documents</h1>
     <p class="govuk-body">We're reviewing your documents and identifying information that can be used to complete your notification.</p>
     <p class="govuk-body">This may take a few moments. Do not close or refresh this page.</p>
-    <ul class="govuk-list">
-      <li>✅ Catch Certificate analysed</li>
-      <li>✅ Processing Statement analysed</li>
-      <li>⏳ Non-Manipulation Declaration being analysed</li>
-    </ul>
+    {% if data['extraction-variant'] == 'f' %}
+      <ul class="govuk-list">
+        <li>✅ 12 Catch Certificates analysed</li>
+        <li>✅ 4 Processing Statements analysed</li>
+        <li>✅ 2 Non-Manipulation Declarations analysed</li>
+        <li>⏳ 2 Additional documents being analysed</li>
+      </ul>
+    {% else %}
+      <ul class="govuk-list">
+        <li>✅ Catch Certificate analysed</li>
+        <li>✅ Processing Statement analysed</li>
+        <li>⏳ Non-Manipulation Declaration being analysed</li>
+      </ul>
+    {% endif %}
     <p class="govuk-body">You can review and confirm all extracted information before submitting your notification.</p>
     <noscript>
       <p class="govuk-body">

@@ -14,7 +14,7 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
-const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b'])
+const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b', '/review-extraction-f'])
 
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
@@ -121,6 +121,249 @@ const splitAddressForDisplay = (address) => {
     town,
     postcode
   }
+}
+
+const getConfidenceTagClass = (confidence) => {
+  if (confidence >= 90) return 'govuk-tag--green'
+  if (confidence >= 70) return 'govuk-tag--yellow'
+  return 'govuk-tag--red'
+}
+
+const getConfidenceLabel = (confidence) => {
+  if (confidence >= 90) return 'High'
+  if (confidence >= 70) return 'Medium'
+  return 'Low'
+}
+
+const buildScenarioFStatusMeta = (statusKey) => {
+  if (statusKey === 'complete') return { label: 'Complete', className: 'govuk-tag--green' }
+  if (statusKey === 'needs-review') return { label: 'Needs Review', className: 'govuk-tag--yellow' }
+  if (statusKey === 'incomplete') return { label: 'Incomplete', className: 'govuk-tag--red' }
+  return { label: 'Manual Check Required', className: 'govuk-tag--blue' }
+}
+
+const buildScenarioFDocumentReference = (prefix, sequence) => {
+  const year = new Date().getFullYear()
+  return prefix + '.' + year + '.' + String(sequence).padStart(4, '0')
+}
+
+const buildScenarioFDocumentTypeMetadata = (documentType) => {
+  if (documentType === 'Catch Certificate') {
+    return { prefix: 'CATCH.CC.IS', productCode: '03036390', processingReference: 'Not applicable' }
+  }
+
+  if (documentType === 'Processing Statement') {
+    return { prefix: 'CATCH.PS.IS', productCode: '03036611', processingReferencePrefix: 'CATCH.PS.IS' }
+  }
+
+  if (documentType === 'Non-Manipulation Declaration') {
+    return { prefix: 'CATCH.NMD.GB', productCode: '03038920', processingReference: 'Not applicable' }
+  }
+
+  return { prefix: 'SUPPORT.DOC.GB', productCode: 'Not available', processingReference: 'Not applicable' }
+}
+
+const createScenarioFDetailSection = (title, confidenceLabel, confidenceTagClass, rows) => {
+  return {
+    title,
+    confidenceLabel,
+    confidenceTagClass,
+    rows: rows.map((row) => ({
+      label: row.label,
+      value: row.value || '',
+      isMissing: !row.value,
+      fieldConfidenceLabel: row.fieldConfidenceLabel || confidenceLabel,
+      fieldConfidenceTagClass: row.fieldConfidenceTagClass || confidenceTagClass
+    }))
+  }
+}
+
+const createScenarioFDocument = (index, documentType, confidence, statusKey, seedData) => {
+  const metadata = buildScenarioFDocumentTypeMetadata(documentType)
+  const sequence = index + 1
+  const referenceNumber = buildScenarioFDocumentReference(metadata.prefix, sequence)
+  const reference = 'DOC-' + String(sequence).padStart(3, '0')
+  const status = buildScenarioFStatusMeta(statusKey)
+  const confidenceLabel = getConfidenceLabel(confidence)
+  const confidenceTagClass = getConfidenceTagClass(confidence)
+  const vesselName = seedData['scenario-a-vessel-name'] || 'FV Nordic Star'
+  const flagState = seedData['scenario-a-flag-state'] || 'Iceland (IS)'
+  const species = seedData['scenario-a-species'] || 'Atlantic cod (Gadus morhua)'
+  const scientificName = 'Gadus morhua'
+  const catchArea = seedData['scenario-a-catch-area'] || 'FAO Area 27, Northeast Atlantic'
+  const catchDates = seedData['scenario-a-catch-date'] || '11/01/2026 to 18/01/2026'
+  const netWeight = seedData['scenario-a-net-weight'] || '2,450 kg'
+  const importerName = seedData['importer-name'] || 'Nordic Sea Imports Ltd'
+  const exporterName = seedData['scenario-a-exporter-name'] || 'Samherji Export Ltd'
+  const transportReference = 'SHIP-REF-RKV-GB-' + String(sequence).padStart(4, '0')
+  const processingReference = documentType === 'Processing Statement'
+    ? buildScenarioFDocumentReference(metadata.processingReferencePrefix, 1100 + sequence)
+    : 'Not applicable'
+  const totalFields = 10
+  const fieldsExtractedByStatus = {
+    complete: 10,
+    'needs-review': 8,
+    incomplete: 6,
+    'manual-check': 3
+  }
+  const fieldsExtracted = fieldsExtractedByStatus[statusKey] || 6
+
+  const baseRows = {
+    documentType,
+    certificateReference: referenceNumber,
+    vesselName,
+    flagState,
+    species,
+    scientificName,
+    productCode: metadata.productCode,
+    catchArea,
+    catchDates,
+    netWeight,
+    importerName,
+    exporterName,
+    processingReference,
+    transportReference
+  }
+
+  if (statusKey === 'incomplete') {
+    baseRows.catchDates = ''
+    baseRows.processingReference = documentType === 'Processing Statement' ? '' : 'Not applicable'
+    baseRows.transportReference = ''
+  }
+
+  if (statusKey === 'manual-check') {
+    baseRows.productCode = ''
+    baseRows.catchArea = ''
+    baseRows.catchDates = ''
+    baseRows.netWeight = ''
+    baseRows.exporterName = ''
+    baseRows.processingReference = ''
+    baseRows.transportReference = ''
+  }
+
+  return {
+    id: 'doc-' + sequence,
+    reference,
+    documentNumber: referenceNumber,
+    documentType,
+    referenceNumber,
+    species,
+    scientificName,
+    vessel: vesselName,
+    flagState,
+    catchArea,
+    extractionConfidence: confidence,
+    extractionConfidenceLabel: confidenceLabel,
+    extractionConfidenceTagClass: confidenceTagClass,
+    fieldsExtracted,
+    totalFields,
+    fieldsExtractedDisplay: fieldsExtracted + '/' + totalFields,
+    statusKey,
+    statusLabel: status.label,
+    statusTagClass: status.className,
+    summaryFields: [
+      { label: 'Document type', value: documentType, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Document/certificate reference', value: referenceNumber, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Vessel name and flag state', value: vesselName + ' - ' + flagState, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Species', value: species, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'FAO catch area', value: baseRows.catchArea || 'Missing', confidence: baseRows.catchArea ? confidenceLabel : 'Missing', confidenceTagClass: baseRows.catchArea ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Catch/net weight', value: baseRows.netWeight || 'Missing', confidence: baseRows.netWeight ? confidenceLabel : 'Missing', confidenceTagClass: baseRows.netWeight ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Importer/exporter details', value: [importerName, baseRows.exporterName].filter(Boolean).join('; ') || 'Missing', confidence: baseRows.exporterName ? confidenceLabel : 'Needs review', confidenceTagClass: baseRows.exporterName ? confidenceTagClass : 'govuk-tag--yellow' },
+      { label: 'Processing statement reference (where applicable)', value: baseRows.processingReference || 'Missing', confidence: baseRows.processingReference && baseRows.processingReference !== 'Not applicable' ? confidenceLabel : (baseRows.processingReference === 'Not applicable' ? 'N/A' : 'Missing'), confidenceTagClass: baseRows.processingReference && baseRows.processingReference !== 'Not applicable' ? confidenceTagClass : (baseRows.processingReference === 'Not applicable' ? 'govuk-tag--grey' : 'govuk-tag--red') },
+      { label: 'Shipment/transport reference', value: baseRows.transportReference || 'Missing', confidence: baseRows.transportReference ? confidenceLabel : 'Missing', confidenceTagClass: baseRows.transportReference ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Extraction confidence', value: confidence + '%', confidence: confidenceLabel, confidenceTagClass }
+    ],
+    detailSections: [
+      createScenarioFDetailSection('Document information', confidenceLabel, confidenceTagClass, [
+        { label: 'Document type', value: baseRows.documentType },
+        { label: 'Document/certificate reference', value: baseRows.certificateReference }
+      ]),
+      createScenarioFDetailSection('Vessel information', confidenceLabel, confidenceTagClass, [
+        { label: 'Vessel name', value: baseRows.vesselName },
+        { label: 'Flag state', value: baseRows.flagState }
+      ]),
+      createScenarioFDetailSection('Species information', confidenceLabel, confidenceTagClass, [
+        { label: 'Species', value: baseRows.species },
+        { label: 'Scientific name', value: baseRows.scientificName }
+      ]),
+      createScenarioFDetailSection('Commodity information', confidenceLabel, confidenceTagClass, [
+        { label: 'Product code / CN code', value: baseRows.productCode }
+      ]),
+      createScenarioFDetailSection('Catch information', confidenceLabel, confidenceTagClass, [
+        { label: 'FAO catch area', value: baseRows.catchArea },
+        { label: 'Catch dates', value: baseRows.catchDates }
+      ]),
+      createScenarioFDetailSection('Weight information', confidenceLabel, confidenceTagClass, [
+        { label: 'Catch weight / net weight', value: baseRows.netWeight }
+      ]),
+      createScenarioFDetailSection('Commercial parties', confidenceLabel, confidenceTagClass, [
+        { label: 'Importer details', value: baseRows.importerName },
+        { label: 'Exporter details', value: baseRows.exporterName }
+      ]),
+      createScenarioFDetailSection('Processing information', confidenceLabel, confidenceTagClass, [
+        { label: 'Processing statement reference', value: baseRows.processingReference === 'Not applicable' ? 'Not applicable' : baseRows.processingReference }
+      ]),
+      createScenarioFDetailSection('Consignment information', confidenceLabel, confidenceTagClass, [
+        { label: 'Shipment / transport reference', value: baseRows.transportReference }
+      ])
+    ]
+  }
+}
+
+const buildScenarioFDocuments = (seedData) => {
+  const documents = []
+  const statuses = [
+    ...Array.from({ length: 16 }, () => 'complete'),
+    ...Array.from({ length: 2 }, () => 'needs-review'),
+    'incomplete',
+    'manual-check'
+  ]
+  const documentTypes = [
+    ...Array.from({ length: 12 }, () => 'Catch Certificate'),
+    ...Array.from({ length: 4 }, () => 'Processing Statement'),
+    ...Array.from({ length: 2 }, () => 'Non-Manipulation Declaration'),
+    ...Array.from({ length: 2 }, () => 'Additional document')
+  ]
+  const confidenceByStatus = {
+    complete: [99, 98, 98, 97, 97, 96, 96, 96, 95, 95, 94, 94, 93, 93, 92, 91],
+    'needs-review': [79, 74],
+    incomplete: [59],
+    'manual-check': [43]
+  }
+  const counters = { complete: 0, 'needs-review': 0, incomplete: 0, 'manual-check': 0 }
+
+  for (let i = 0; i < documentTypes.length; i++) {
+    const status = statuses[i]
+    const statusIndex = counters[status]
+    counters[status] = statusIndex + 1
+    const confidence = confidenceByStatus[status][statusIndex]
+    documents.push(createScenarioFDocument(i, documentTypes[i], confidence, status, seedData))
+  }
+  return documents
+}
+
+const buildScenarioFExtractionSummary = (documents) => {
+  const complete = documents.filter((item) => item.statusKey === 'complete').length
+  const needsReview = documents.filter((item) => item.statusKey === 'needs-review').length
+  const incomplete = documents.filter((item) => item.statusKey === 'incomplete').length
+  const manualCheckRequired = documents.filter((item) => item.statusKey === 'manual-check').length
+
+  return {
+    documentsUploaded: documents.length,
+    documentsAnalysed: documents.length,
+    complete,
+    needsReview,
+    incomplete,
+    manualCheckRequired,
+    reviewRequiredTotal: needsReview + incomplete
+  }
+}
+
+const applyScenarioFExtractionData = (data) => {
+  const documents = buildScenarioFDocuments(data)
+  data['scenario-f-documents'] = documents
+  data['scenario-f-summary'] = buildScenarioFExtractionSummary(documents)
+  data['scenario-f-representative-document'] = documents[0]
 }
 
 const buildScenarioAExtractionData = () => {
@@ -321,7 +564,7 @@ const seedReviewSummaryData = (data) => {
 const applyExtractionVariantData = (data) => {
   const variant = data['extraction-variant'] || 'a'
 
-  if (variant === 'a' || variant === 'c') {
+  if (variant === 'a' || variant === 'c' || variant === 'f') {
     const scenarioAExtractionData = buildScenarioAExtractionData()
     if (scenarioAExtractionData) {
       Object.assign(data, scenarioAExtractionData)
@@ -336,6 +579,10 @@ const applyExtractionVariantData = (data) => {
   }
 
   seedReviewSummaryData(data)
+
+  if (variant === 'f') {
+    applyScenarioFExtractionData(data)
+  }
 }
 
 const scenarioDCatchCertificateFiles = [
@@ -872,6 +1119,10 @@ router.post('/change-catch-certificate-details', (req, res) => {
     return res.redirect('/review-extraction-b')
   }
 
+  if (variant === 'f') {
+    return res.redirect('/review-extraction-f')
+  }
+
   return res.redirect('/review-extraction-a')
 })
 
@@ -888,6 +1139,106 @@ router.post('/change-extracted-details', (req, res) => {
   const returnTo = data['change-extracted-details-return-to'] || '/review-extraction-a'
   delete data['change-extracted-details-return-to']
   res.redirect(returnTo)
+})
+
+router.get('/review-extraction-f', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const totalDocuments = documents.length
+  const documentsPerPage = 10
+  const tableStatusPriority = {
+    'manual-check': 1,
+    incomplete: 2,
+    'needs-review': 3,
+    complete: 4
+  }
+  const sortedTableDocuments = [...documents].sort((left, right) => {
+    const priorityDifference = (tableStatusPriority[left.statusKey] || 99) - (tableStatusPriority[right.statusKey] || 99)
+    if (priorityDifference !== 0) return priorityDifference
+
+    const confidenceDifference = left.extractionConfidence - right.extractionConfidence
+    if (confidenceDifference !== 0) return confidenceDifference
+
+    return left.reference.localeCompare(right.reference)
+  })
+  const totalTablePages = Math.max(1, Math.ceil(totalDocuments / documentsPerPage))
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage)
+    ? 1
+    : Math.min(Math.max(requestedTablePage, 1), totalTablePages)
+  const tableStart = (tablePage - 1) * documentsPerPage
+  const tableDocuments = sortedTableDocuments.slice(tableStart, tableStart + documentsPerPage)
+  const fallbackPortOfEntry = 'Grimsby'
+  const fallbackExpectedArrivalDate = '12/12/2026'
+  const arrivalDay = String(data['arrival-date-day'] || '').trim()
+  const arrivalMonth = String(data['arrival-date-month'] || '').trim()
+  const arrivalYear = String(data['arrival-date-year'] || '').trim()
+  const hasEnteredArrivalDate = Boolean(arrivalDay && arrivalMonth && arrivalYear)
+  const expectedDateOfArrival = hasEnteredArrivalDate
+    ? [arrivalDay.padStart(2, '0'), arrivalMonth.padStart(2, '0'), arrivalYear].join('/')
+    : fallbackExpectedArrivalDate
+  const portOfEntry = data['destination-port'] || fallbackPortOfEntry
+
+  const buildReviewExtractionFUrl = (summaryPage) => {
+    const query = []
+    if (summaryPage > 1) query.push('tablePage=' + summaryPage)
+    return '/review-extraction-f' + (query.length ? '?' + query.join('&') : '')
+  }
+
+  const tablePaginationItems = []
+  for (let pageNumber = 1; pageNumber <= totalTablePages; pageNumber++) {
+    tablePaginationItems.push({
+      number: pageNumber,
+      current: pageNumber === tablePage,
+      href: buildReviewExtractionFUrl(pageNumber) + '#document-summary'
+    })
+  }
+
+  res.render('review-extraction-f', {
+    totalDocuments,
+    tableDocuments,
+    tablePage,
+    totalTablePages,
+    showTablePagination: totalDocuments > documentsPerPage,
+    tablePaginationItems,
+    tablePreviousUrl: tablePage > 1 ? buildReviewExtractionFUrl(tablePage - 1) + '#document-summary' : '',
+    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionFUrl(tablePage + 1) + '#document-summary' : '',
+    arrivalDetails: {
+      portOfEntry,
+      expectedDateOfArrival
+    }
+  })
+})
+
+router.get('/review-extraction-f/dashboard', (req, res) => {
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+  const query = tablePage > 1 ? '?tablePage=' + tablePage : ''
+  return res.redirect('/review-extraction-f' + query + '#document-summary')
+})
+
+router.get('/review-extraction-f/document/:documentId', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+
+  if (!document) {
+    return res.redirect('/review-extraction-f#document-summary')
+  }
+
+  const documentIndex = documents.findIndex((item) => item.id === document.id) + 1
+
+  res.render('review-extraction-f-document', {
+    document,
+    documentIndex,
+    totalDocuments: documents.length
+  })
 })
 
 // -------------------------------------------------------
@@ -916,6 +1267,10 @@ router.post('/review-extraction-c', (req, res) => {
 // -------------------------------------------------------
 router.post('/review-extraction-d', (req, res) => {
   res.redirect('/upload-documents')
+})
+
+router.post('/review-extraction-f', (req, res) => {
+  res.redirect('/declaration')
 })
 
 router.post('/declaration', (req, res) => {
