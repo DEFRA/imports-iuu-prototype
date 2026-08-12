@@ -137,9 +137,9 @@ const getConfidenceLabel = (confidence) => {
 
 const buildScenarioFStatusMeta = (statusKey) => {
   if (statusKey === 'complete') return { label: 'Complete', className: 'govuk-tag--green' }
-  if (statusKey === 'needs-review') return { label: 'Needs Review', className: 'govuk-tag--yellow' }
-  if (statusKey === 'incomplete') return { label: 'Incomplete', className: 'govuk-tag--red' }
-  return { label: 'Manual Check Required', className: 'govuk-tag--blue' }
+  if (statusKey === 'needs-review') return { label: 'Needs review', className: 'govuk-tag--yellow' }
+  if (statusKey === 'incomplete') return { label: 'Manual check required', className: 'govuk-tag--red' }
+  return { label: 'Manual check required', className: 'govuk-tag--red' }
 }
 
 const buildScenarioFDocumentReference = (prefix, sequence) => {
@@ -346,7 +346,8 @@ const buildScenarioFExtractionSummary = (documents) => {
   const complete = documents.filter((item) => item.statusKey === 'complete').length
   const needsReview = documents.filter((item) => item.statusKey === 'needs-review').length
   const incomplete = documents.filter((item) => item.statusKey === 'incomplete').length
-  const manualCheckRequired = documents.filter((item) => item.statusKey === 'manual-check').length
+  const manualCheckOnly = documents.filter((item) => item.statusKey === 'manual-check').length
+  const manualCheckRequired = manualCheckOnly + incomplete
 
   return {
     documentsUploaded: documents.length,
@@ -355,7 +356,7 @@ const buildScenarioFExtractionSummary = (documents) => {
     needsReview,
     incomplete,
     manualCheckRequired,
-    reviewRequiredTotal: needsReview + incomplete
+    reviewRequiredTotal: needsReview
   }
 }
 
