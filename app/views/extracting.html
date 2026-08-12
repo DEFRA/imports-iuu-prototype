@@ -10,18 +10,43 @@
     <h1 class="govuk-heading-l">Analysing your documents</h1>
     <p class="govuk-body">We're reviewing your documents and identifying information that can be used to complete your notification.</p>
     <p class="govuk-body">This may take a few moments. Do not close or refresh this page.</p>
+    <div class="govuk-inset-text">
+      <p class="govuk-body govuk-!-margin-bottom-1"><strong id="progress-summary">Progress: 0%</strong></p>
+      <p class="govuk-body-s govuk-!-margin-bottom-0" id="progress-message" role="status" aria-live="polite">Starting document analysis.</p>
+    </div>
     {% if data['extraction-variant'] == 'f' %}
-      <ul class="govuk-list">
-        <li>✅ 12 Catch Certificates analysed</li>
-        <li>✅ 4 Processing Statements analysed</li>
-        <li>✅ 2 Non-Manipulation Declarations analysed</li>
-        <li>⏳ 2 Additional documents being analysed</li>
+      <ul class="govuk-list" id="analysis-steps">
+        <li class="govuk-!-margin-bottom-2" data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">12 Catch Certificates analysed</span>
+        </li>
+        <li class="govuk-!-margin-bottom-2" data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">4 Processing Statements analysed</span>
+        </li>
+        <li class="govuk-!-margin-bottom-2" data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">2 Non-Manipulation Declarations analysed</span>
+        </li>
+        <li data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">2 Additional documents being analysed</span>
+        </li>
       </ul>
     {% else %}
-      <ul class="govuk-list">
-        <li>✅ Catch Certificate analysed</li>
-        <li>✅ Processing Statement analysed</li>
-        <li>⏳ Non-Manipulation Declaration being analysed</li>
+      <ul class="govuk-list" id="analysis-steps">
+        <li class="govuk-!-margin-bottom-2" data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">Catch Certificate analysed</span>
+        </li>
+        <li class="govuk-!-margin-bottom-2" data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">Processing Statement analysed</span>
+        </li>
+        <li data-analysis-step>
+          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
+          <span class="govuk-!-margin-left-2">Non-Manipulation Declaration being analysed</span>
+        </li>
       </ul>
     {% endif %}
     <p class="govuk-body">You can review and confirm all extracted information before submitting your notification.</p>
@@ -34,9 +59,75 @@
 </div>
 
 <script>
-  setTimeout(function () {
+  var steps = document.querySelectorAll('[data-analysis-step]')
+  var progressSummary = document.getElementById('progress-summary')
+  var progressMessage = document.getElementById('progress-message')
+  var stepDelayMs = 900
+
+  if (steps.length === 0) {
     window.location.href = '/documents-ready'
-  }, 2200)
+  } else {
+    var setStepStatus = function (step, status) {
+      var statusTag = step.querySelector('[data-analysis-status]')
+      if (status === 'complete') {
+        statusTag.className = 'govuk-tag govuk-tag--green'
+        statusTag.textContent = 'Complete'
+        return
+      }
+
+      if (status === 'in-progress') {
+        statusTag.className = 'govuk-tag govuk-tag--blue'
+        statusTag.textContent = 'In progress'
+        return
+      }
+
+      statusTag.className = 'govuk-tag govuk-tag--grey'
+      statusTag.textContent = 'Not started'
+    }
+
+    var updateProgress = function (completedCount, currentStep) {
+      var percentComplete = Math.round((completedCount / steps.length) * 100)
+      progressSummary.textContent = 'Progress: ' + percentComplete + '%'
+
+      if (currentStep) {
+        var stepText = currentStep.textContent.replace(/(Not started|In progress|Complete)/, '').trim()
+        progressMessage.textContent = 'Now analysing: ' + stepText
+        return
+      }
+
+      progressMessage.textContent = 'Document analysis complete. Taking you to your extracted information.'
+    }
+
+    var currentIndex = 0
+    var progressTimer
+
+    var advanceProgress = function () {
+      for (var index = 0; index < steps.length; index += 1) {
+        if (index < currentIndex) {
+          setStepStatus(steps[index], 'complete')
+        } else if (index === currentIndex) {
+          setStepStatus(steps[index], 'in-progress')
+        } else {
+          setStepStatus(steps[index], 'not-started')
+        }
+      }
+
+      if (currentIndex >= steps.length) {
+        clearInterval(progressTimer)
+        updateProgress(steps.length)
+        setTimeout(function () {
+          window.location.href = '/documents-ready'
+        }, 800)
+        return
+      }
+
+      updateProgress(currentIndex, steps[currentIndex])
+      currentIndex += 1
+    }
+
+    advanceProgress()
+    progressTimer = setInterval(advanceProgress, stepDelayMs)
+  }
 </script>
 
 {% endblock %}
