@@ -10,7 +10,7 @@
     <h1 class="govuk-heading-l">Change document details</h1>
     <p class="govuk-body">Document {{ document.reference }} — {{ document.documentNumber }}</p>
 
-    <form action="/review-extraction-f/document/{{ document.id }}/change{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
+    <form action="/review-extraction-a/document/{{ document.id }}/change{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
       <div class="govuk-form-group">
         <label class="govuk-label" for="documentNumber">Document number</label>
         <input class="govuk-input" id="documentNumber" name="documentNumber" type="text" value="{{ document.documentNumber }}">
@@ -80,7 +80,7 @@
         <button class="govuk-button" data-module="govuk-button">
           Save and continue
         </button>
-        <a class="govuk-link" href="/review-extraction-f/document/{{ document.id }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">Cancel</a>
+        <a class="govuk-link" href="/review-extraction-a/document/{{ document.id }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">Cancel</a>
       </div>
     </form>
   </div>
