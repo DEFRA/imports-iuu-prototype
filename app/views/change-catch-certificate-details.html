@@ -10,13 +10,7 @@
     <span class="govuk-caption-l">Review extracted information</span>
     <h1 class="govuk-heading-l">Catch certificate</h1>
 
-    {% set variant = data['extraction-variant'] or 'a' %}
     {% set cancelPath = '/review-extraction-a' %}
-    {% if variant == 'b' %}
-      {% set cancelPath = '/review-extraction-b' %}
-    {% elif variant == 'f' %}
-      {% set cancelPath = '/review-extraction-f' %}
-    {% endif %}
 
     <form action="/change-catch-certificate-details" method="post">
 
@@ -25,7 +19,7 @@
           Catch Certificate reference
         </label>
         <input class="govuk-input" id="catch-certificate-reference" name="catch-certificate-reference" type="text"
-          value="{{ data['scenario-a-catch-certificate-reference'] or data['scenario-b-catch-certificate-reference'] }}">
+          value="{{ data['scenario-a-catch-certificate-reference'] }}">
       </div>
 
       <div class="govuk-form-group">
@@ -33,21 +27,21 @@
           Catch certificate number
         </label>
         <input class="govuk-input" id="catch-certificate-number" name="catch-certificate-number" type="text"
-          value="{{ data['catch-certificate-number'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][0] and data['scenario-a-catch-fields'][0].value) or (data['scenario-b-catch-fields'] and data['scenario-b-catch-fields'][0] and data['scenario-b-catch-fields'][0].value) or '') }}">
+          value="{{ data['catch-certificate-number'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][0] and data['scenario-a-catch-fields'][0].value) or '') }}">
       </div>
 
       <div class="govuk-form-group">
         <label class="govuk-label govuk-label--m" for="vessel-validation-summary">
           Vessel name(s), flag(s), validation date(s)
         </label>
-        <textarea class="govuk-textarea" id="vessel-validation-summary" name="vessel-validation-summary" rows="4">{{ data['vessel-validation-summary'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][1] and data['scenario-a-catch-fields'][1].value) or (data['scenario-b-catch-fields'] and data['scenario-b-catch-fields'][1] and data['scenario-b-catch-fields'][1].value) or '') }}</textarea>
+        <textarea class="govuk-textarea" id="vessel-validation-summary" name="vessel-validation-summary" rows="4">{{ data['vessel-validation-summary'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][1] and data['scenario-a-catch-fields'][1].value) or '') }}</textarea>
       </div>
 
       <div class="govuk-form-group">
         <label class="govuk-label govuk-label--m" for="catch-description">
           Catch description
         </label>
-        <textarea class="govuk-textarea" id="catch-description" name="catch-description" rows="6">{{ data['catch-description'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][2] and data['scenario-a-catch-fields'][2].value) or (data['scenario-b-catch-fields'] and data['scenario-b-catch-fields'][2] and data['scenario-b-catch-fields'][2].value) or '') }}</textarea>
+        <textarea class="govuk-textarea" id="catch-description" name="catch-description" rows="6">{{ data['catch-description'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][2] and data['scenario-a-catch-fields'][2].value) or '') }}</textarea>
       </div>
 
       <div class="govuk-button-group">

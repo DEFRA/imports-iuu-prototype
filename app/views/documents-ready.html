@@ -14,7 +14,7 @@
 
     <h2 class="govuk-heading-m">Documents received</h2>
 
-    {% if data['extraction-variant'] == 'f' %}
+    {% if data['extraction-variant'] == 'a' %}
       <p class="govuk-body">20 documents received:</p>
 
       <ul class="govuk-list govuk-list--bullet">
@@ -39,7 +39,7 @@
     <p class="govuk-body">You must check that all information is correct before submitting your import notification. Providing inaccurate information may result in delays to your consignment and could lead to enforcement action.</p>
 
     <a href="/review-extraction-{{ data['extraction-variant'] or 'a' }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-      {% if data['extraction-variant'] == 'f' %}
+      {% if data['extraction-variant'] == 'a' %}
         Continue to extraction summary
       {% else %}
         Continue to review your information

@@ -14,7 +14,8 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
-const reviewExtractionReturnPaths = new Set(['/review-extraction-a', '/review-extraction-b', '/review-extraction-f'])
+const supportedExtractionVariants = new Set(['a', 'b'])
+const reviewExtractionReturnPaths = new Set(['/review-extraction-a'])
 
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
@@ -135,19 +136,19 @@ const getConfidenceLabel = (confidence) => {
   return 'Low'
 }
 
-const buildScenarioFStatusMeta = (statusKey) => {
+const buildScenarioAStatusMeta = (statusKey) => {
   if (statusKey === 'complete') return { label: 'Complete', className: 'govuk-tag--green' }
   if (statusKey === 'needs-review') return { label: 'Needs review', className: 'govuk-tag--yellow' }
   if (statusKey === 'incomplete') return { label: 'Manual check required', className: 'govuk-tag--red' }
   return { label: 'Manual check required', className: 'govuk-tag--red' }
 }
 
-const buildScenarioFDocumentReference = (prefix, sequence) => {
+const buildScenarioADocumentReference = (prefix, sequence) => {
   const year = new Date().getFullYear()
   return prefix + '.' + year + '.' + String(sequence).padStart(4, '0')
 }
 
-const buildScenarioFDocumentTypeMetadata = (documentType) => {
+const buildScenarioADocumentTypeMetadata = (documentType) => {
   if (documentType === 'Catch Certificate') {
     return { prefix: 'CATCH.CC.IS', productCode: '03036390', processingReference: 'Not applicable' }
   }
@@ -163,7 +164,7 @@ const buildScenarioFDocumentTypeMetadata = (documentType) => {
   return { prefix: 'SUPPORT.DOC.GB', productCode: 'Not available', processingReference: 'Not applicable' }
 }
 
-const createScenarioFDetailSection = (title, confidenceLabel, confidenceTagClass, rows) => {
+const createScenarioADetailSection = (title, confidenceLabel, confidenceTagClass, rows) => {
   return {
     title,
     confidenceLabel,
@@ -178,7 +179,7 @@ const createScenarioFDetailSection = (title, confidenceLabel, confidenceTagClass
   }
 }
 
-const buildScenarioFDocumentPresentation = (document) => {
+const buildScenarioADocumentPresentation = (document) => {
   const confidenceLabel = document.extractionConfidenceLabel
   const confidenceTagClass = document.extractionConfidenceTagClass
   const vesselAndFlag = [document.vessel, document.flagState].filter(Boolean).join(' - ')
@@ -206,48 +207,48 @@ const buildScenarioFDocumentPresentation = (document) => {
       { label: 'Extraction confidence', value: document.extractionConfidence + '%', confidence: confidenceLabel, confidenceTagClass }
     ],
     detailSections: [
-      createScenarioFDetailSection('Document information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Document information', confidenceLabel, confidenceTagClass, [
         { label: 'Document type', value: document.documentType },
         { label: 'Document/certificate reference', value: document.documentNumber }
       ]),
-      createScenarioFDetailSection('Vessel information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Vessel information', confidenceLabel, confidenceTagClass, [
         { label: 'Vessel name', value: document.vessel },
         { label: 'Flag state', value: document.flagState }
       ]),
-      createScenarioFDetailSection('Species information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Species information', confidenceLabel, confidenceTagClass, [
         { label: 'Species', value: document.species },
         { label: 'Scientific name', value: document.scientificName }
       ]),
-      createScenarioFDetailSection('Commodity information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Commodity information', confidenceLabel, confidenceTagClass, [
         { label: 'Product code / CN code', value: document.productCode }
       ]),
-      createScenarioFDetailSection('Catch information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Catch information', confidenceLabel, confidenceTagClass, [
         { label: 'FAO catch area', value: document.catchArea },
         { label: 'Catch dates', value: document.catchDates }
       ]),
-      createScenarioFDetailSection('Weight information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Weight information', confidenceLabel, confidenceTagClass, [
         { label: 'Catch weight / net weight', value: document.catchNetWeight }
       ]),
-      createScenarioFDetailSection('Commercial parties', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Commercial parties', confidenceLabel, confidenceTagClass, [
         { label: 'Importer details', value: document.importerDetails },
         { label: 'Exporter details', value: document.exporterDetails }
       ]),
-      createScenarioFDetailSection('Processing information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Processing information', confidenceLabel, confidenceTagClass, [
         { label: 'Processing statement reference', value: processingReferenceValue === 'Not applicable' ? 'Not applicable' : document.processingStatementReference }
       ]),
-      createScenarioFDetailSection('Consignment information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('Consignment information', confidenceLabel, confidenceTagClass, [
         { label: 'Shipment / transport reference', value: document.shipmentTransportReference }
       ])
     ]
   }
 }
 
-const createScenarioFDocument = (index, documentType, confidence, statusKey, seedData) => {
-  const metadata = buildScenarioFDocumentTypeMetadata(documentType)
+const createScenarioADocument = (index, documentType, confidence, statusKey, seedData) => {
+  const metadata = buildScenarioADocumentTypeMetadata(documentType)
   const sequence = index + 1
-  const referenceNumber = buildScenarioFDocumentReference(metadata.prefix, sequence)
+  const referenceNumber = buildScenarioADocumentReference(metadata.prefix, sequence)
   const reference = 'DOC-' + String(sequence).padStart(3, '0')
-  const status = buildScenarioFStatusMeta(statusKey)
+  const status = buildScenarioAStatusMeta(statusKey)
   const confidenceLabel = getConfidenceLabel(confidence)
   const confidenceTagClass = getConfidenceTagClass(confidence)
   const vesselName = seedData['scenario-a-vessel-name'] || 'FV Nordic Star'
@@ -261,7 +262,7 @@ const createScenarioFDocument = (index, documentType, confidence, statusKey, see
   const exporterName = seedData['scenario-a-exporter-name'] || 'Samherji Export Ltd'
   const transportReference = 'SHIP-REF-RKV-GB-' + String(sequence).padStart(4, '0')
   const processingReference = documentType === 'Processing Statement'
-    ? buildScenarioFDocumentReference(metadata.processingReferencePrefix, 1100 + sequence)
+    ? buildScenarioADocumentReference(metadata.processingReferencePrefix, 1100 + sequence)
     : 'Not applicable'
   const totalFields = 10
   const fieldsExtractedByStatus = {
@@ -336,11 +337,11 @@ const createScenarioFDocument = (index, documentType, confidence, statusKey, see
 
   return {
     ...baseDocument,
-    ...buildScenarioFDocumentPresentation(baseDocument)
+    ...buildScenarioADocumentPresentation(baseDocument)
   }
 }
 
-const applyScenarioFDocumentOverride = (document, override = null) => {
+const applyScenarioADocumentOverride = (document, override = null) => {
   if (!override || typeof override !== 'object') return document
 
   const updatedDocument = {
@@ -363,11 +364,11 @@ const applyScenarioFDocumentOverride = (document, override = null) => {
 
   return {
     ...updatedDocument,
-    ...buildScenarioFDocumentPresentation(updatedDocument)
+    ...buildScenarioADocumentPresentation(updatedDocument)
   }
 }
 
-const buildScenarioFDocuments = (seedData) => {
+const buildScenarioADocuments = (seedData) => {
   const documents = []
   const statuses = [
     ...Array.from({ length: 16 }, () => 'complete'),
@@ -394,12 +395,12 @@ const buildScenarioFDocuments = (seedData) => {
     const statusIndex = counters[status]
     counters[status] = statusIndex + 1
     const confidence = confidenceByStatus[status][statusIndex]
-    documents.push(createScenarioFDocument(i, documentTypes[i], confidence, status, seedData))
+    documents.push(createScenarioADocument(i, documentTypes[i], confidence, status, seedData))
   }
   return documents
 }
 
-const buildScenarioFExtractionSummary = (documents) => {
+const buildScenarioAExtractionSummary = (documents) => {
   const complete = documents.filter((item) => item.statusKey === 'complete').length
   const needsReview = documents.filter((item) => item.statusKey === 'needs-review').length
   const incomplete = documents.filter((item) => item.statusKey === 'incomplete').length
@@ -417,15 +418,15 @@ const buildScenarioFExtractionSummary = (documents) => {
   }
 }
 
-const applyScenarioFExtractionData = (data) => {
-  const generatedDocuments = buildScenarioFDocuments(data)
-  const documentOverrides = (data['scenario-f-document-overrides'] && typeof data['scenario-f-document-overrides'] === 'object')
-    ? data['scenario-f-document-overrides']
+const applyScenarioAExtractionData = (data) => {
+  const generatedDocuments = buildScenarioADocuments(data)
+  const documentOverrides = (data['scenario-a-document-overrides'] && typeof data['scenario-a-document-overrides'] === 'object')
+    ? data['scenario-a-document-overrides']
     : {}
-  const documents = generatedDocuments.map((document) => applyScenarioFDocumentOverride(document, documentOverrides[document.id]))
-  data['scenario-f-documents'] = documents
-  data['scenario-f-summary'] = buildScenarioFExtractionSummary(documents)
-  data['scenario-f-representative-document'] = documents[0]
+  const documents = generatedDocuments.map((document) => applyScenarioADocumentOverride(document, documentOverrides[document.id]))
+  data['scenario-a-documents'] = documents
+  data['scenario-a-summary'] = buildScenarioAExtractionSummary(documents)
+  data['scenario-a-representative-document'] = documents[0]
 }
 
 const buildScenarioAExtractionData = () => {
@@ -519,158 +520,33 @@ const buildScenarioAExtractionData = () => {
   }
 }
 
-const buildScenarioBExtractionData = () => {
-  const extractionJsonFile = findSampleExtractionJsonFile()
-  if (!extractionJsonFile) return null
-
-  try {
-    const raw = fs.readFileSync(path.join(sampleDocumentsPath, extractionJsonFile), 'utf8')
-    const parsed = JSON.parse(raw)
-    const field = buildExtractionFieldLookup(parsed.fields)
-    const importerAddress = splitAddressForDisplay(field['importer.address'])
-
-    return {
-      'importer-name': field['importer.name'] || '',
-      'importer-eori': field['importer.eori'] || '',
-      'importer-phone': field['importer.phone'] || '',
-      'importer-email': field['importerRepresentative.email'] || '',
-      'importer-address-line-1': importerAddress.line1,
-      'importer-address-line-2': importerAddress.line2,
-      'importer-town': importerAddress.town,
-      'importer-postcode': importerAddress.postcode,
-      'scenario-b-port-of-entry': field['memberStateOfficeOfImport'] || '',
-      'scenario-b-estimated-arrival': field['arrivalTransport.estimatedArrivalTime'] || '',
-      'scenario-b-catch-certificate-reference': field['catchCertificate.reference'] || '',
-      'scenario-b-catch-area': [field['product.1.faoArea'], field['product.1.eezOrHighSeas'], field['product.1.rfmo']].filter(Boolean).join(' | '),
-      // Intentionally blank in Scenario B to represent partial extraction
-      'scenario-b-catch-date': '',
-      'scenario-b-flag-state': [field['validatingAuthority.country'], field['validatingAuthority.isoCode'] ? '(' + field['validatingAuthority.isoCode'] + ')' : ''].filter(Boolean).join(' '),
-      'scenario-b-vessel-name': field['fishingVessel.name'] || '',
-      'scenario-b-vessel-imo': field['fishingVessel.imoNumber'] || '',
-      'scenario-b-species': field['product.1.species'] || '',
-      'scenario-b-commodity-type': field['importerProduct.cnDescription'] || field['productGroup.1.description'] || '',
-      'scenario-b-cn-code': field['product.1.productCode'] || '',
-      // Intentionally blank in Scenario B to represent partial extraction
-      'scenario-b-net-weight': '',
-      'scenario-b-product-description': field['productGroup.1.description'] || '',
-      'scenario-b-processing-facility': field['memberStateOfficeOfImport'] || '',
-      'scenario-b-processing-country': field['transportDetails.countryOfExportation'] || '',
-      // Intentionally blank in Scenario B to represent partial extraction
-      'scenario-b-processing-reference': '',
-      'scenario-b-processing-date': field['transportDetails.signatureDate'] || field['flagStateValidation.date'] || '',
-      'scenario-b-exporter-name': field['exporter.name'] || '',
-      // Intentionally blank in Scenario B to represent partial extraction
-      'scenario-b-export-approval-number': '',
-      'scenario-b-export-country': field['exporter.country'] || '',
-      'scenario-b-import-fields': [
-        { field: 'Place of departure of product', value: field['transportDetails.countryOfExportation'] || '', extracted: true },
-        { field: 'Date of departure', value: field['transportDetails.signatureDate'] || '', extracted: true },
-        { field: 'Last point of departure before storage country', value: field['transportDetails.placeOfDeparture'] || '', extracted: true },
-        { field: 'Date of arrival to storage (unloading)', value: '', extracted: false },
-        { field: 'Place of storage', value: field['importer.country'] || '', extracted: true }
-      ],
-      'scenario-b-catch-fields': [
-        { field: 'Catch certificate number', value: field['catchCertificate.documentNumber'] || '', extracted: true },
-        { field: 'Vessel name(s), flag(s), validation date(s)', value: [field['fishingVessel.name'], field['fishingVessel.flagHomePort'], field['flagStateValidation.date']].filter(Boolean).join(' | '), extracted: true },
-        { field: 'Catch description', value: field['productGroup.1.description'] || '', extracted: true }
-      ],
-      'scenario-b-commodity-fields': [
-        { field: 'Species', value: field['product.1.species'] || '', extracted: true },
-        { field: 'Product code', value: field['product.1.productCode'] || '', extracted: true },
-        { field: 'Description of fisheries products', value: field['productGroup.1.description'] || '', extracted: true },
-        { field: 'Processed fishery product (CN code + description)', value: field['importerProduct.cnDescription'] || '', extracted: true }
-      ],
-      'scenario-b-consignment-fields': [
-        { field: 'Document linkage references', value: field['catchCertificate.documentNumber'] || '', extracted: true },
-        { field: 'Net weight entering storage (kg)', value: '', extracted: false },
-        { field: 'Net fishery product weight entering storage (kg)', value: '', extracted: false },
-        { field: 'Net weight departing storage (kg)', value: '', extracted: false },
-        { field: 'Net fishery product weight departing storage (kg)', value: '', extracted: false },
-        { field: 'Total landed weight (kg)', value: field['product.1.verifiedWeightLandedKg'] || '', extracted: true },
-        { field: 'Catch processed (kg)', value: '', extracted: false },
-        { field: 'Processed fishery product (kg)', value: '', extracted: false }
-      ],
-      'scenario-b-processing-fields': [
-        { field: 'Processing plant', value: '', extracted: false },
-        { field: 'Processing plant address', value: '', extracted: false },
-        { field: 'Plant approval number', value: '', extracted: false },
-        { field: 'Responsible person', value: '', extracted: false },
-        { field: 'Date of acceptance', value: field['flagStateValidation.date'] || '', extracted: true }
-      ],
-      'scenario-b-export-fields': [
-        { field: 'Exporter company', value: field['exporter.name'] || '', extracted: true },
-        { field: 'Exporter address', value: field['exporter.address'] || '', extracted: true },
-        { field: 'Date of submission to competent authority', value: field['exporter.signatureDate'] || '', extracted: true },
-        { field: 'Point of destination', value: field['memberStateOfficeOfImport'] || '', extracted: true }
-      ],
-      'scenario-b-nmd-fields': fesDataDictionaryFields.byCategory.nmd.map((item) => ({ field: item.field, value: '', extracted: false }))
-    }
-
-  } catch (error) {
-    console.error('Failed to parse Scenario B extraction JSON:', extractionJsonFile, error)
-    return null
-  }
-}
-
 const seedReviewSummaryData = (data) => {
-  data['review-catch-certificate-number'] = data['review-catch-certificate-number'] || data['scenario-a-catch-certificate-reference'] || data['scenario-b-catch-certificate-reference'] || 'CATCH.CC.IS.2026.000148'
-  data['review-species'] = data['review-species'] || data['scenario-a-species'] || data['scenario-b-species'] || 'Atlantic cod (Gadus morhua)'
-  data['review-catch-area'] = data['review-catch-area'] || data['scenario-a-catch-area'] || data['scenario-b-catch-area'] || 'FAO Area 27, Northeast Atlantic'
-  data['review-vessel-id-flag-state'] = data['review-vessel-id-flag-state'] || [data['scenario-a-vessel-name'] || data['scenario-b-vessel-name'] || 'FV Nordic Star', data['scenario-a-flag-state'] || data['scenario-b-flag-state'] || 'Iceland (IS)'].filter(Boolean).join(' - ')
-  data['review-weight-quantity'] = data['review-weight-quantity'] || data['scenario-a-net-weight'] || data['scenario-b-net-weight'] || '2,450 kg'
-  data['review-importer-exporter-agent-details'] = data['review-importer-exporter-agent-details'] || [data['importer-name'] || 'Nordic Sea Imports Ltd', data['scenario-a-exporter-name'] || data['scenario-b-exporter-name'] || 'Samherji Export Ltd'].join('; ')
-  data['review-processing-storage-reference-numbers'] = data['review-processing-storage-reference-numbers'] || [data['scenario-a-processing-reference'] || data['scenario-b-processing-reference'] || 'PS-IS-2026-01149', 'NMD-IS-2026-00372'].join('; ')
+  data['review-catch-certificate-number'] = data['review-catch-certificate-number'] || data['scenario-a-catch-certificate-reference'] || 'CATCH.CC.IS.2026.000148'
+  data['review-species'] = data['review-species'] || data['scenario-a-species'] || 'Atlantic cod (Gadus morhua)'
+  data['review-catch-area'] = data['review-catch-area'] || data['scenario-a-catch-area'] || 'FAO Area 27, Northeast Atlantic'
+  data['review-vessel-id-flag-state'] = data['review-vessel-id-flag-state'] || [data['scenario-a-vessel-name'] || 'FV Nordic Star', data['scenario-a-flag-state'] || 'Iceland (IS)'].filter(Boolean).join(' - ')
+  data['review-weight-quantity'] = data['review-weight-quantity'] || data['scenario-a-net-weight'] || '2,450 kg'
+  data['review-importer-exporter-agent-details'] = data['review-importer-exporter-agent-details'] || [data['importer-name'] || 'Nordic Sea Imports Ltd', data['scenario-a-exporter-name'] || 'Samherji Export Ltd'].join('; ')
+  data['review-processing-storage-reference-numbers'] = data['review-processing-storage-reference-numbers'] || [data['scenario-a-processing-reference'] || 'PS-IS-2026-01149', 'NMD-IS-2026-00372'].join('; ')
   data['review-transport-details'] = data['review-transport-details'] || 'Vessel transport via Reykjavik to ' + (data['destination-port'] || 'Grimsby') + ', ETA ' + [data['arrival-date-day'], data['arrival-date-month'], data['arrival-date-year']].filter(Boolean).join('/')
 }
 
 const applyExtractionVariantData = (data) => {
   const variant = data['extraction-variant'] || 'a'
 
-  if (variant === 'a' || variant === 'c' || variant === 'f') {
+  if (variant === 'a') {
     const scenarioAExtractionData = buildScenarioAExtractionData()
     if (scenarioAExtractionData) {
       Object.assign(data, scenarioAExtractionData)
     }
   }
 
-  if (variant === 'b') {
-    const scenarioBExtractionData = buildScenarioBExtractionData()
-    if (scenarioBExtractionData) {
-      Object.assign(data, scenarioBExtractionData)
-    }
-  }
-
   seedReviewSummaryData(data)
 
-  if (variant === 'f') {
-    applyScenarioFExtractionData(data)
+  if (variant === 'a') {
+    applyScenarioAExtractionData(data)
   }
 }
-
-const scenarioDCatchCertificateFiles = [
-  'ESP.SGCI.AI.2025.944.pdf',
-  'FRA-2025-CSP-000472.pdf',
-  'FRA-2025-CSP-000518.pdf',
-  'CL-2026-44-000079-N.pdf',
-  'SYC-SFA-10-2025-SW0454.pdf'
-]
-
-// Simulated Catch Certificate filenames for non-D variants.
-// Format follows EU Reg 1005/2008 / UK retained law: CATCH.CC.<flag-state ISO-3>.<year>.<seq>
-const simulatedCatchCertPool = [
-  'CATCH.CC.IS.2025.0847.pdf',  // Iceland
-  'CATCH.CC.NO.2025.1193.pdf',  // Norway
-  'CATCH.CC.FO.2025.3381.pdf',  // Faroe Islands
-  'CATCH.CC.MA.2026.0042.pdf',  // Morocco
-  'CATCH.CC.MR.2026.0284.pdf'   // Mauritania
-]
-
-const scenarioDProcessingStatementReferences = [
-  'ESP.SGCI.AI.2025.944',
-  'FRA-2025-CSP-000472',
-  'FRA-2025-CSP-000518',
-  'CL-2026-44-000079-N'
-]
 
 const fesDataDictionaryFields = {
   nonManipulation: [
@@ -1087,7 +963,7 @@ router.post('/check-answers', (req, res) => {
   // Generate a reference number
   const refNumber = 'IMP-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000)
   req.session.data['reference-number'] = refNumber
-  req.session.data['submission-kind'] = req.session.data['extraction-variant'] === 'c' ? 'iuu' : 'import'
+  req.session.data['submission-kind'] = 'import'
   res.redirect('/confirmation')
 })
 
@@ -1099,9 +975,12 @@ router.post('/check-answers', (req, res) => {
 // Upload guidance — store extraction variant from query param
 // -------------------------------------------------------
 router.get('/upload-guidance', (req, res, next) => {
-  if (req.query.variant) {
-    req.session.data['extraction-variant'] = req.query.variant
+  const variant = String(req.query.variant || 'a').toLowerCase()
+  if (!supportedExtractionVariants.has(variant)) {
+    return res.redirect('/')
   }
+
+  req.session.data['extraction-variant'] = variant
   next()
 })
 
@@ -1165,8 +1044,7 @@ router.post('/processing', (req, res) => {
 // -------------------------------------------------------
 router.post('/change-catch-certificate-details', (req, res) => {
   const data = req.session.data
-  const variant = data['extraction-variant'] || 'a'
-  const scenarioPrefix = variant === 'b' ? 'scenario-b' : 'scenario-a'
+  const scenarioPrefix = 'scenario-a'
 
   data[scenarioPrefix + '-catch-certificate-reference'] = data['catch-certificate-reference'] || ''
 
@@ -1176,14 +1054,6 @@ router.post('/change-catch-certificate-details', (req, res) => {
   updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Vessel name(s), flag(s), validation date(s)', data['vessel-validation-summary'])
   updatedCatchFields = upsertSummaryField(updatedCatchFields, 'Catch description', data['catch-description'])
   data[catchFieldKey] = updatedCatchFields
-
-  if (variant === 'b') {
-    return res.redirect('/review-extraction-b')
-  }
-
-  if (variant === 'f') {
-    return res.redirect('/review-extraction-f')
-  }
 
   return res.redirect('/review-extraction-a')
 })
@@ -1203,12 +1073,12 @@ router.post('/change-extracted-details', (req, res) => {
   res.redirect(returnTo)
 })
 
-router.get('/review-extraction-f', (req, res) => {
+router.get('/review-extraction-a', (req, res) => {
   const data = req.session.data
-  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  data['extraction-variant'] = 'a'
   applyExtractionVariantData(data)
 
-  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
   const totalDocuments = documents.length
   const documentsPerPage = 10
   const tableStatusPriority = {
@@ -1244,10 +1114,10 @@ router.get('/review-extraction-f', (req, res) => {
     : fallbackExpectedArrivalDate
   const portOfEntry = data['destination-port'] || fallbackPortOfEntry
 
-  const buildReviewExtractionFUrl = (summaryPage) => {
+  const buildReviewExtractionAUrl = (summaryPage) => {
     const query = []
     if (summaryPage > 1) query.push('tablePage=' + summaryPage)
-    return '/review-extraction-f' + (query.length ? '?' + query.join('&') : '')
+    return '/review-extraction-a' + (query.length ? '?' + query.join('&') : '')
   }
 
   const tablePaginationItems = []
@@ -1255,19 +1125,19 @@ router.get('/review-extraction-f', (req, res) => {
     tablePaginationItems.push({
       number: pageNumber,
       current: pageNumber === tablePage,
-      href: buildReviewExtractionFUrl(pageNumber) + '#document-summary'
+      href: buildReviewExtractionAUrl(pageNumber) + '#document-summary'
     })
   }
 
-  res.render('review-extraction-f', {
+  res.render('review-extraction-a', {
     totalDocuments,
     tableDocuments,
     tablePage,
     totalTablePages,
     showTablePagination: totalDocuments > documentsPerPage,
     tablePaginationItems,
-    tablePreviousUrl: tablePage > 1 ? buildReviewExtractionFUrl(tablePage - 1) + '#document-summary' : '',
-    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionFUrl(tablePage + 1) + '#document-summary' : '',
+    tablePreviousUrl: tablePage > 1 ? buildReviewExtractionAUrl(tablePage - 1) + '#document-summary' : '',
+    tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionAUrl(tablePage + 1) + '#document-summary' : '',
     arrivalDetails: {
       portOfEntry,
       expectedDateOfArrival
@@ -1275,31 +1145,31 @@ router.get('/review-extraction-f', (req, res) => {
   })
 })
 
-router.get('/review-extraction-f/dashboard', (req, res) => {
+router.get('/review-extraction-a/dashboard', (req, res) => {
   const requestedTablePage = parseInt(req.query.tablePage, 10)
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
   const query = tablePage > 1 ? '?tablePage=' + tablePage : ''
-  return res.redirect('/review-extraction-f' + query + '#document-summary')
+  return res.redirect('/review-extraction-a' + query + '#document-summary')
 })
 
-router.get('/review-extraction-f/document/:documentId', (req, res) => {
+router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const data = req.session.data
-  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  data['extraction-variant'] = 'a'
   applyExtractionVariantData(data)
 
-  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
   const document = documents.find((item) => item.id === req.params.documentId)
 
   if (!document) {
-    return res.redirect('/review-extraction-f#document-summary')
+    return res.redirect('/review-extraction-a#document-summary')
   }
 
   const documentIndex = documents.findIndex((item) => item.id === document.id) + 1
   const requestedTablePage = parseInt(req.query.tablePage, 10)
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
-  const reviewPageUrl = '/review-extraction-f' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
+  const reviewPageUrl = '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
-  res.render('review-extraction-f-document', {
+  res.render('review-extraction-a-document', {
     document,
     documentIndex,
     totalDocuments: documents.length,
@@ -1309,35 +1179,35 @@ router.get('/review-extraction-f/document/:documentId', (req, res) => {
   })
 })
 
-router.get('/review-extraction-f/document/:documentId/change', (req, res) => {
+router.get('/review-extraction-a/document/:documentId/change', (req, res) => {
   const data = req.session.data
-  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  data['extraction-variant'] = 'a'
   applyExtractionVariantData(data)
 
-  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
   const document = documents.find((item) => item.id === req.params.documentId)
   if (!document) {
-    return res.redirect('/review-extraction-f#document-summary')
+    return res.redirect('/review-extraction-a#document-summary')
   }
 
   const requestedTablePage = parseInt(req.query.tablePage, 10)
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
 
-  res.render('review-extraction-f-document-change', {
+  res.render('review-extraction-a-document-change', {
     document,
     tablePage
   })
 })
 
-router.post('/review-extraction-f/document/:documentId/change', (req, res) => {
+router.post('/review-extraction-a/document/:documentId/change', (req, res) => {
   const data = req.session.data
-  data['extraction-variant'] = data['extraction-variant'] || 'f'
+  data['extraction-variant'] = 'a'
   applyExtractionVariantData(data)
 
-  const documents = Array.isArray(data['scenario-f-documents']) ? data['scenario-f-documents'] : []
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
   const document = documents.find((item) => item.id === req.params.documentId)
   if (!document) {
-    return res.redirect('/review-extraction-f#document-summary')
+    return res.redirect('/review-extraction-a#document-summary')
   }
 
   const requestedTablePage = parseInt(req.query.tablePage, 10)
@@ -1360,45 +1230,27 @@ router.post('/review-extraction-f/document/:documentId/change', (req, res) => {
     shipmentTransportReference: normalizeValue(req.body.shipmentTransportReference)
   }
 
-  if (!data['scenario-f-document-overrides'] || typeof data['scenario-f-document-overrides'] !== 'object') {
-    data['scenario-f-document-overrides'] = {}
+  if (!data['scenario-a-document-overrides'] || typeof data['scenario-a-document-overrides'] !== 'object') {
+    data['scenario-a-document-overrides'] = {}
   }
-  data['scenario-f-document-overrides'][document.id] = override
+  data['scenario-a-document-overrides'][document.id] = override
 
   const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
-  return res.redirect('/review-extraction-f/document/' + document.id + tablePageQuery)
+  return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
 })
 
 // -------------------------------------------------------
-// Review extraction — Variant A (high confidence)
+// Review extraction — Scenario A (multiple documents)
 // -------------------------------------------------------
 router.post('/review-extraction-a', (req, res) => {
   res.redirect('/declaration')
 })
 
 // -------------------------------------------------------
-// Review extraction — Variant B (partial)
+// Review extraction — Scenario B (extraction failed)
 // -------------------------------------------------------
 router.post('/review-extraction-b', (req, res) => {
-  res.redirect('/declaration')
-})
-
-// -------------------------------------------------------
-// Review extraction — Variant C (failed)
-// -------------------------------------------------------
-router.post('/review-extraction-c', (req, res) => {
-  res.redirect('/declaration')
-})
-
-// -------------------------------------------------------
-// Review extraction — Variant D (cross-document validation failed)
-// -------------------------------------------------------
-router.post('/review-extraction-d', (req, res) => {
   res.redirect('/upload-documents')
-})
-
-router.post('/review-extraction-f', (req, res) => {
-  res.redirect('/declaration')
 })
 
 router.post('/declaration', (req, res) => {

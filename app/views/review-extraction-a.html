@@ -11,74 +11,127 @@
 
     <div class="govuk-notification-banner govuk-notification-banner--success" data-module="govuk-notification-banner">
       <div class="govuk-notification-banner__header">
-        <h2 class="govuk-notification-banner__title">Scenario A: full extraction</h2>
+        <h2 class="govuk-notification-banner__title">Documents ready to review</h2>
       </div>
       <div class="govuk-notification-banner__content">
-        We extracted all key information with high confidence. Check and confirm before continuing.
+        We have analysed your uploaded documents. Check the summary and review any documents that need attention before you continue.
       </div>
     </div>
 
-    <form action="/review-extraction-a" method="post">
-      <div class="govuk-summary-card">
-        <div class="govuk-summary-card__title-wrapper">
-          <h2 class="govuk-summary-card__title">Extracted notification details</h2>
-          <ul class="govuk-summary-card__actions">
-            <li class="govuk-summary-card__action">
-              <a class="govuk-link" href="/change-extracted-details?returnTo=/review-extraction-a">Change<span class="govuk-visually-hidden"> extracted details</span></a>
-            </li>
-          </ul>
-        </div>
-        <div class="govuk-summary-card__content">
-          <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Section extraction confidence</dt>
-              <dd class="govuk-summary-list__value">97%</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Catch certificate number</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-catch-certificate-number'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Species</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-species'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Catch area</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-catch-area'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Vessel ID and flag State</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-vessel-id-flag-state'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Weight/quantity</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-weight-quantity'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Importer/exporter/agent details</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-importer-exporter-agent-details'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Processing/storage statement reference numbers</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-processing-storage-reference-numbers'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Transport details</dt>
-              <dd class="govuk-summary-list__value">{{ data['review-transport-details'] }}</dd>
-              <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">High</strong></dd>
-            </div>
-          </dl>
-        </div>
+    <div class="govuk-summary-card govuk-!-margin-bottom-6">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Arrival details</h2>
       </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Port of entry</dt>
+            <dd class="govuk-summary-list__value">{{ arrivalDetails.portOfEntry }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Expected date of arrival</dt>
+            <dd class="govuk-summary-list__value">{{ arrivalDetails.expectedDateOfArrival }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
 
+    <div class="govuk-summary-card">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Extraction summary</h2>
+      </div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Documents analysed</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['documentsAnalysed'] }}</dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Manual check required</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['manualCheckRequired'] }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--red">Manual check required</strong></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Needs review</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['reviewRequiredTotal'] }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Needs review</strong></dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Complete</dt>
+            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['complete'] }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">Complete</strong></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <div id="document-summary" class="govuk-!-margin-top-9">
+      <h2 class="govuk-heading-m">Document summary</h2>
+      <p class="govuk-body">Showing {{ tableDocuments.length }} of {{ totalDocuments }} extracted documents.</p>
+
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Reference</th>
+            <th scope="col" class="govuk-table__header">Document Number</th>
+            <th scope="col" class="govuk-table__header">Document Type</th>
+            <th scope="col" class="govuk-table__header">Extraction confidence</th>
+            <th scope="col" class="govuk-table__header">Fields Extracted</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for document in tableDocuments %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/review-extraction-a/document/{{ document.id }}?tablePage={{ tablePage }}">{{ document.reference }}</a>
+              </td>
+              <td class="govuk-table__cell">{{ document.documentNumber }}</td>
+              <td class="govuk-table__cell">{{ document.documentType }}</td>
+              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.extractionConfidence }}%</strong></td>
+              <td class="govuk-table__cell">{{ document.fieldsExtractedDisplay }}</td>
+              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if showTablePagination %}
+        <nav class="govuk-pagination" aria-label="Document summary pagination">
+          {% if tablePreviousUrl %}
+            <div class="govuk-pagination__prev">
+              <a class="govuk-link govuk-pagination__link" href="{{ tablePreviousUrl }}" rel="prev">
+                <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                  <path d="m6.5938 0.45703-6.25 6.25c-0.41797 0.41797-0.41797 1.0898 0 1.5078l6.25 6.25c0.41797 0.41797 1.0898 0.41797 1.5078 0s0.41797-1.0898 0-1.5078l-4.4492-4.4492h10.09c0.58594 0 1.0625-0.47656 1.0625-1.0625s-0.47656-1.0625-1.0625-1.0625h-10.09l4.4492-4.4492c0.41797-0.41797 0.41797-1.0898 0-1.5078-0.41797-0.40625-1.0898-0.41797-1.5078 0z"></path>
+                </svg>
+                <span class="govuk-pagination__link-title">Previous</span>
+              </a>
+            </div>
+          {% endif %}
+          <ul class="govuk-pagination__list">
+            {% for item in tablePaginationItems %}
+              <li class="govuk-pagination__item {% if item.current %}govuk-pagination__item--current{% endif %}">
+                <a class="govuk-link govuk-pagination__link" href="{{ item.href }}" aria-label="Page {{ item.number }}"{% if item.current %} aria-current="page"{% endif %}>
+                  {{ item.number }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+          {% if tableNextUrl %}
+            <div class="govuk-pagination__next">
+              <a class="govuk-link govuk-pagination__link" href="{{ tableNextUrl }}" rel="next">
+                <span class="govuk-pagination__link-title">Next</span>
+                <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                  <path d="m8.1016 0.45703c-0.41797 0.41797-0.41797 1.0898 0 1.5078l4.4492 4.4492h-10.09c-0.58594 0-1.0625 0.47656-1.0625 1.0625s0.47656 1.0625 1.0625 1.0625h10.09l-4.4492 4.4492c-0.41797 0.41797-0.41797 1.0898 0 1.5078 0.41797 0.41797 1.0898 0.41797 1.5078 0l6.25-6.25c0.41797-0.41797 0.41797-1.0898 0-1.5078l-6.25-6.25c-0.40625-0.41797-1.0898-0.40625-1.5078 0z"></path>
+                </svg>
+              </a>
+            </div>
+          {% endif %}
+        </nav>
+      {% endif %}
+    </div>
+
+    <form action="/review-extraction-a" method="post" class="govuk-!-margin-top-8">
       <button class="govuk-button" data-module="govuk-button">
         Save and continue
       </button>
