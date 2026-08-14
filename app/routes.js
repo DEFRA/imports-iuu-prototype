@@ -164,8 +164,9 @@ const buildScenarioADocumentTypeMetadata = (documentType) => {
   return { prefix: 'SUPPORT.DOC.GB', productCode: 'Not available', processingReference: 'Not applicable' }
 }
 
-const createScenarioADetailSection = (title, confidenceLabel, confidenceTagClass, rows) => {
+const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTagClass, rows) => {
   return {
+    key,
     title,
     confidenceLabel,
     confidenceTagClass,
@@ -176,6 +177,68 @@ const createScenarioADetailSection = (title, confidenceLabel, confidenceTagClass
       fieldConfidenceLabel: row.fieldConfidenceLabel || confidenceLabel,
       fieldConfidenceTagClass: row.fieldConfidenceTagClass || confidenceTagClass
     }))
+  }
+}
+
+const scenarioASectionEditConfigs = {
+  'document-information': {
+    title: 'Document information',
+    fields: [
+      { key: 'documentType', label: 'Document type', control: 'input' },
+      { key: 'documentNumber', label: 'Document/certificate reference', control: 'input' }
+    ]
+  },
+  'vessel-information': {
+    title: 'Vessel information',
+    fields: [
+      { key: 'vessel', label: 'Vessel name', control: 'input' },
+      { key: 'flagState', label: 'Flag state', control: 'input' }
+    ]
+  },
+  'species-information': {
+    title: 'Species information',
+    fields: [
+      { key: 'species', label: 'Species', control: 'input' },
+      { key: 'scientificName', label: 'Scientific name', control: 'input' }
+    ]
+  },
+  'commodity-information': {
+    title: 'Commodity information',
+    fields: [
+      { key: 'productCode', label: 'Product code / CN code', control: 'input' }
+    ]
+  },
+  'catch-information': {
+    title: 'Catch information',
+    fields: [
+      { key: 'catchArea', label: 'FAO catch area', control: 'input' },
+      { key: 'catchDates', label: 'Catch dates', control: 'input' }
+    ]
+  },
+  'weight-information': {
+    title: 'Weight information',
+    fields: [
+      { key: 'catchNetWeight', label: 'Catch weight / net weight', control: 'input' }
+    ]
+  },
+  'commercial-parties': {
+    title: 'Commercial parties',
+    fields: [
+      { key: 'importerDetails', label: 'Importer details', control: 'textarea', rows: 3 },
+      { key: 'exporterDetails', label: 'Exporter details', control: 'textarea', rows: 3 }
+    ]
+  },
+  'processing-information': {
+    title: 'Processing information',
+    fields: [
+      { key: 'processingStatementReference', label: 'Processing statement reference', control: 'input' }
+    ]
+  },
+  'consignment-information': {
+    title: 'Consignment information',
+    fields: [
+      { key: 'shipmentTransportReference', label: 'Shipment / transport reference', control: 'input' }
+    ]
   }
 }
 
@@ -207,36 +270,36 @@ const buildScenarioADocumentPresentation = (document) => {
       { label: 'Extraction confidence', value: document.extractionConfidence + '%', confidence: confidenceLabel, confidenceTagClass }
     ],
     detailSections: [
-      createScenarioADetailSection('Document information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('document-information', 'Document information', confidenceLabel, confidenceTagClass, [
         { label: 'Document type', value: document.documentType },
         { label: 'Document/certificate reference', value: document.documentNumber }
       ]),
-      createScenarioADetailSection('Vessel information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('vessel-information', 'Vessel information', confidenceLabel, confidenceTagClass, [
         { label: 'Vessel name', value: document.vessel },
         { label: 'Flag state', value: document.flagState }
       ]),
-      createScenarioADetailSection('Species information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('species-information', 'Species information', confidenceLabel, confidenceTagClass, [
         { label: 'Species', value: document.species },
         { label: 'Scientific name', value: document.scientificName }
       ]),
-      createScenarioADetailSection('Commodity information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('commodity-information', 'Commodity information', confidenceLabel, confidenceTagClass, [
         { label: 'Product code / CN code', value: document.productCode }
       ]),
-      createScenarioADetailSection('Catch information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('catch-information', 'Catch information', confidenceLabel, confidenceTagClass, [
         { label: 'FAO catch area', value: document.catchArea },
         { label: 'Catch dates', value: document.catchDates }
       ]),
-      createScenarioADetailSection('Weight information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('weight-information', 'Weight information', confidenceLabel, confidenceTagClass, [
         { label: 'Catch weight / net weight', value: document.catchNetWeight }
       ]),
-      createScenarioADetailSection('Commercial parties', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('commercial-parties', 'Commercial parties', confidenceLabel, confidenceTagClass, [
         { label: 'Importer details', value: document.importerDetails },
         { label: 'Exporter details', value: document.exporterDetails }
       ]),
-      createScenarioADetailSection('Processing information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('processing-information', 'Processing information', confidenceLabel, confidenceTagClass, [
         { label: 'Processing statement reference', value: processingReferenceValue === 'Not applicable' ? 'Not applicable' : document.processingStatementReference }
       ]),
-      createScenarioADetailSection('Consignment information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('consignment-information', 'Consignment information', confidenceLabel, confidenceTagClass, [
         { label: 'Shipment / transport reference', value: document.shipmentTransportReference }
       ])
     ]
@@ -346,6 +409,7 @@ const applyScenarioADocumentOverride = (document, override = null) => {
 
   const updatedDocument = {
     ...document,
+    documentType: Object.prototype.hasOwnProperty.call(override, 'documentType') ? override.documentType : document.documentType,
     documentNumber: Object.prototype.hasOwnProperty.call(override, 'documentNumber') ? override.documentNumber : document.documentNumber,
     referenceNumber: Object.prototype.hasOwnProperty.call(override, 'documentNumber') ? override.documentNumber : document.referenceNumber,
     vessel: Object.prototype.hasOwnProperty.call(override, 'vessel') ? override.vessel : document.vessel,
@@ -1221,7 +1285,8 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
     totalDocuments: documents.length,
     tablePage,
     reviewPageUrl,
-    showBackLink: false
+    showBackLink: true,
+    backLinkHref: reviewPageUrl
   })
 })
 
@@ -1245,6 +1310,81 @@ router.get('/review-extraction-a/document/:documentId/change', (req, res) => {
   })
 })
 
+router.get('/review-extraction-a/document/:documentId/change/:sectionKey', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = 'a'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+  if (!document) {
+    return res.redirect('/review-extraction-a#document-summary')
+  }
+
+  const sectionConfig = scenarioASectionEditConfigs[req.params.sectionKey]
+  if (!sectionConfig) {
+    const tablePageQuery = req.query.tablePage ? '?tablePage=' + encodeURIComponent(req.query.tablePage) : ''
+    return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+  const sectionFields = sectionConfig.fields.map((field) => ({
+    ...field,
+    value: Object.prototype.hasOwnProperty.call(document, field.key) ? document[field.key] : ''
+  }))
+
+  res.render('review-extraction-a-document-card-change', {
+    document,
+    sectionKey: req.params.sectionKey,
+    sectionTitle: sectionConfig.title,
+    sectionFields,
+    tablePage
+  })
+})
+
+router.post('/review-extraction-a/document/:documentId/change/:sectionKey', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = 'a'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+  if (!document) {
+    return res.redirect('/review-extraction-a#document-summary')
+  }
+
+  const sectionConfig = scenarioASectionEditConfigs[req.params.sectionKey]
+  if (!sectionConfig) {
+    const tablePageQuery = req.query.tablePage ? '?tablePage=' + encodeURIComponent(req.query.tablePage) : ''
+    return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+  const normalizeValue = (value) => String(value || '').trim()
+  const sectionOverride = {}
+
+  for (const field of sectionConfig.fields) {
+    sectionOverride[field.key] = normalizeValue(req.body[field.key])
+  }
+
+  if (!data['scenario-a-document-overrides'] || typeof data['scenario-a-document-overrides'] !== 'object') {
+    data['scenario-a-document-overrides'] = {}
+  }
+
+  const existingOverride = (data['scenario-a-document-overrides'][document.id] && typeof data['scenario-a-document-overrides'][document.id] === 'object')
+    ? data['scenario-a-document-overrides'][document.id]
+    : {}
+  data['scenario-a-document-overrides'][document.id] = {
+    ...existingOverride,
+    ...sectionOverride
+  }
+
+  const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+  return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+})
+
 router.post('/review-extraction-a/document/:documentId/change', (req, res) => {
   const data = req.session.data
   data['extraction-variant'] = 'a'
@@ -1261,6 +1401,7 @@ router.post('/review-extraction-a/document/:documentId/change', (req, res) => {
 
   const normalizeValue = (value) => String(value || '').trim()
   const override = {
+    documentType: normalizeValue(req.body.documentType),
     documentNumber: normalizeValue(req.body.documentNumber),
     vessel: normalizeValue(req.body.vessel),
     flagState: normalizeValue(req.body.flagState),
