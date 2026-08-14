@@ -6,8 +6,8 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l">Document {{ documentIndex }} of {{ totalDocuments }}</span>
-    <h1 class="govuk-heading-l">{{ document.reference }} — {{ document.documentNumber }}</h1>
+    <span class="govuk-caption-l">Catch Certificate | Document {{ documentIndex }} of {{ totalDocuments }}</span>
+    <h1 class="govuk-heading-l">{{ document.reference }} - {{ document.documentNumber }}</h1>
 
     {% if document.statusKey == 'incomplete' or document.statusKey == 'manual-check' %}
       <div class="govuk-inset-text">
