@@ -181,63 +181,118 @@ const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTag
 }
 
 const scenarioASectionEditConfigs = {
-  'document-information': {
-    title: 'Document information',
+  'transport-details-from-cc': {
+    title: 'Transport details from CC',
     fields: [
-      { key: 'documentType', label: 'Document type', control: 'input' },
-      { key: 'documentNumber', label: 'Document/certificate reference', control: 'input' }
+      { key: 'portOfLanding', label: 'Port of Landing', control: 'input' },
+      { key: 'dateOfLanding', label: 'Date of Landing', control: 'input' }
     ]
   },
-  'vessel-information': {
-    title: 'Vessel information',
+  'catch-certificate-number': {
+    title: 'Catch certificate number',
     fields: [
-      { key: 'vessel', label: 'Vessel name', control: 'input' },
-      { key: 'flagState', label: 'Flag state', control: 'input' }
+      { key: 'documentNumber', label: 'Document number', control: 'input' },
+      { key: 'validatingAuthorityName', label: 'Validating Authority Name', control: 'input' },
+      { key: 'validatingAuthorityAddress', label: 'Validating Authority Address', control: 'textarea', rows: 3 }
     ]
   },
-  'species-information': {
-    title: 'Species information',
+  species: {
+    title: 'Species',
     fields: [
       { key: 'species', label: 'Species', control: 'input' },
-      { key: 'scientificName', label: 'Scientific name', control: 'input' }
+      { key: 'productCode', label: 'Product code', control: 'input' }
     ]
   },
-  'commodity-information': {
-    title: 'Commodity information',
+  'catch-area': {
+    title: 'Catch area',
     fields: [
-      { key: 'productCode', label: 'Product code / CN code', control: 'input' }
+      { key: 'catchArea', label: 'Catch Area', control: 'input' },
+      { key: 'catchDateFrom', label: 'Catch Date from', control: 'input' },
+      { key: 'catchDateTo', label: 'Catch Date to', control: 'input' }
     ]
   },
-  'catch-information': {
-    title: 'Catch information',
+  'fishing-gear': {
+    title: 'Fishing gear',
     fields: [
-      { key: 'catchArea', label: 'FAO catch area', control: 'input' },
-      { key: 'catchDates', label: 'Catch dates', control: 'input' }
+      { key: 'fishingLicenseNumber', label: 'Fishing License No.', control: 'input' },
+      { key: 'fishingGear', label: 'Fishing Gear', control: 'input' }
     ]
   },
-  'weight-information': {
-    title: 'Weight information',
+  'weight-quantity': {
+    title: 'Weight/quantity',
     fields: [
-      { key: 'catchNetWeight', label: 'Catch weight / net weight', control: 'input' }
+      { key: 'estimatedWeightToBeLandedKg', label: 'Estimated weight to be landed in kg', control: 'input' },
+      { key: 'netCatchWeightKg', label: 'Net catch weight in kg', control: 'input' },
+      { key: 'verifiedWeightLandedKg', label: 'Verified weight landed in kg', control: 'input' }
     ]
   },
-  'commercial-parties': {
-    title: 'Commercial parties',
+  'vessel-id-and-flag-state': {
+    title: 'Vessel ID and flag State',
     fields: [
-      { key: 'importerDetails', label: 'Importer details', control: 'textarea', rows: 3 },
-      { key: 'exporterDetails', label: 'Exporter details', control: 'textarea', rows: 3 }
+      { key: 'vesselName', label: 'Vessel Name', control: 'input' },
+      { key: 'flagHomePortAndRegistrationNumber', label: 'Flag - home port and registration number', control: 'input' },
+      { key: 'callSign', label: 'Call sign', control: 'input' },
+      { key: 'imoNumberOrOtherUniqueIdentifier', label: 'IMO number or other unique identifier', control: 'input' }
     ]
   },
-  'processing-information': {
-    title: 'Processing information',
+  'exporter-details': {
+    title: 'exporter details',
     fields: [
-      { key: 'processingStatementReference', label: 'Processing statement reference', control: 'input' }
+      { key: 'nameOfExporter', label: 'Name of Exporter', control: 'input' },
+      { key: 'exporterAddress', label: 'Exporter Address', control: 'textarea', rows: 3 }
     ]
   },
-  'consignment-information': {
-    title: 'Consignment information',
+  'importer-details': {
+    title: 'Importer details',
     fields: [
-      { key: 'shipmentTransportReference', label: 'Shipment / transport reference', control: 'input' }
+      { key: 'importerCompany', label: 'Importer Company', control: 'input' },
+      { key: 'importerName', label: 'Importer Name', control: 'input' },
+      { key: 'importerAddress', label: 'Importer address', control: 'textarea', rows: 3 },
+      { key: 'importerEoriNumber', label: 'Importer EORI number', control: 'input' },
+      { key: 'importerContactDetails', label: 'Importer contact details', control: 'textarea', rows: 2 }
+    ]
+  },
+  'importer-agent-details': {
+    title: 'Importer agent details',
+    fields: [
+      { key: 'importerRepresentativeCompany', label: 'Importer Representative Company', control: 'input' },
+      { key: 'importerRepresentativeName', label: 'Importer Representative Name', control: 'input' },
+      { key: 'importerRepresentativeAddress', label: 'Importer Representative address', control: 'textarea', rows: 3 },
+      { key: 'importerRepresentativeEoriNumber', label: 'Importer Representative EORI number', control: 'input' },
+      { key: 'importerRepresentativeContactDetails', label: 'Importer Representative contact details', control: 'textarea', rows: 2 }
+    ]
+  },
+  'importer-declaration': {
+    title: 'Importer Declaration',
+    fields: [
+      { key: 'productDescription', label: 'Product Description', control: 'textarea', rows: 2 },
+      { key: 'cnCode', label: 'CN code', control: 'input' },
+      { key: 'importerDeclarationNetWeightKg', label: 'Net weight in kg', control: 'input' },
+      { key: 'netFisheryProductWeightKg', label: 'Net fishery product weight in kg', control: 'input' }
+    ]
+  },
+  'transport-details': {
+    title: 'Transport details',
+    fields: [
+      { key: 'transportName', label: 'Name', control: 'input' },
+      { key: 'transportAddress', label: 'Address', control: 'textarea', rows: 3 },
+      { key: 'meansOfTransportUponArrival', label: 'Means of transport upon arrival', control: 'input' },
+      { key: 'transportDocumentReference', label: 'Transport document reference', control: 'input' },
+      { key: 'countryOfExportationPointOfDeparture', label: 'Country of exportation Port/airport/other point of departure', control: 'input' },
+      { key: 'pointOfDestination', label: 'Point of destination', control: 'input' },
+      { key: 'containerNumbers', label: 'Container Numbers', control: 'input' }
+    ]
+  },
+  'storage-statement-reference-numbers': {
+    title: 'Storage statement reference numbers',
+    fields: [
+      { key: 'storageStatementDocumentNumber', label: 'Document number', control: 'input' }
+    ]
+  },
+  'processing-statement-reference-numbers': {
+    title: 'Processing statement reference numbers',
+    fields: [
+      { key: 'processingStatementReference', label: 'Document number', control: 'input' }
     ]
   }
 }
@@ -245,62 +300,92 @@ const scenarioASectionEditConfigs = {
 const buildScenarioADocumentPresentation = (document) => {
   const confidenceLabel = document.extractionConfidenceLabel
   const confidenceTagClass = document.extractionConfidenceTagClass
-  const vesselAndFlag = [document.vessel, document.flagState].filter(Boolean).join(' - ')
-  const importerExporterValue = [document.importerDetails, document.exporterDetails].filter(Boolean).join('; ')
-  const hasBothCommercialParties = Boolean(document.importerDetails && document.exporterDetails)
   const processingReferenceValue = document.processingStatementReference || 'Missing'
-  const processingConfidenceLabel = processingReferenceValue === 'Not applicable'
-    ? 'N/A'
-    : (document.processingStatementReference ? confidenceLabel : 'Missing')
-  const processingConfidenceTagClass = processingReferenceValue === 'Not applicable'
-    ? 'govuk-tag--grey'
-    : (document.processingStatementReference ? confidenceTagClass : 'govuk-tag--red')
 
   return {
     summaryFields: [
       { label: 'Document type', value: document.documentType, confidence: confidenceLabel, confidenceTagClass },
-      { label: 'Document/certificate reference', value: document.documentNumber, confidence: confidenceLabel, confidenceTagClass },
-      { label: 'Vessel name and flag state', value: vesselAndFlag || 'Missing', confidence: vesselAndFlag ? confidenceLabel : 'Missing', confidenceTagClass: vesselAndFlag ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Document number', value: document.documentNumber, confidence: confidenceLabel, confidenceTagClass },
+      { label: 'Vessel Name', value: document.vesselName || 'Missing', confidence: document.vesselName ? confidenceLabel : 'Missing', confidenceTagClass: document.vesselName ? confidenceTagClass : 'govuk-tag--red' },
       { label: 'Species', value: document.species || 'Missing', confidence: document.species ? confidenceLabel : 'Missing', confidenceTagClass: document.species ? confidenceTagClass : 'govuk-tag--red' },
-      { label: 'FAO catch area', value: document.catchArea || 'Missing', confidence: document.catchArea ? confidenceLabel : 'Missing', confidenceTagClass: document.catchArea ? confidenceTagClass : 'govuk-tag--red' },
-      { label: 'Catch/net weight', value: document.catchNetWeight || 'Missing', confidence: document.catchNetWeight ? confidenceLabel : 'Missing', confidenceTagClass: document.catchNetWeight ? confidenceTagClass : 'govuk-tag--red' },
-      { label: 'Importer/exporter details', value: importerExporterValue || 'Missing', confidence: hasBothCommercialParties ? confidenceLabel : 'Needs review', confidenceTagClass: hasBothCommercialParties ? confidenceTagClass : 'govuk-tag--yellow' },
-      { label: 'Processing statement reference (where applicable)', value: processingReferenceValue, confidence: processingConfidenceLabel, confidenceTagClass: processingConfidenceTagClass },
-      { label: 'Shipment/transport reference', value: document.shipmentTransportReference || 'Missing', confidence: document.shipmentTransportReference ? confidenceLabel : 'Missing', confidenceTagClass: document.shipmentTransportReference ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Catch Area', value: document.catchArea || 'Missing', confidence: document.catchArea ? confidenceLabel : 'Missing', confidenceTagClass: document.catchArea ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Net catch weight in kg', value: document.netCatchWeightKg || 'Missing', confidence: document.netCatchWeightKg ? confidenceLabel : 'Missing', confidenceTagClass: document.netCatchWeightKg ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Importer Company', value: document.importerCompany || 'Missing', confidence: document.importerCompany ? confidenceLabel : 'Missing', confidenceTagClass: document.importerCompany ? confidenceTagClass : 'govuk-tag--red' },
+      { label: 'Document number (Processing statement)', value: processingReferenceValue, confidence: document.processingStatementReference ? confidenceLabel : 'Missing', confidenceTagClass: document.processingStatementReference ? confidenceTagClass : 'govuk-tag--red' },
       { label: 'Extraction confidence', value: document.extractionConfidence + '%', confidence: confidenceLabel, confidenceTagClass }
     ],
     detailSections: [
-      createScenarioADetailSection('document-information', 'Document information', confidenceLabel, confidenceTagClass, [
-        { label: 'Document type', value: document.documentType },
-        { label: 'Document/certificate reference', value: document.documentNumber }
+      createScenarioADetailSection('transport-details-from-cc', 'Transport details from CC', confidenceLabel, confidenceTagClass, [
+        { label: 'Port of Landing', value: document.portOfLanding },
+        { label: 'Date of Landing', value: document.dateOfLanding }
       ]),
-      createScenarioADetailSection('vessel-information', 'Vessel information', confidenceLabel, confidenceTagClass, [
-        { label: 'Vessel name', value: document.vessel },
-        { label: 'Flag state', value: document.flagState }
+      createScenarioADetailSection('catch-certificate-number', 'Catch certificate number', confidenceLabel, confidenceTagClass, [
+        { label: 'Document number', value: document.documentNumber },
+        { label: 'Validating Authority Name', value: document.validatingAuthorityName },
+        { label: 'Validating Authority Address', value: document.validatingAuthorityAddress }
       ]),
-      createScenarioADetailSection('species-information', 'Species information', confidenceLabel, confidenceTagClass, [
+      createScenarioADetailSection('species', 'Species', confidenceLabel, confidenceTagClass, [
         { label: 'Species', value: document.species },
-        { label: 'Scientific name', value: document.scientificName }
+        { label: 'Product code', value: document.productCode }
       ]),
-      createScenarioADetailSection('commodity-information', 'Commodity information', confidenceLabel, confidenceTagClass, [
-        { label: 'Product code / CN code', value: document.productCode }
+      createScenarioADetailSection('catch-area', 'Catch area', confidenceLabel, confidenceTagClass, [
+        { label: 'Catch Area', value: document.catchArea },
+        { label: 'Catch Date from', value: document.catchDateFrom },
+        { label: 'Catch Date to', value: document.catchDateTo }
       ]),
-      createScenarioADetailSection('catch-information', 'Catch information', confidenceLabel, confidenceTagClass, [
-        { label: 'FAO catch area', value: document.catchArea },
-        { label: 'Catch dates', value: document.catchDates }
+      createScenarioADetailSection('fishing-gear', 'Fishing gear', confidenceLabel, confidenceTagClass, [
+        { label: 'Fishing License No.', value: document.fishingLicenseNumber },
+        { label: 'Fishing Gear', value: document.fishingGear }
       ]),
-      createScenarioADetailSection('weight-information', 'Weight information', confidenceLabel, confidenceTagClass, [
-        { label: 'Catch weight / net weight', value: document.catchNetWeight }
+      createScenarioADetailSection('weight-quantity', 'Weight/quantity', confidenceLabel, confidenceTagClass, [
+        { label: 'Estimated weight to be landed in kg', value: document.estimatedWeightToBeLandedKg },
+        { label: 'Net catch weight in kg', value: document.netCatchWeightKg },
+        { label: 'Verified weight landed in kg', value: document.verifiedWeightLandedKg }
       ]),
-      createScenarioADetailSection('commercial-parties', 'Commercial parties', confidenceLabel, confidenceTagClass, [
-        { label: 'Importer details', value: document.importerDetails },
-        { label: 'Exporter details', value: document.exporterDetails }
+      createScenarioADetailSection('vessel-id-and-flag-state', 'Vessel ID and flag State', confidenceLabel, confidenceTagClass, [
+        { label: 'Vessel Name', value: document.vesselName },
+        { label: 'Flag - home port and registration number', value: document.flagHomePortAndRegistrationNumber },
+        { label: 'Call sign', value: document.callSign },
+        { label: 'IMO number or other unique identifier', value: document.imoNumberOrOtherUniqueIdentifier }
       ]),
-      createScenarioADetailSection('processing-information', 'Processing information', confidenceLabel, confidenceTagClass, [
-        { label: 'Processing statement reference', value: processingReferenceValue === 'Not applicable' ? 'Not applicable' : document.processingStatementReference }
+      createScenarioADetailSection('exporter-details', 'exporter details', confidenceLabel, confidenceTagClass, [
+        { label: 'Name of Exporter', value: document.nameOfExporter },
+        { label: 'Exporter Address', value: document.exporterAddress }
       ]),
-      createScenarioADetailSection('consignment-information', 'Consignment information', confidenceLabel, confidenceTagClass, [
-        { label: 'Shipment / transport reference', value: document.shipmentTransportReference }
+      createScenarioADetailSection('importer-details', 'Importer details', confidenceLabel, confidenceTagClass, [
+        { label: 'Importer Company', value: document.importerCompany },
+        { label: 'Importer Name', value: document.importerName },
+        { label: 'Importer address', value: document.importerAddress },
+        { label: 'Importer EORI number', value: document.importerEoriNumber },
+        { label: 'Importer contact details', value: document.importerContactDetails }
+      ]),
+      createScenarioADetailSection('importer-agent-details', 'Importer agent details', confidenceLabel, confidenceTagClass, [
+        { label: 'Importer Representative Company', value: document.importerRepresentativeCompany },
+        { label: 'Importer Representative Name', value: document.importerRepresentativeName },
+        { label: 'Importer Representative address', value: document.importerRepresentativeAddress },
+        { label: 'Importer Representative EORI number', value: document.importerRepresentativeEoriNumber },
+        { label: 'Importer Representative contact details', value: document.importerRepresentativeContactDetails }
+      ]),
+      createScenarioADetailSection('importer-declaration', 'Importer Declaration', confidenceLabel, confidenceTagClass, [
+        { label: 'Product Description', value: document.productDescription },
+        { label: 'CN code', value: document.cnCode },
+        { label: 'Net weight in kg', value: document.importerDeclarationNetWeightKg },
+        { label: 'Net fishery product weight in kg', value: document.netFisheryProductWeightKg }
+      ]),
+      createScenarioADetailSection('transport-details', 'Transport details', confidenceLabel, confidenceTagClass, [
+        { label: 'Name', value: document.transportName },
+        { label: 'Address', value: document.transportAddress },
+        { label: 'Means of transport upon arrival', value: document.meansOfTransportUponArrival },
+        { label: 'Transport document reference', value: document.transportDocumentReference },
+        { label: 'Country of exportation Port/airport/other point of departure', value: document.countryOfExportationPointOfDeparture },
+        { label: 'Point of destination', value: document.pointOfDestination },
+        { label: 'Container Numbers', value: document.containerNumbers }
+      ]),
+      createScenarioADetailSection('storage-statement-reference-numbers', 'Storage statement reference numbers', confidenceLabel, confidenceTagClass, [
+        { label: 'Document number', value: document.storageStatementDocumentNumber }
+      ]),
+      createScenarioADetailSection('processing-statement-reference-numbers', 'Processing statement reference numbers', confidenceLabel, confidenceTagClass, [
+        { label: 'Document number', value: document.processingStatementReference }
       ])
     ]
   }
@@ -321,50 +406,119 @@ const createScenarioADocument = (index, documentType, confidence, statusKey, see
   const catchArea = seedData['scenario-a-catch-area'] || 'FAO Area 27, Northeast Atlantic'
   const catchDates = seedData['scenario-a-catch-date'] || '11/01/2026 to 18/01/2026'
   const netWeight = seedData['scenario-a-net-weight'] || '2,450 kg'
+  const catchDateFrom = catchDates.split(' to ')[0] || ''
+  const catchDateTo = catchDates.split(' to ')[1] || ''
   const importerName = seedData['importer-name'] || 'Nordic Sea Imports Ltd'
   const exporterName = seedData['scenario-a-exporter-name'] || 'Samherji Export Ltd'
   const transportReference = 'SHIP-REF-RKV-GB-' + String(sequence).padStart(4, '0')
+  const storageStatementReference = 'CATCH.ST.GB.' + String(new Date().getFullYear()) + '.' + String(2000 + sequence).padStart(4, '0')
   const processingReference = documentType === 'Processing Statement'
     ? buildScenarioADocumentReference(metadata.processingReferencePrefix, 1100 + sequence)
     : 'Not applicable'
-  const totalFields = 10
+  const totalFields = 44
   const fieldsExtractedByStatus = {
-    complete: 10,
-    'needs-review': 8,
-    incomplete: 6,
-    'manual-check': 3
+    complete: 44,
+    'needs-review': 36,
+    incomplete: 26,
+    'manual-check': 12
   }
-  const fieldsExtracted = fieldsExtractedByStatus[statusKey] || 6
+  const fieldsExtracted = fieldsExtractedByStatus[statusKey] || 26
 
   const baseRows = {
     documentType,
     certificateReference: referenceNumber,
+    portOfLanding: seedData['scenario-a-port-of-landing'] || 'Hull',
+    dateOfLanding: seedData['scenario-a-date-of-landing'] || '25/01/2026',
+    validatingAuthorityName: 'Directorate of Fisheries, Iceland',
+    validatingAuthorityAddress: 'Skulagata 4, 101 Reykjavik, Iceland',
     vesselName,
     flagState,
+    flagHomePortAndRegistrationNumber: 'Iceland - Reykjavik - REY-88412',
+    callSign: 'TFNS',
+    imoNumberOrOtherUniqueIdentifier: 'IMO 9321487',
     species,
     scientificName,
     productCode: metadata.productCode,
+    catchDateFrom,
+    catchDateTo,
     catchArea,
     catchDates,
-    netWeight,
-    importerName,
-    exporterName,
+    fishingLicenseNumber: 'IS-FL-88412',
+    fishingGear: 'Bottom trawl',
+    estimatedWeightToBeLandedKg: netWeight,
+    netCatchWeightKg: netWeight,
+    verifiedWeightLandedKg: netWeight,
+    importerCompany: importerName,
+    importerName: 'Alex Reid',
+    importerAddress: '1 Dockside Way, Hull, HU1 2AB',
+    importerEoriNumber: 'GB123456789000',
+    importerContactDetails: '+44 20 7946 0123, imports@nordicsea.example',
+    importerRepresentativeCompany: 'Harbor Trade Agents Ltd',
+    importerRepresentativeName: 'Mia Johnson',
+    importerRepresentativeAddress: '20 Quay Street, Hull, HU1 2LT',
+    importerRepresentativeEoriNumber: 'GB987654321000',
+    importerRepresentativeContactDetails: '+44 20 7000 9000, agent@harbortrade.example',
+    productDescription: 'Frozen cod fillets',
+    cnCode: metadata.productCode,
+    importerDeclarationNetWeightKg: netWeight,
+    netFisheryProductWeightKg: '2,300 kg',
+    nameOfExporter: exporterName,
+    exporterAddress: 'Harbour Road 12, Reykjavik, Iceland',
+    transportName: 'North Sea Cargo Lines',
+    transportAddress: 'Dock 5, Reykjavik Port, Iceland',
+    meansOfTransportUponArrival: 'Container vessel',
+    transportDocumentReference: transportReference,
+    countryOfExportationPointOfDeparture: 'Iceland - Reykjavik Port',
+    pointOfDestination: 'Hull Port, United Kingdom',
+    containerNumbers: 'MSCU1234567',
+    storageStatementDocumentNumber: storageStatementReference,
     processingReference,
     transportReference
   }
 
   if (statusKey === 'incomplete') {
+    baseRows.validatingAuthorityAddress = ''
+    baseRows.fishingGear = ''
+    baseRows.verifiedWeightLandedKg = ''
     baseRows.catchDates = ''
+    baseRows.catchDateFrom = ''
+    baseRows.catchDateTo = ''
+    baseRows.importerRepresentativeContactDetails = ''
+    baseRows.transportDocumentReference = ''
+    baseRows.containerNumbers = ''
     baseRows.processingReference = documentType === 'Processing Statement' ? '' : 'Not applicable'
     baseRows.transportReference = ''
   }
 
   if (statusKey === 'manual-check') {
     baseRows.productCode = ''
+    baseRows.validatingAuthorityName = ''
+    baseRows.validatingAuthorityAddress = ''
     baseRows.catchArea = ''
+    baseRows.catchDateFrom = ''
+    baseRows.catchDateTo = ''
     baseRows.catchDates = ''
-    baseRows.netWeight = ''
-    baseRows.exporterName = ''
+    baseRows.fishingLicenseNumber = ''
+    baseRows.fishingGear = ''
+    baseRows.estimatedWeightToBeLandedKg = ''
+    baseRows.netCatchWeightKg = ''
+    baseRows.verifiedWeightLandedKg = ''
+    baseRows.callSign = ''
+    baseRows.imoNumberOrOtherUniqueIdentifier = ''
+    baseRows.nameOfExporter = ''
+    baseRows.exporterAddress = ''
+    baseRows.importerEoriNumber = ''
+    baseRows.importerContactDetails = ''
+    baseRows.importerRepresentativeEoriNumber = ''
+    baseRows.importerRepresentativeContactDetails = ''
+    baseRows.productDescription = ''
+    baseRows.cnCode = ''
+    baseRows.importerDeclarationNetWeightKg = ''
+    baseRows.netFisheryProductWeightKg = ''
+    baseRows.transportDocumentReference = ''
+    baseRows.countryOfExportationPointOfDeparture = ''
+    baseRows.containerNumbers = ''
+    baseRows.storageStatementDocumentNumber = ''
     baseRows.processingReference = ''
     baseRows.transportReference = ''
   }
@@ -378,8 +532,20 @@ const createScenarioADocument = (index, documentType, confidence, statusKey, see
     species,
     scientificName,
     vessel: vesselName,
+    vesselName: baseRows.vesselName,
     flagState,
+    flagHomePortAndRegistrationNumber: baseRows.flagHomePortAndRegistrationNumber,
+    callSign: baseRows.callSign,
+    imoNumberOrOtherUniqueIdentifier: baseRows.imoNumberOrOtherUniqueIdentifier,
     catchArea,
+    catchDateFrom: baseRows.catchDateFrom,
+    catchDateTo: baseRows.catchDateTo,
+    portOfLanding: baseRows.portOfLanding,
+    dateOfLanding: baseRows.dateOfLanding,
+    validatingAuthorityName: baseRows.validatingAuthorityName,
+    validatingAuthorityAddress: baseRows.validatingAuthorityAddress,
+    fishingLicenseNumber: baseRows.fishingLicenseNumber,
+    fishingGear: baseRows.fishingGear,
     extractionConfidence: confidence,
     extractionConfidenceLabel: confidenceLabel,
     extractionConfidenceTagClass: confidenceTagClass,
@@ -391,10 +557,37 @@ const createScenarioADocument = (index, documentType, confidence, statusKey, see
     statusTagClass: status.className,
     productCode: baseRows.productCode,
     catchDates: baseRows.catchDates,
-    catchNetWeight: baseRows.netWeight,
-    importerDetails: baseRows.importerName,
-    exporterDetails: baseRows.exporterName,
+    catchNetWeight: baseRows.netCatchWeightKg,
+    estimatedWeightToBeLandedKg: baseRows.estimatedWeightToBeLandedKg,
+    netCatchWeightKg: baseRows.netCatchWeightKg,
+    verifiedWeightLandedKg: baseRows.verifiedWeightLandedKg,
+    importerCompany: baseRows.importerCompany,
+    importerName: baseRows.importerName,
+    importerAddress: baseRows.importerAddress,
+    importerEoriNumber: baseRows.importerEoriNumber,
+    importerContactDetails: baseRows.importerContactDetails,
+    importerRepresentativeCompany: baseRows.importerRepresentativeCompany,
+    importerRepresentativeName: baseRows.importerRepresentativeName,
+    importerRepresentativeAddress: baseRows.importerRepresentativeAddress,
+    importerRepresentativeEoriNumber: baseRows.importerRepresentativeEoriNumber,
+    importerRepresentativeContactDetails: baseRows.importerRepresentativeContactDetails,
+    productDescription: baseRows.productDescription,
+    cnCode: baseRows.cnCode,
+    importerDeclarationNetWeightKg: baseRows.importerDeclarationNetWeightKg,
+    netFisheryProductWeightKg: baseRows.netFisheryProductWeightKg,
+    importerDetails: baseRows.importerCompany,
+    nameOfExporter: baseRows.nameOfExporter,
+    exporterAddress: baseRows.exporterAddress,
+    exporterDetails: baseRows.nameOfExporter,
     processingStatementReference: baseRows.processingReference,
+    transportName: baseRows.transportName,
+    transportAddress: baseRows.transportAddress,
+    meansOfTransportUponArrival: baseRows.meansOfTransportUponArrival,
+    transportDocumentReference: baseRows.transportDocumentReference,
+    countryOfExportationPointOfDeparture: baseRows.countryOfExportationPointOfDeparture,
+    pointOfDestination: baseRows.pointOfDestination,
+    containerNumbers: baseRows.containerNumbers,
+    storageStatementDocumentNumber: baseRows.storageStatementDocumentNumber,
     shipmentTransportReference: baseRows.transportReference
   }
 
@@ -412,18 +605,77 @@ const applyScenarioADocumentOverride = (document, override = null) => {
     documentType: Object.prototype.hasOwnProperty.call(override, 'documentType') ? override.documentType : document.documentType,
     documentNumber: Object.prototype.hasOwnProperty.call(override, 'documentNumber') ? override.documentNumber : document.documentNumber,
     referenceNumber: Object.prototype.hasOwnProperty.call(override, 'documentNumber') ? override.documentNumber : document.referenceNumber,
+    portOfLanding: Object.prototype.hasOwnProperty.call(override, 'portOfLanding') ? override.portOfLanding : document.portOfLanding,
+    dateOfLanding: Object.prototype.hasOwnProperty.call(override, 'dateOfLanding') ? override.dateOfLanding : document.dateOfLanding,
+    validatingAuthorityName: Object.prototype.hasOwnProperty.call(override, 'validatingAuthorityName') ? override.validatingAuthorityName : document.validatingAuthorityName,
+    validatingAuthorityAddress: Object.prototype.hasOwnProperty.call(override, 'validatingAuthorityAddress') ? override.validatingAuthorityAddress : document.validatingAuthorityAddress,
     vessel: Object.prototype.hasOwnProperty.call(override, 'vessel') ? override.vessel : document.vessel,
+    vesselName: Object.prototype.hasOwnProperty.call(override, 'vesselName') ? override.vesselName : document.vesselName,
     flagState: Object.prototype.hasOwnProperty.call(override, 'flagState') ? override.flagState : document.flagState,
+    flagHomePortAndRegistrationNumber: Object.prototype.hasOwnProperty.call(override, 'flagHomePortAndRegistrationNumber') ? override.flagHomePortAndRegistrationNumber : document.flagHomePortAndRegistrationNumber,
+    callSign: Object.prototype.hasOwnProperty.call(override, 'callSign') ? override.callSign : document.callSign,
+    imoNumberOrOtherUniqueIdentifier: Object.prototype.hasOwnProperty.call(override, 'imoNumberOrOtherUniqueIdentifier') ? override.imoNumberOrOtherUniqueIdentifier : document.imoNumberOrOtherUniqueIdentifier,
     species: Object.prototype.hasOwnProperty.call(override, 'species') ? override.species : document.species,
     scientificName: Object.prototype.hasOwnProperty.call(override, 'scientificName') ? override.scientificName : document.scientificName,
     productCode: Object.prototype.hasOwnProperty.call(override, 'productCode') ? override.productCode : document.productCode,
     catchArea: Object.prototype.hasOwnProperty.call(override, 'catchArea') ? override.catchArea : document.catchArea,
+    catchDateFrom: Object.prototype.hasOwnProperty.call(override, 'catchDateFrom') ? override.catchDateFrom : document.catchDateFrom,
+    catchDateTo: Object.prototype.hasOwnProperty.call(override, 'catchDateTo') ? override.catchDateTo : document.catchDateTo,
     catchDates: Object.prototype.hasOwnProperty.call(override, 'catchDates') ? override.catchDates : document.catchDates,
     catchNetWeight: Object.prototype.hasOwnProperty.call(override, 'catchNetWeight') ? override.catchNetWeight : document.catchNetWeight,
+    fishingLicenseNumber: Object.prototype.hasOwnProperty.call(override, 'fishingLicenseNumber') ? override.fishingLicenseNumber : document.fishingLicenseNumber,
+    fishingGear: Object.prototype.hasOwnProperty.call(override, 'fishingGear') ? override.fishingGear : document.fishingGear,
+    estimatedWeightToBeLandedKg: Object.prototype.hasOwnProperty.call(override, 'estimatedWeightToBeLandedKg') ? override.estimatedWeightToBeLandedKg : document.estimatedWeightToBeLandedKg,
+    netCatchWeightKg: Object.prototype.hasOwnProperty.call(override, 'netCatchWeightKg') ? override.netCatchWeightKg : document.netCatchWeightKg,
+    verifiedWeightLandedKg: Object.prototype.hasOwnProperty.call(override, 'verifiedWeightLandedKg') ? override.verifiedWeightLandedKg : document.verifiedWeightLandedKg,
+    importerCompany: Object.prototype.hasOwnProperty.call(override, 'importerCompany') ? override.importerCompany : document.importerCompany,
+    importerName: Object.prototype.hasOwnProperty.call(override, 'importerName') ? override.importerName : document.importerName,
+    importerAddress: Object.prototype.hasOwnProperty.call(override, 'importerAddress') ? override.importerAddress : document.importerAddress,
+    importerEoriNumber: Object.prototype.hasOwnProperty.call(override, 'importerEoriNumber') ? override.importerEoriNumber : document.importerEoriNumber,
+    importerContactDetails: Object.prototype.hasOwnProperty.call(override, 'importerContactDetails') ? override.importerContactDetails : document.importerContactDetails,
+    importerRepresentativeCompany: Object.prototype.hasOwnProperty.call(override, 'importerRepresentativeCompany') ? override.importerRepresentativeCompany : document.importerRepresentativeCompany,
+    importerRepresentativeName: Object.prototype.hasOwnProperty.call(override, 'importerRepresentativeName') ? override.importerRepresentativeName : document.importerRepresentativeName,
+    importerRepresentativeAddress: Object.prototype.hasOwnProperty.call(override, 'importerRepresentativeAddress') ? override.importerRepresentativeAddress : document.importerRepresentativeAddress,
+    importerRepresentativeEoriNumber: Object.prototype.hasOwnProperty.call(override, 'importerRepresentativeEoriNumber') ? override.importerRepresentativeEoriNumber : document.importerRepresentativeEoriNumber,
+    importerRepresentativeContactDetails: Object.prototype.hasOwnProperty.call(override, 'importerRepresentativeContactDetails') ? override.importerRepresentativeContactDetails : document.importerRepresentativeContactDetails,
+    productDescription: Object.prototype.hasOwnProperty.call(override, 'productDescription') ? override.productDescription : document.productDescription,
+    cnCode: Object.prototype.hasOwnProperty.call(override, 'cnCode') ? override.cnCode : document.cnCode,
+    importerDeclarationNetWeightKg: Object.prototype.hasOwnProperty.call(override, 'importerDeclarationNetWeightKg') ? override.importerDeclarationNetWeightKg : document.importerDeclarationNetWeightKg,
+    netFisheryProductWeightKg: Object.prototype.hasOwnProperty.call(override, 'netFisheryProductWeightKg') ? override.netFisheryProductWeightKg : document.netFisheryProductWeightKg,
+    nameOfExporter: Object.prototype.hasOwnProperty.call(override, 'nameOfExporter') ? override.nameOfExporter : document.nameOfExporter,
+    exporterAddress: Object.prototype.hasOwnProperty.call(override, 'exporterAddress') ? override.exporterAddress : document.exporterAddress,
+    transportName: Object.prototype.hasOwnProperty.call(override, 'transportName') ? override.transportName : document.transportName,
+    transportAddress: Object.prototype.hasOwnProperty.call(override, 'transportAddress') ? override.transportAddress : document.transportAddress,
+    meansOfTransportUponArrival: Object.prototype.hasOwnProperty.call(override, 'meansOfTransportUponArrival') ? override.meansOfTransportUponArrival : document.meansOfTransportUponArrival,
+    transportDocumentReference: Object.prototype.hasOwnProperty.call(override, 'transportDocumentReference') ? override.transportDocumentReference : document.transportDocumentReference,
+    countryOfExportationPointOfDeparture: Object.prototype.hasOwnProperty.call(override, 'countryOfExportationPointOfDeparture') ? override.countryOfExportationPointOfDeparture : document.countryOfExportationPointOfDeparture,
+    pointOfDestination: Object.prototype.hasOwnProperty.call(override, 'pointOfDestination') ? override.pointOfDestination : document.pointOfDestination,
+    containerNumbers: Object.prototype.hasOwnProperty.call(override, 'containerNumbers') ? override.containerNumbers : document.containerNumbers,
+    storageStatementDocumentNumber: Object.prototype.hasOwnProperty.call(override, 'storageStatementDocumentNumber') ? override.storageStatementDocumentNumber : document.storageStatementDocumentNumber,
     importerDetails: Object.prototype.hasOwnProperty.call(override, 'importerDetails') ? override.importerDetails : document.importerDetails,
     exporterDetails: Object.prototype.hasOwnProperty.call(override, 'exporterDetails') ? override.exporterDetails : document.exporterDetails,
     processingStatementReference: Object.prototype.hasOwnProperty.call(override, 'processingStatementReference') ? override.processingStatementReference : document.processingStatementReference,
     shipmentTransportReference: Object.prototype.hasOwnProperty.call(override, 'shipmentTransportReference') ? override.shipmentTransportReference : document.shipmentTransportReference
+  }
+
+  if (Object.prototype.hasOwnProperty.call(override, 'vesselName')) {
+    updatedDocument.vessel = override.vesselName
+  }
+
+  if (Object.prototype.hasOwnProperty.call(override, 'nameOfExporter')) {
+    updatedDocument.exporterDetails = override.nameOfExporter
+  }
+
+  if (Object.prototype.hasOwnProperty.call(override, 'importerCompany')) {
+    updatedDocument.importerDetails = override.importerCompany
+  }
+
+  if (Object.prototype.hasOwnProperty.call(override, 'netCatchWeightKg')) {
+    updatedDocument.catchNetWeight = override.netCatchWeightKg
+  }
+
+  if (Object.prototype.hasOwnProperty.call(override, 'transportDocumentReference')) {
+    updatedDocument.shipmentTransportReference = override.transportDocumentReference
   }
 
   return {
