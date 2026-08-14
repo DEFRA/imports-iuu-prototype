@@ -36,6 +36,36 @@
       </div>
     </div>
 
+    <div class="govuk-summary-card govuk-!-margin-bottom-6">
+      <div class="govuk-summary-card__title-wrapper">
+        <h2 class="govuk-summary-card__title">Commodity details</h2>
+      </div>
+      <div class="govuk-summary-card__content">
+        {% if commodityDetails and commodityDetails.length > 0 %}
+          <table class="govuk-table govuk-!-margin-bottom-0">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Commodity code</th>
+                <th scope="col" class="govuk-table__header">Species</th>
+                <th scope="col" class="govuk-table__header">Weight (kg)</th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              {% for commodity in commodityDetails %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">{{ commodity.commodityCode or "—" }}</td>
+                  <td class="govuk-table__cell">{{ commodity.species or "—" }}</td>
+                  <td class="govuk-table__cell">{{ commodity.weight or "—" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="govuk-body govuk-!-margin-bottom-0">No commodity details added.</p>
+        {% endif %}
+      </div>
+    </div>
+
     <div class="govuk-summary-card">
       <div class="govuk-summary-card__title-wrapper">
         <h2 class="govuk-summary-card__title">Extraction summary</h2>

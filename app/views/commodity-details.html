@@ -1,7 +1,6 @@
 {% extends "layouts/main.html" %}
 
 {% set pageName="Commodity details" %}
-{% set commodityRows = data['commodity-details-list'] if data['commodity-details-list'] and data['commodity-details-list'].length > 0 else [{ commodityCode: "", species: "", weight: "" }] %}
 
 {% block content %}
 
@@ -13,174 +12,167 @@
     <p class="govuk-body">Provide details of the seafood products included in this import notification.</p>
     <p class="govuk-body">Add each commodity, species and weight that forms part of this consignment.</p>
 
+    {% if data['commodity-details-list'] and data['commodity-details-list'].length > 0 %}
+      <table class="govuk-table">
+        <caption class="govuk-table__caption govuk-table__caption--m">Commodities added so far</caption>
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Commodity code</th>
+            <th scope="col" class="govuk-table__header">Species</th>
+            <th scope="col" class="govuk-table__header">Weight (kg)</th>
+            <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for commodity in data['commodity-details-list'] %}
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ commodity.commodityCode or "—" }}</td>
+              <td class="govuk-table__cell">{{ commodity.species or "—" }}</td>
+              <td class="govuk-table__cell">{{ commodity.weight or "—" }}</td>
+              <td class="govuk-table__cell">
+                <a href="/remove-commodity?index={{ loop.index0 }}" class="govuk-link govuk-link--no-visited-state">
+                  Remove<span class="govuk-visually-hidden"> commodity {{ loop.index }}</span>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
     <form action="/commodity-details" method="post">
       <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-visually-hidden">Commodity details</legend>
-
-          <div class="govuk-grid-row govuk-!-margin-bottom-2">
-            <div class="govuk-grid-column-one-third">
-              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Commodity code</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Species</p>
-            </div>
-            <div class="govuk-grid-column-one-third">
-              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Weight (kg)</p>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-one-half">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-label--m" for="commodity-entry-code">
+                Commodity code
+              </label>
+              <input
+                class="govuk-input govuk-input--width-20"
+                id="commodity-entry-code"
+                name="commodity-entry-code"
+                type="text"
+                list="commodity-code-suggestions"
+                inputmode="numeric"
+                autocomplete="off"
+                value="{{ data['commodity-entry-code'] }}">
+              <datalist id="commodity-code-suggestions">
+                <option value="03021900" label="Fresh or chilled fish"></option>
+                <option value="03036390" label="Frozen fish"></option>
+                <option value="03036611" label="Frozen fillets"></option>
+                <option value="03038920" label="Other frozen fish products"></option>
+                <option value="03052000" label="Dried, salted or smoked fish"></option>
+                <option value="03061700" label="Frozen crustaceans"></option>
+                <option value="16041311" label="Prepared or preserved sardines"></option>
+                <option value="16042070" label="Prepared fish products"></option>
+              </datalist>
             </div>
           </div>
-
-          <div id="commodity-rows">
-            {% for commodity in commodityRows %}
-              <div class="govuk-grid-row govuk-!-margin-bottom-3" data-commodity-row>
-                <div class="govuk-grid-column-one-third">
-                  <label class="govuk-label govuk-visually-hidden" for="commodity-code-{{ loop.index }}" data-commodity-code-label>Commodity code</label>
-                  <input
-                    class="govuk-input govuk-!-margin-bottom-0"
-                    id="commodity-code-{{ loop.index }}"
-                    data-commodity-code-input
-                    name="commodity-code"
-                    type="text"
-                    autocomplete="off"
-                    placeholder="Enter code"
-                    value="{{ commodity.commodityCode }}">
-                </div>
-                <div class="govuk-grid-column-one-third">
-                  <label class="govuk-label govuk-visually-hidden" for="species-{{ loop.index }}" data-species-label>Species</label>
-                  <input
-                    class="govuk-input govuk-!-margin-bottom-0"
-                    id="species-{{ loop.index }}"
-                    data-species-input
-                    name="commodity-species"
-                    type="text"
-                    autocomplete="off"
-                    placeholder="Enter species"
-                    value="{{ commodity.species }}">
-                </div>
-                <div class="govuk-grid-column-one-third">
-                  <label class="govuk-label govuk-visually-hidden" for="weight-{{ loop.index }}" data-weight-label>Weight in kilograms</label>
-                  <input
-                    class="govuk-input govuk-input--width-10 govuk-!-margin-bottom-0"
-                    id="weight-{{ loop.index }}"
-                    data-weight-input
-                    name="commodity-weight"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    inputmode="decimal"
-                    placeholder="Enter weight"
-                    value="{{ commodity.weight }}">
-                </div>
-                <div class="govuk-grid-column-full govuk-!-margin-top-2">
-                  <a
-                    class="govuk-link"
-                    href="#"
-                    data-remove-commodity
-                    {% if loop.index == 1 %}hidden{% endif %}>
-                    Remove<span class="govuk-visually-hidden"> commodity {{ loop.index }}</span>
-                  </a>
-                </div>
+          <div class="govuk-grid-column-one-quarter">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-label--m" for="commodity-entry-species">
+                Species
+              </label>
+              <input
+                class="govuk-input"
+                id="commodity-entry-species"
+                name="commodity-entry-species"
+                type="text"
+                autocomplete="off"
+                list="species-suggestions"
+                value="{{ data['commodity-entry-species'] }}">
+              <datalist id="species-suggestions"></datalist>
+            </div>
+          </div>
+          <div class="govuk-grid-column-one-quarter">
+            <div class="govuk-form-group">
+              <label class="govuk-label govuk-label--m" for="commodity-entry-weight">
+                Weight
+              </label>
+              <div class="govuk-input__wrapper">
+                <input
+                  class="govuk-input govuk-input--width-10"
+                  id="commodity-entry-weight"
+                  name="commodity-entry-weight"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  value="{{ data['commodity-entry-weight'] }}">
+                <div class="govuk-input__suffix" aria-hidden="true">kg</div>
               </div>
-            {% endfor %}
+            </div>
           </div>
+        </div>
+      </div>
 
-          <p class="govuk-body">
-            <a class="govuk-link" href="#" id="add-another-commodity">Add another commodity</a>
-          </p>
-        </fieldset>
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="add-another">
+          Add another commodity
+        </button>
       </div>
 
       <h2 class="govuk-heading-m">Before you continue</h2>
       <p class="govuk-body">You must include all commodities and species covered by this notification.</p>
       <p class="govuk-body">You can add, remove or update these details later before submitting your notification.</p>
 
-      <button class="govuk-button" data-module="govuk-button">Save and continue</button>
+      <button class="govuk-button" data-module="govuk-button" name="action" value="continue">
+        Save and continue
+      </button>
     </form>
   </div>
 </div>
 
 <script>
   (function () {
-    var rowsContainer = document.getElementById('commodity-rows')
-    var addAnotherLink = document.getElementById('add-another-commodity')
+    var commodityCodeInput = document.getElementById('commodity-entry-code')
+    var speciesSuggestions = document.getElementById('species-suggestions')
 
-    if (!rowsContainer || !addAnotherLink) return
+    if (!commodityCodeInput || !speciesSuggestions) return
 
-    var createCommodityRow = function (rowNumber) {
-      var row = document.createElement('div')
-      row.className = 'govuk-grid-row govuk-!-margin-bottom-3'
-      row.setAttribute('data-commodity-row', '')
-      row.innerHTML = '' +
-        '<div class="govuk-grid-column-one-third">' +
-        '  <label class="govuk-label govuk-visually-hidden" for="commodity-code-' + rowNumber + '" data-commodity-code-label>Commodity code</label>' +
-        '  <input class="govuk-input govuk-!-margin-bottom-0" id="commodity-code-' + rowNumber + '" data-commodity-code-input name="commodity-code" type="text" autocomplete="off" placeholder="Enter code">' +
-        '</div>' +
-        '<div class="govuk-grid-column-one-third">' +
-        '  <label class="govuk-label govuk-visually-hidden" for="species-' + rowNumber + '" data-species-label>Species</label>' +
-        '  <input class="govuk-input govuk-!-margin-bottom-0" id="species-' + rowNumber + '" data-species-input name="commodity-species" type="text" autocomplete="off" placeholder="Enter species">' +
-        '</div>' +
-        '<div class="govuk-grid-column-one-third">' +
-        '  <label class="govuk-label govuk-visually-hidden" for="weight-' + rowNumber + '" data-weight-label>Weight in kilograms</label>' +
-        '  <input class="govuk-input govuk-input--width-10 govuk-!-margin-bottom-0" id="weight-' + rowNumber + '" data-weight-input name="commodity-weight" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Enter weight">' +
-        '</div>' +
-        '<div class="govuk-grid-column-full govuk-!-margin-top-2">' +
-        '  <a class="govuk-link" href="#" data-remove-commodity>Remove<span class="govuk-visually-hidden"> commodity ' + rowNumber + '</span></a>' +
-        '</div>'
-      return row
+    var speciesByCommodityPrefix = {
+      '03': ['Atlantic Cod', 'Haddock', 'Pollock', 'Whiting', 'Hake', 'Monkfish', 'Atlantic Mackerel', 'Atlantic Herring'],
+      '16': ['Atlantic Sardine', 'European Anchovy', 'Salmon', 'Rainbow Trout', 'Skipjack Tuna']
     }
 
-    var renumberRows = function () {
-      var rows = rowsContainer.querySelectorAll('[data-commodity-row]')
-      rows.forEach(function (row, index) {
-        var rowNumber = index + 1
-        var commodityCodeLabel = row.querySelector('[data-commodity-code-label]')
-        var commodityCodeInput = row.querySelector('[data-commodity-code-input]')
-        var speciesLabel = row.querySelector('[data-species-label]')
-        var speciesInput = row.querySelector('[data-species-input]')
-        var weightLabel = row.querySelector('[data-weight-label]')
-        var weightInput = row.querySelector('[data-weight-input]')
-        var removeLink = row.querySelector('[data-remove-commodity]')
+    var commonSpeciesSuggestions = ['Atlantic Cod', 'Haddock', 'Atlantic Mackerel', 'Atlantic Herring', 'Salmon', 'Tuna']
 
-        commodityCodeInput.id = 'commodity-code-' + rowNumber
-        commodityCodeLabel.setAttribute('for', commodityCodeInput.id)
-        speciesInput.id = 'species-' + rowNumber
-        speciesLabel.setAttribute('for', speciesInput.id)
-        weightInput.id = 'weight-' + rowNumber
-        weightLabel.setAttribute('for', weightInput.id)
+    var getCommodityPrefix = function (value) {
+      return String(value || '').replace(/[^0-9]/g, '').slice(0, 2)
+    }
 
-        if (removeLink) {
-          removeLink.hidden = rowNumber === 1
-          removeLink.innerHTML = 'Remove<span class="govuk-visually-hidden"> commodity ' + rowNumber + '</span>'
-        }
+    var buildUniqueList = function (items) {
+      var seen = {}
+      return items.filter(function (item) {
+        if (!item || seen[item]) return false
+        seen[item] = true
+        return true
       })
     }
 
-    addAnotherLink.addEventListener('click', function (event) {
-      event.preventDefault()
-      var nextRowNumber = rowsContainer.querySelectorAll('[data-commodity-row]').length + 1
-      var newRow = createCommodityRow(nextRowNumber)
-      rowsContainer.appendChild(newRow)
-      renumberRows()
-      var firstInput = newRow.querySelector('[data-commodity-code-input]')
-      if (firstInput) firstInput.focus()
+    var populateSpeciesSuggestions = function (commodityPrefix) {
+      var prefixSpecies = speciesByCommodityPrefix[commodityPrefix] || []
+      var options = buildUniqueList(prefixSpecies.concat(commonSpeciesSuggestions))
+      speciesSuggestions.innerHTML = ''
+
+      options.forEach(function (species) {
+        var option = document.createElement('option')
+        option.value = species
+        speciesSuggestions.appendChild(option)
+      })
+    }
+
+    populateSpeciesSuggestions(getCommodityPrefix(commodityCodeInput.value))
+
+    commodityCodeInput.addEventListener('input', function () {
+      populateSpeciesSuggestions(getCommodityPrefix(commodityCodeInput.value))
     })
 
-    rowsContainer.addEventListener('click', function (event) {
-      var removeLink = event.target.closest('[data-remove-commodity]')
-      if (!removeLink) return
-
-      event.preventDefault()
-      var row = removeLink.closest('[data-commodity-row]')
-      if (row) row.remove()
-
-      if (rowsContainer.querySelectorAll('[data-commodity-row]').length === 0) {
-        rowsContainer.appendChild(createCommodityRow(1))
-      }
-
-      renumberRows()
+    commodityCodeInput.addEventListener('change', function () {
+      populateSpeciesSuggestions(getCommodityPrefix(commodityCodeInput.value))
     })
-
-    renumberRows()
   })()
 </script>
 

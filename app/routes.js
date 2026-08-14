@@ -716,35 +716,43 @@ router.post('/arrival-details', (req, res) => {
 // -------------------------------------------------------
 router.post('/commodity-details', (req, res) => {
   const data = req.session.data
-  const toArray = (value) => {
-    if (Array.isArray(value)) return value
-    if (value === undefined || value === null) return []
-    return [value]
+  const action = req.body.action || 'continue'
+
+  if (!Array.isArray(data['commodity-details-list'])) {
+    data['commodity-details-list'] = []
   }
 
-  const commodityCodes = toArray(req.body['commodity-code'])
-  const speciesValues = toArray(req.body['commodity-species'])
-  const weightValues = toArray(req.body['commodity-weight'])
-  const rowCount = Math.max(commodityCodes.length, speciesValues.length, weightValues.length)
-  const commodities = []
+  const commodityCode = String(req.body['commodity-entry-code'] || '').trim()
+  const species = String(req.body['commodity-entry-species'] || '').trim()
+  const weight = String(req.body['commodity-entry-weight'] || '').trim()
+  const hasAnyValue = Boolean(commodityCode || species || weight)
 
-  for (let index = 0; index < rowCount; index += 1) {
-    const commodityCode = String(commodityCodes[index] || '').trim()
-    const species = String(speciesValues[index] || '').trim()
-    const weight = String(weightValues[index] || '').trim()
-    const hasAnyValue = Boolean(commodityCode || species || weight)
-
-    if (hasAnyValue) {
-      commodities.push({
-        commodityCode,
-        species,
-        weight
-      })
-    }
+  if (hasAnyValue) {
+    data['commodity-details-list'].push({
+      commodityCode,
+      species,
+      weight
+    })
   }
 
-  data['commodity-details-list'] = commodities
+  data['commodity-entry-code'] = ''
+  data['commodity-entry-species'] = ''
+  data['commodity-entry-weight'] = ''
+
+  if (action === 'add-another') {
+    return res.redirect('/commodity-details')
+  }
+
   res.redirect('/upload-documents')
+})
+
+router.get('/remove-commodity', (req, res) => {
+  const index = parseInt(req.query.index, 10)
+  const data = req.session.data
+  if (Array.isArray(data['commodity-details-list']) && !isNaN(index)) {
+    data['commodity-details-list'].splice(index, 1)
+  }
+  res.redirect('/commodity-details')
 })
 
 // -------------------------------------------------------
@@ -1149,6 +1157,7 @@ router.get('/review-extraction-a', (req, res) => {
     ? [arrivalDay.padStart(2, '0'), arrivalMonth.padStart(2, '0'), arrivalYear].join('/')
     : fallbackExpectedArrivalDate
   const portOfEntry = data['destination-port'] || fallbackPortOfEntry
+  const commodityDetails = Array.isArray(data['commodity-details-list']) ? data['commodity-details-list'] : []
 
   const buildReviewExtractionAUrl = (summaryPage) => {
     const query = []
@@ -1174,6 +1183,7 @@ router.get('/review-extraction-a', (req, res) => {
     tablePaginationItems,
     tablePreviousUrl: tablePage > 1 ? buildReviewExtractionAUrl(tablePage - 1) + '#document-summary' : '',
     tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionAUrl(tablePage + 1) + '#document-summary' : '',
+    commodityDetails,
     arrivalDetails: {
       portOfEntry,
       expectedDateOfArrival
