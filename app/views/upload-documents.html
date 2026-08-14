@@ -14,6 +14,12 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: errorList
+      }) }}
+    {% endif %}
 
     <span class="govuk-caption-l">Import notification</span>
     <h1 class="govuk-heading-l">Supporting documents</h1>
@@ -37,28 +43,53 @@
 
     <p class="govuk-body">The Port Health Authority may ask for additional information if further evidence is needed.</p>
 
-    <form action="/upload-documents" method="post" enctype="multipart/form-data">
+    <form action="/upload-documents" method="post">
       <input type="hidden" name="documents-selected" id="documents-selected" value="false">
       <input type="hidden" name="documents-file-names" id="documents-file-names" value="">
 
-      <div class="govuk-form-group">
-        {{ govukFileUpload({
-          id: "file-upload-1",
-          name: "fileUpload1",
-          label: {
-            text: "Upload your documents",
-            classes: "govuk-label--m"
-          },
-          hint: {
-            html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
-          },
-          chooseFilesButtonText: "Choose files",
-          multiple: true,
-          attributes: {
-            accept: ".pdf,.jpg,.jpeg,.png"
-          },
-          javascript: true
-        }) }}
+      <div class="govuk-form-group{% if errorMap['file-upload-1'] %} govuk-form-group--error{% endif %}">
+        {% if errorMap['file-upload-1'] %}
+          {{ govukFileUpload({
+            id: "file-upload-1",
+            name: "fileUpload1",
+            label: {
+              text: "Upload your documents",
+              classes: "govuk-label--m"
+            },
+            hint: {
+              html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
+            },
+            chooseFilesButtonText: "Choose files",
+            multiple: true,
+            attributes: {
+              accept: ".pdf,.jpg,.jpeg,.png",
+              onchange: "var files=Array.from(this.files||[]);document.getElementById('documents-selected').value=files.length>0?'true':'false';document.getElementById('documents-file-names').value=files.map(function(file){return file.name}).join('|');if(files.length===0)return;var summary=document.querySelector('.govuk-error-summary');if(summary){summary.remove();}var formGroup=this.closest('.govuk-form-group');if(!formGroup)return;formGroup.classList.remove('govuk-form-group--error');var errorMessage=formGroup.querySelector('.govuk-error-message');if(errorMessage){errorMessage.remove();}"
+            },
+            errorMessage: {
+              text: errorMap['file-upload-1']
+            },
+            javascript: true
+          }) }}
+        {% else %}
+          {{ govukFileUpload({
+            id: "file-upload-1",
+            name: "fileUpload1",
+            label: {
+              text: "Upload your documents",
+              classes: "govuk-label--m"
+            },
+            hint: {
+              html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
+            },
+            chooseFilesButtonText: "Choose files",
+            multiple: true,
+            attributes: {
+              accept: ".pdf,.jpg,.jpeg,.png",
+              onchange: "var files=Array.from(this.files||[]);document.getElementById('documents-selected').value=files.length>0?'true':'false';document.getElementById('documents-file-names').value=files.map(function(file){return file.name}).join('|');if(files.length===0)return;var summary=document.querySelector('.govuk-error-summary');if(summary){summary.remove();}var formGroup=this.closest('.govuk-form-group');if(!formGroup)return;formGroup.classList.remove('govuk-form-group--error');var errorMessage=formGroup.querySelector('.govuk-error-message');if(errorMessage){errorMessage.remove();}"
+            },
+            javascript: true
+          }) }}
+        {% endif %}
       </div>
 
       {% if data['uploaded-documents'] and (data['uploaded-documents'] | length) %}
@@ -83,21 +114,5 @@
 
   </div>
 </div>
-
-<script>
-  (function () {
-    var fileInput = document.getElementById('file-upload-1')
-    var selectedField = document.getElementById('documents-selected')
-    var namesField = document.getElementById('documents-file-names')
-
-    if (!fileInput || !selectedField || !namesField) return
-
-    fileInput.addEventListener('change', function () {
-      var files = Array.from(fileInput.files || [])
-      selectedField.value = files.length > 0 ? 'true' : 'false'
-      namesField.value = files.map(function (file) { return file.name }).join('|')
-    })
-  })()
-</script>
 
 {% endblock %}
