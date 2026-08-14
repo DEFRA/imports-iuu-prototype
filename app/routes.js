@@ -706,9 +706,53 @@ router.post('/arrival-details', (req, res) => {
   const data = req.session.data
   const hasVariantFlow = Boolean(data['extraction-variant'])
   if (hasVariantFlow) {
-    return res.redirect('/upload-documents')
+    return res.redirect('/commodity-details')
   }
   return res.redirect('/species-details')
+})
+
+// -------------------------------------------------------
+// Commodity details (Scenario A and Scenario B extraction journeys)
+// -------------------------------------------------------
+router.post('/commodity-details', (req, res) => {
+  const data = req.session.data
+  const action = req.body.action || 'continue'
+
+  if (!Array.isArray(data['commodity-details-list'])) {
+    data['commodity-details-list'] = []
+  }
+
+  const commodityCode = String(req.body['commodity-entry-code'] || '').trim()
+  const species = String(req.body['commodity-entry-species'] || '').trim()
+  const weight = String(req.body['commodity-entry-weight'] || '').trim()
+  const hasAnyValue = Boolean(commodityCode || species || weight)
+
+  if (hasAnyValue) {
+    data['commodity-details-list'].push({
+      commodityCode,
+      species,
+      weight
+    })
+  }
+
+  data['commodity-entry-code'] = ''
+  data['commodity-entry-species'] = ''
+  data['commodity-entry-weight'] = ''
+
+  if (action === 'add-another') {
+    return res.redirect('/commodity-details')
+  }
+
+  res.redirect('/upload-documents')
+})
+
+router.get('/remove-commodity', (req, res) => {
+  const index = parseInt(req.query.index, 10)
+  const data = req.session.data
+  if (Array.isArray(data['commodity-details-list']) && !isNaN(index)) {
+    data['commodity-details-list'].splice(index, 1)
+  }
+  res.redirect('/commodity-details')
 })
 
 // -------------------------------------------------------
@@ -1113,6 +1157,7 @@ router.get('/review-extraction-a', (req, res) => {
     ? [arrivalDay.padStart(2, '0'), arrivalMonth.padStart(2, '0'), arrivalYear].join('/')
     : fallbackExpectedArrivalDate
   const portOfEntry = data['destination-port'] || fallbackPortOfEntry
+  const commodityDetails = Array.isArray(data['commodity-details-list']) ? data['commodity-details-list'] : []
 
   const buildReviewExtractionAUrl = (summaryPage) => {
     const query = []
@@ -1138,6 +1183,7 @@ router.get('/review-extraction-a', (req, res) => {
     tablePaginationItems,
     tablePreviousUrl: tablePage > 1 ? buildReviewExtractionAUrl(tablePage - 1) + '#document-summary' : '',
     tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionAUrl(tablePage + 1) + '#document-summary' : '',
+    commodityDetails,
     arrivalDetails: {
       portOfEntry,
       expectedDateOfArrival

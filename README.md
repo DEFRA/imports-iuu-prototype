@@ -95,6 +95,7 @@ The prototype also includes a separate inspection journey for Port Health Author
   - Processing Statements
   - Non-Manipulation Declarations
 - Processing Statement and NMD flows use separate Yes/No decision pages before upload pages
+- Scenario A and Scenario B extraction journeys include a commodity details page after arrival details
 - Session data is reset when a user returns to the start page (`/`)
 
 ### Important prototype limitations
