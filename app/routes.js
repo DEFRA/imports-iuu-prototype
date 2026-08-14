@@ -716,6 +716,17 @@ const buildScenarioADocuments = (seedData) => {
   return documents
 }
 
+const getScenarioADocumentTemplate = (documentType) => {
+  const templateByType = {
+    'Additional document': 'review-extraction-a-document-additional-document',
+    'Non-Manipulation Declaration': 'review-extraction-a-document-non-manipulation-declaration',
+    'Processing Statement': 'review-extraction-a-document-processing-statement',
+    'Catch Certificate': 'review-extraction-a-document-catch-certificate'
+  }
+
+  return templateByType[documentType] || 'review-extraction-a-document-catch-certificate'
+}
+
 const buildScenarioAExtractionSummary = (documents) => {
   const complete = documents.filter((item) => item.statusKey === 'complete').length
   const needsReview = documents.filter((item) => item.statusKey === 'needs-review').length
@@ -1531,7 +1542,9 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
   const reviewPageUrl = '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
-  res.render('review-extraction-a-document', {
+  const documentTemplate = getScenarioADocumentTemplate(document.documentType)
+
+  res.render(documentTemplate, {
     document,
     documentIndex,
     totalDocuments: documents.length,
