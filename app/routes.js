@@ -706,9 +706,45 @@ router.post('/arrival-details', (req, res) => {
   const data = req.session.data
   const hasVariantFlow = Boolean(data['extraction-variant'])
   if (hasVariantFlow) {
-    return res.redirect('/upload-documents')
+    return res.redirect('/commodity-details')
   }
   return res.redirect('/species-details')
+})
+
+// -------------------------------------------------------
+// Commodity details (Scenario A and Scenario B extraction journeys)
+// -------------------------------------------------------
+router.post('/commodity-details', (req, res) => {
+  const data = req.session.data
+  const toArray = (value) => {
+    if (Array.isArray(value)) return value
+    if (value === undefined || value === null) return []
+    return [value]
+  }
+
+  const commodityCodes = toArray(req.body['commodity-code'])
+  const speciesValues = toArray(req.body['commodity-species'])
+  const weightValues = toArray(req.body['commodity-weight'])
+  const rowCount = Math.max(commodityCodes.length, speciesValues.length, weightValues.length)
+  const commodities = []
+
+  for (let index = 0; index < rowCount; index += 1) {
+    const commodityCode = String(commodityCodes[index] || '').trim()
+    const species = String(speciesValues[index] || '').trim()
+    const weight = String(weightValues[index] || '').trim()
+    const hasAnyValue = Boolean(commodityCode || species || weight)
+
+    if (hasAnyValue) {
+      commodities.push({
+        commodityCode,
+        species,
+        weight
+      })
+    }
+  }
+
+  data['commodity-details-list'] = commodities
+  res.redirect('/upload-documents')
 })
 
 // -------------------------------------------------------

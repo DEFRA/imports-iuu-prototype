@@ -1,0 +1,187 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName="Commodity details" %}
+{% set commodityRows = data['commodity-details-list'] if data['commodity-details-list'] and data['commodity-details-list'].length > 0 else [{ commodityCode: "", species: "", weight: "" }] %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Tell us about the seafood you are importing</h1>
+
+    <p class="govuk-body">Provide details of the seafood products included in this import notification.</p>
+    <p class="govuk-body">Add each commodity, species and weight that forms part of this consignment.</p>
+
+    <form action="/commodity-details" method="post">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-visually-hidden">Commodity details</legend>
+
+          <div class="govuk-grid-row govuk-!-margin-bottom-2">
+            <div class="govuk-grid-column-one-third">
+              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Commodity code</p>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Species</p>
+            </div>
+            <div class="govuk-grid-column-one-third">
+              <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Weight (kg)</p>
+            </div>
+          </div>
+
+          <div id="commodity-rows">
+            {% for commodity in commodityRows %}
+              <div class="govuk-grid-row govuk-!-margin-bottom-3" data-commodity-row>
+                <div class="govuk-grid-column-one-third">
+                  <label class="govuk-label govuk-visually-hidden" for="commodity-code-{{ loop.index }}" data-commodity-code-label>Commodity code</label>
+                  <input
+                    class="govuk-input govuk-!-margin-bottom-0"
+                    id="commodity-code-{{ loop.index }}"
+                    data-commodity-code-input
+                    name="commodity-code"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Enter code"
+                    value="{{ commodity.commodityCode }}">
+                </div>
+                <div class="govuk-grid-column-one-third">
+                  <label class="govuk-label govuk-visually-hidden" for="species-{{ loop.index }}" data-species-label>Species</label>
+                  <input
+                    class="govuk-input govuk-!-margin-bottom-0"
+                    id="species-{{ loop.index }}"
+                    data-species-input
+                    name="commodity-species"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Enter species"
+                    value="{{ commodity.species }}">
+                </div>
+                <div class="govuk-grid-column-one-third">
+                  <label class="govuk-label govuk-visually-hidden" for="weight-{{ loop.index }}" data-weight-label>Weight in kilograms</label>
+                  <input
+                    class="govuk-input govuk-input--width-10 govuk-!-margin-bottom-0"
+                    id="weight-{{ loop.index }}"
+                    data-weight-input
+                    name="commodity-weight"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    inputmode="decimal"
+                    placeholder="Enter weight"
+                    value="{{ commodity.weight }}">
+                </div>
+                <div class="govuk-grid-column-full govuk-!-margin-top-2">
+                  <a
+                    class="govuk-link"
+                    href="#"
+                    data-remove-commodity
+                    {% if loop.index == 1 %}hidden{% endif %}>
+                    Remove<span class="govuk-visually-hidden"> commodity {{ loop.index }}</span>
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <p class="govuk-body">
+            <a class="govuk-link" href="#" id="add-another-commodity">Add another commodity</a>
+          </p>
+        </fieldset>
+      </div>
+
+      <h2 class="govuk-heading-m">Before you continue</h2>
+      <p class="govuk-body">You must include all commodities and species covered by this notification.</p>
+      <p class="govuk-body">You can add, remove or update these details later before submitting your notification.</p>
+
+      <button class="govuk-button" data-module="govuk-button">Save and continue</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var rowsContainer = document.getElementById('commodity-rows')
+    var addAnotherLink = document.getElementById('add-another-commodity')
+
+    if (!rowsContainer || !addAnotherLink) return
+
+    var createCommodityRow = function (rowNumber) {
+      var row = document.createElement('div')
+      row.className = 'govuk-grid-row govuk-!-margin-bottom-3'
+      row.setAttribute('data-commodity-row', '')
+      row.innerHTML = '' +
+        '<div class="govuk-grid-column-one-third">' +
+        '  <label class="govuk-label govuk-visually-hidden" for="commodity-code-' + rowNumber + '" data-commodity-code-label>Commodity code</label>' +
+        '  <input class="govuk-input govuk-!-margin-bottom-0" id="commodity-code-' + rowNumber + '" data-commodity-code-input name="commodity-code" type="text" autocomplete="off" placeholder="Enter code">' +
+        '</div>' +
+        '<div class="govuk-grid-column-one-third">' +
+        '  <label class="govuk-label govuk-visually-hidden" for="species-' + rowNumber + '" data-species-label>Species</label>' +
+        '  <input class="govuk-input govuk-!-margin-bottom-0" id="species-' + rowNumber + '" data-species-input name="commodity-species" type="text" autocomplete="off" placeholder="Enter species">' +
+        '</div>' +
+        '<div class="govuk-grid-column-one-third">' +
+        '  <label class="govuk-label govuk-visually-hidden" for="weight-' + rowNumber + '" data-weight-label>Weight in kilograms</label>' +
+        '  <input class="govuk-input govuk-input--width-10 govuk-!-margin-bottom-0" id="weight-' + rowNumber + '" data-weight-input name="commodity-weight" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Enter weight">' +
+        '</div>' +
+        '<div class="govuk-grid-column-full govuk-!-margin-top-2">' +
+        '  <a class="govuk-link" href="#" data-remove-commodity>Remove<span class="govuk-visually-hidden"> commodity ' + rowNumber + '</span></a>' +
+        '</div>'
+      return row
+    }
+
+    var renumberRows = function () {
+      var rows = rowsContainer.querySelectorAll('[data-commodity-row]')
+      rows.forEach(function (row, index) {
+        var rowNumber = index + 1
+        var commodityCodeLabel = row.querySelector('[data-commodity-code-label]')
+        var commodityCodeInput = row.querySelector('[data-commodity-code-input]')
+        var speciesLabel = row.querySelector('[data-species-label]')
+        var speciesInput = row.querySelector('[data-species-input]')
+        var weightLabel = row.querySelector('[data-weight-label]')
+        var weightInput = row.querySelector('[data-weight-input]')
+        var removeLink = row.querySelector('[data-remove-commodity]')
+
+        commodityCodeInput.id = 'commodity-code-' + rowNumber
+        commodityCodeLabel.setAttribute('for', commodityCodeInput.id)
+        speciesInput.id = 'species-' + rowNumber
+        speciesLabel.setAttribute('for', speciesInput.id)
+        weightInput.id = 'weight-' + rowNumber
+        weightLabel.setAttribute('for', weightInput.id)
+
+        if (removeLink) {
+          removeLink.hidden = rowNumber === 1
+          removeLink.innerHTML = 'Remove<span class="govuk-visually-hidden"> commodity ' + rowNumber + '</span>'
+        }
+      })
+    }
+
+    addAnotherLink.addEventListener('click', function (event) {
+      event.preventDefault()
+      var nextRowNumber = rowsContainer.querySelectorAll('[data-commodity-row]').length + 1
+      var newRow = createCommodityRow(nextRowNumber)
+      rowsContainer.appendChild(newRow)
+      renumberRows()
+      var firstInput = newRow.querySelector('[data-commodity-code-input]')
+      if (firstInput) firstInput.focus()
+    })
+
+    rowsContainer.addEventListener('click', function (event) {
+      var removeLink = event.target.closest('[data-remove-commodity]')
+      if (!removeLink) return
+
+      event.preventDefault()
+      var row = removeLink.closest('[data-commodity-row]')
+      if (row) row.remove()
+
+      if (rowsContainer.querySelectorAll('[data-commodity-row]').length === 0) {
+        rowsContainer.appendChild(createCommodityRow(1))
+      }
+
+      renumberRows()
+    })
+
+    renumberRows()
+  })()
+</script>
+
+{% endblock %}
