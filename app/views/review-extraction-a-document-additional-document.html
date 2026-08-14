@@ -15,46 +15,19 @@
       </div>
     {% endif %}
 
-    {% for section in document.detailSections %}
-      <div class="govuk-summary-card govuk-!-margin-bottom-6">
-        <div class="govuk-summary-card__title-wrapper">
-          <h2 class="govuk-summary-card__title">{{ section.title }}</h2>
-          <ul class="govuk-summary-card__actions">
-            <li class="govuk-summary-card__action">
-              <a class="govuk-link" href="/review-extraction-a/document/{{ document.id }}/change/{{ section.key }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">
-                Change<span class="govuk-visually-hidden"> {{ section.title }}</span>
-              </a>
-            </li>
-            <li class="govuk-summary-card__action">
-              <strong class="govuk-tag {{ section.confidenceTagClass }}">{{ section.confidenceLabel }}</strong>
-            </li>
-          </ul>
-        </div>
-        <div class="govuk-summary-card__content">
-          <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-            {% for row in section.rows %}
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ row.label }}</dt>
-                <dd class="govuk-summary-list__value">
-                  {% if row.isMissing %}
-                    <span class="govuk-error-message govuk-!-margin-bottom-0">Missing</span>
-                  {% else %}
-                    {{ row.value }}
-                  {% endif %}
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                  {% if row.isMissing %}
-                    <strong class="govuk-tag govuk-tag--red">Missing</strong>
-                  {% else %}
-                    <strong class="govuk-tag {{ row.fieldConfidenceTagClass }}">{{ row.fieldConfidenceLabel }}</strong>
-                  {% endif %}
-                </dd>
-              </div>
-            {% endfor %}
-          </dl>
-        </div>
+    <form action="/review-extraction-a/document/{{ document.id }}/change/additional-document-placeholder{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="additionalDocumentPlaceholder">Placeholder input</label>
+        <input class="govuk-input" id="additionalDocumentPlaceholder" name="additionalDocumentPlaceholder" type="text" value="{{ document.additionalDocumentPlaceholder }}">
       </div>
-    {% endfor %}
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and return
+        </button>
+        <a class="govuk-link" href="{{ reviewPageUrl }}">Cancel</a>
+      </div>
+    </form>
 
   </div>
 </div>

@@ -181,6 +181,12 @@ const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTag
 }
 
 const scenarioASectionEditConfigs = {
+  'additional-document-placeholder': {
+    title: 'Additional document details',
+    fields: [
+      { key: 'additionalDocumentPlaceholder', label: 'Placeholder input', control: 'input' }
+    ]
+  },
   'transport-details-from-cc': {
     title: 'Transport details from CC',
     fields: [
@@ -302,6 +308,92 @@ const buildScenarioADocumentPresentation = (document) => {
   const confidenceTagClass = document.extractionConfidenceTagClass
   const processingReferenceValue = document.processingStatementReference || 'Missing'
 
+  const allDetailSections = [
+    createScenarioADetailSection('transport-details-from-cc', 'Transport details from CC', confidenceLabel, confidenceTagClass, [
+      { label: 'Port of Landing', value: document.portOfLanding },
+      { label: 'Date of Landing', value: document.dateOfLanding }
+    ]),
+    createScenarioADetailSection('catch-certificate-number', 'Catch certificate number', confidenceLabel, confidenceTagClass, [
+      { label: 'Document number', value: document.documentNumber },
+      { label: 'Validating Authority Name', value: document.validatingAuthorityName },
+      { label: 'Validating Authority Address', value: document.validatingAuthorityAddress }
+    ]),
+    createScenarioADetailSection('species', 'Species', confidenceLabel, confidenceTagClass, [
+      { label: 'Species', value: document.species },
+      { label: 'Product code', value: document.productCode }
+    ]),
+    createScenarioADetailSection('catch-area', 'Catch area', confidenceLabel, confidenceTagClass, [
+      { label: 'Catch Area', value: document.catchArea },
+      { label: 'Catch Date from', value: document.catchDateFrom },
+      { label: 'Catch Date to', value: document.catchDateTo }
+    ]),
+    createScenarioADetailSection('fishing-gear', 'Fishing gear', confidenceLabel, confidenceTagClass, [
+      { label: 'Fishing License No.', value: document.fishingLicenseNumber },
+      { label: 'Fishing Gear', value: document.fishingGear }
+    ]),
+    createScenarioADetailSection('weight-quantity', 'Weight/quantity', confidenceLabel, confidenceTagClass, [
+      { label: 'Estimated weight to be landed in kg', value: document.estimatedWeightToBeLandedKg },
+      { label: 'Net catch weight in kg', value: document.netCatchWeightKg },
+      { label: 'Verified weight landed in kg', value: document.verifiedWeightLandedKg }
+    ]),
+    createScenarioADetailSection('vessel-id-and-flag-state', 'Vessel ID and flag State', confidenceLabel, confidenceTagClass, [
+      { label: 'Vessel Name', value: document.vesselName },
+      { label: 'Flag - home port and registration number', value: document.flagHomePortAndRegistrationNumber },
+      { label: 'Call sign', value: document.callSign },
+      { label: 'IMO number or other unique identifier', value: document.imoNumberOrOtherUniqueIdentifier }
+    ]),
+    createScenarioADetailSection('exporter-details', 'exporter details', confidenceLabel, confidenceTagClass, [
+      { label: 'Name of Exporter', value: document.nameOfExporter },
+      { label: 'Exporter Address', value: document.exporterAddress }
+    ]),
+    createScenarioADetailSection('importer-details', 'Importer details', confidenceLabel, confidenceTagClass, [
+      { label: 'Importer Company', value: document.importerCompany },
+      { label: 'Importer Name', value: document.importerName },
+      { label: 'Importer address', value: document.importerAddress },
+      { label: 'Importer EORI number', value: document.importerEoriNumber },
+      { label: 'Importer contact details', value: document.importerContactDetails }
+    ]),
+    createScenarioADetailSection('importer-agent-details', 'Importer agent details', confidenceLabel, confidenceTagClass, [
+      { label: 'Importer Representative Company', value: document.importerRepresentativeCompany },
+      { label: 'Importer Representative Name', value: document.importerRepresentativeName },
+      { label: 'Importer Representative address', value: document.importerRepresentativeAddress },
+      { label: 'Importer Representative EORI number', value: document.importerRepresentativeEoriNumber },
+      { label: 'Importer Representative contact details', value: document.importerRepresentativeContactDetails }
+    ]),
+    createScenarioADetailSection('importer-declaration', 'Importer Declaration', confidenceLabel, confidenceTagClass, [
+      { label: 'Product Description', value: document.productDescription },
+      { label: 'CN code', value: document.cnCode },
+      { label: 'Net weight in kg', value: document.importerDeclarationNetWeightKg },
+      { label: 'Net fishery product weight in kg', value: document.netFisheryProductWeightKg }
+    ]),
+    createScenarioADetailSection('transport-details', 'Transport details', confidenceLabel, confidenceTagClass, [
+      { label: 'Name', value: document.transportName },
+      { label: 'Address', value: document.transportAddress },
+      { label: 'Means of transport upon arrival', value: document.meansOfTransportUponArrival },
+      { label: 'Transport document reference', value: document.transportDocumentReference },
+      { label: 'Country of exportation Port/airport/other point of departure', value: document.countryOfExportationPointOfDeparture },
+      { label: 'Point of destination', value: document.pointOfDestination },
+      { label: 'Container Numbers', value: document.containerNumbers }
+    ]),
+    createScenarioADetailSection('storage-statement-reference-numbers', 'Storage statement reference numbers', confidenceLabel, confidenceTagClass, [
+      { label: 'Document number', value: document.storageStatementDocumentNumber }
+    ]),
+    createScenarioADetailSection('processing-statement-reference-numbers', 'Processing statement reference numbers', confidenceLabel, confidenceTagClass, [
+      { label: 'Document number', value: document.processingStatementReference }
+    ])
+  ]
+
+  let detailSections = allDetailSections
+  if (document.documentType === 'Catch Certificate') {
+    detailSections = allDetailSections.filter((section) => section.key !== 'storage-statement-reference-numbers' && section.key !== 'processing-statement-reference-numbers')
+  } else if (document.documentType === 'Processing Statement') {
+    detailSections = allDetailSections.filter((section) => section.key === 'processing-statement-reference-numbers')
+  } else if (document.documentType === 'Non-Manipulation Declaration') {
+    detailSections = allDetailSections.filter((section) => section.key === 'storage-statement-reference-numbers')
+  } else if (document.documentType === 'Additional document') {
+    detailSections = []
+  }
+
   return {
     summaryFields: [
       { label: 'Document type', value: document.documentType, confidence: confidenceLabel, confidenceTagClass },
@@ -314,80 +406,7 @@ const buildScenarioADocumentPresentation = (document) => {
       { label: 'Document number (Processing statement)', value: processingReferenceValue, confidence: document.processingStatementReference ? confidenceLabel : 'Missing', confidenceTagClass: document.processingStatementReference ? confidenceTagClass : 'govuk-tag--red' },
       { label: 'Extraction confidence', value: document.extractionConfidence + '%', confidence: confidenceLabel, confidenceTagClass }
     ],
-    detailSections: [
-      createScenarioADetailSection('transport-details-from-cc', 'Transport details from CC', confidenceLabel, confidenceTagClass, [
-        { label: 'Port of Landing', value: document.portOfLanding },
-        { label: 'Date of Landing', value: document.dateOfLanding }
-      ]),
-      createScenarioADetailSection('catch-certificate-number', 'Catch certificate number', confidenceLabel, confidenceTagClass, [
-        { label: 'Document number', value: document.documentNumber },
-        { label: 'Validating Authority Name', value: document.validatingAuthorityName },
-        { label: 'Validating Authority Address', value: document.validatingAuthorityAddress }
-      ]),
-      createScenarioADetailSection('species', 'Species', confidenceLabel, confidenceTagClass, [
-        { label: 'Species', value: document.species },
-        { label: 'Product code', value: document.productCode }
-      ]),
-      createScenarioADetailSection('catch-area', 'Catch area', confidenceLabel, confidenceTagClass, [
-        { label: 'Catch Area', value: document.catchArea },
-        { label: 'Catch Date from', value: document.catchDateFrom },
-        { label: 'Catch Date to', value: document.catchDateTo }
-      ]),
-      createScenarioADetailSection('fishing-gear', 'Fishing gear', confidenceLabel, confidenceTagClass, [
-        { label: 'Fishing License No.', value: document.fishingLicenseNumber },
-        { label: 'Fishing Gear', value: document.fishingGear }
-      ]),
-      createScenarioADetailSection('weight-quantity', 'Weight/quantity', confidenceLabel, confidenceTagClass, [
-        { label: 'Estimated weight to be landed in kg', value: document.estimatedWeightToBeLandedKg },
-        { label: 'Net catch weight in kg', value: document.netCatchWeightKg },
-        { label: 'Verified weight landed in kg', value: document.verifiedWeightLandedKg }
-      ]),
-      createScenarioADetailSection('vessel-id-and-flag-state', 'Vessel ID and flag State', confidenceLabel, confidenceTagClass, [
-        { label: 'Vessel Name', value: document.vesselName },
-        { label: 'Flag - home port and registration number', value: document.flagHomePortAndRegistrationNumber },
-        { label: 'Call sign', value: document.callSign },
-        { label: 'IMO number or other unique identifier', value: document.imoNumberOrOtherUniqueIdentifier }
-      ]),
-      createScenarioADetailSection('exporter-details', 'exporter details', confidenceLabel, confidenceTagClass, [
-        { label: 'Name of Exporter', value: document.nameOfExporter },
-        { label: 'Exporter Address', value: document.exporterAddress }
-      ]),
-      createScenarioADetailSection('importer-details', 'Importer details', confidenceLabel, confidenceTagClass, [
-        { label: 'Importer Company', value: document.importerCompany },
-        { label: 'Importer Name', value: document.importerName },
-        { label: 'Importer address', value: document.importerAddress },
-        { label: 'Importer EORI number', value: document.importerEoriNumber },
-        { label: 'Importer contact details', value: document.importerContactDetails }
-      ]),
-      createScenarioADetailSection('importer-agent-details', 'Importer agent details', confidenceLabel, confidenceTagClass, [
-        { label: 'Importer Representative Company', value: document.importerRepresentativeCompany },
-        { label: 'Importer Representative Name', value: document.importerRepresentativeName },
-        { label: 'Importer Representative address', value: document.importerRepresentativeAddress },
-        { label: 'Importer Representative EORI number', value: document.importerRepresentativeEoriNumber },
-        { label: 'Importer Representative contact details', value: document.importerRepresentativeContactDetails }
-      ]),
-      createScenarioADetailSection('importer-declaration', 'Importer Declaration', confidenceLabel, confidenceTagClass, [
-        { label: 'Product Description', value: document.productDescription },
-        { label: 'CN code', value: document.cnCode },
-        { label: 'Net weight in kg', value: document.importerDeclarationNetWeightKg },
-        { label: 'Net fishery product weight in kg', value: document.netFisheryProductWeightKg }
-      ]),
-      createScenarioADetailSection('transport-details', 'Transport details', confidenceLabel, confidenceTagClass, [
-        { label: 'Name', value: document.transportName },
-        { label: 'Address', value: document.transportAddress },
-        { label: 'Means of transport upon arrival', value: document.meansOfTransportUponArrival },
-        { label: 'Transport document reference', value: document.transportDocumentReference },
-        { label: 'Country of exportation Port/airport/other point of departure', value: document.countryOfExportationPointOfDeparture },
-        { label: 'Point of destination', value: document.pointOfDestination },
-        { label: 'Container Numbers', value: document.containerNumbers }
-      ]),
-      createScenarioADetailSection('storage-statement-reference-numbers', 'Storage statement reference numbers', confidenceLabel, confidenceTagClass, [
-        { label: 'Document number', value: document.storageStatementDocumentNumber }
-      ]),
-      createScenarioADetailSection('processing-statement-reference-numbers', 'Processing statement reference numbers', confidenceLabel, confidenceTagClass, [
-        { label: 'Document number', value: document.processingStatementReference }
-      ])
-    ]
+    detailSections
   }
 }
 
@@ -588,7 +607,8 @@ const createScenarioADocument = (index, documentType, confidence, statusKey, see
     pointOfDestination: baseRows.pointOfDestination,
     containerNumbers: baseRows.containerNumbers,
     storageStatementDocumentNumber: baseRows.storageStatementDocumentNumber,
-    shipmentTransportReference: baseRows.transportReference
+    shipmentTransportReference: baseRows.transportReference,
+    additionalDocumentPlaceholder: 'Placeholder value'
   }
 
   return {
@@ -652,6 +672,7 @@ const applyScenarioADocumentOverride = (document, override = null) => {
     pointOfDestination: Object.prototype.hasOwnProperty.call(override, 'pointOfDestination') ? override.pointOfDestination : document.pointOfDestination,
     containerNumbers: Object.prototype.hasOwnProperty.call(override, 'containerNumbers') ? override.containerNumbers : document.containerNumbers,
     storageStatementDocumentNumber: Object.prototype.hasOwnProperty.call(override, 'storageStatementDocumentNumber') ? override.storageStatementDocumentNumber : document.storageStatementDocumentNumber,
+    additionalDocumentPlaceholder: Object.prototype.hasOwnProperty.call(override, 'additionalDocumentPlaceholder') ? override.additionalDocumentPlaceholder : document.additionalDocumentPlaceholder,
     importerDetails: Object.prototype.hasOwnProperty.call(override, 'importerDetails') ? override.importerDetails : document.importerDetails,
     exporterDetails: Object.prototype.hasOwnProperty.call(override, 'exporterDetails') ? override.exporterDetails : document.exporterDetails,
     processingStatementReference: Object.prototype.hasOwnProperty.call(override, 'processingStatementReference') ? override.processingStatementReference : document.processingStatementReference,
