@@ -172,20 +172,37 @@ const buildScenarioADocumentTypeMetadata = (documentType) => {
   return { prefix: 'SUPPORT.DOC.GB', productCode: 'Not available', processingReference: 'Not applicable' }
 }
 
-const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTagClass, rows) => {
+const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTagClass, rows, editedHighConfidenceFieldKeys = []) => {
+  const editedHighConfidenceFields = new Set(
+    Array.isArray(editedHighConfidenceFieldKeys) ? editedHighConfidenceFieldKeys : []
+  )
+
   return {
     key,
     title,
     confidenceLabel,
     confidenceTagClass,
-    rows: rows.map((row) => ({
-      label: row.label,
-      value: row.value || '',
-      isMissing: !row.value,
-      fieldConfidenceLabel: row.fieldConfidenceLabel || confidenceLabel,
-      fieldConfidenceTagClass: row.fieldConfidenceTagClass || confidenceTagClass
-    }))
+    rows: rows.map((row) => {
+      const fieldKey = getScenarioAFieldKeyForRow(key, row.label)
+      const hasEditedHighConfidence = Boolean(fieldKey && row.value && editedHighConfidenceFields.has(fieldKey))
+
+      return {
+        label: row.label,
+        value: row.value || '',
+        isMissing: !row.value,
+        fieldConfidenceLabel: hasEditedHighConfidence ? 'High' : (row.fieldConfidenceLabel || confidenceLabel),
+        fieldConfidenceTagClass: hasEditedHighConfidence ? 'govuk-tag--green' : (row.fieldConfidenceTagClass || confidenceTagClass)
+      }
+    })
   }
+}
+
+const getScenarioAFieldKeyForRow = (sectionKey, rowLabel) => {
+  const sectionConfig = scenarioASectionEditConfigs[sectionKey]
+  if (!sectionConfig || !Array.isArray(sectionConfig.fields)) return ''
+
+  const matchingField = sectionConfig.fields.find((field) => field.label === rowLabel)
+  return matchingField && matchingField.key ? matchingField.key : ''
 }
 
 const scenarioASectionEditConfigs = {
@@ -315,66 +332,73 @@ const buildScenarioADocumentPresentation = (document) => {
   const confidenceLabel = document.extractionConfidenceLabel
   const confidenceTagClass = document.extractionConfidenceTagClass
   const processingReferenceValue = document.processingStatementReference || 'Missing'
+  const editedHighConfidenceFieldKeys = Array.isArray(document.editedHighConfidenceFieldKeys)
+    ? document.editedHighConfidenceFieldKeys
+    : []
+
+  const createDetailSection = (key, title, rows) => {
+    return createScenarioADetailSection(key, title, confidenceLabel, confidenceTagClass, rows, editedHighConfidenceFieldKeys)
+  }
 
   const allDetailSections = [
-    createScenarioADetailSection('transport-details-from-cc', 'Transport details from CC', confidenceLabel, confidenceTagClass, [
+    createDetailSection('transport-details-from-cc', 'Transport details from CC', [
       { label: 'Port of Landing', value: document.portOfLanding },
       { label: 'Date of Landing', value: document.dateOfLanding }
     ]),
-    createScenarioADetailSection('catch-certificate-number', 'Catch certificate number', confidenceLabel, confidenceTagClass, [
+    createDetailSection('catch-certificate-number', 'Catch certificate number', [
       { label: 'Document number', value: document.documentNumber },
       { label: 'Validating Authority Name', value: document.validatingAuthorityName },
       { label: 'Validating Authority Address', value: document.validatingAuthorityAddress }
     ]),
-    createScenarioADetailSection('species', 'Species', confidenceLabel, confidenceTagClass, [
+    createDetailSection('species', 'Species', [
       { label: 'Species', value: document.species },
       { label: 'Product code', value: document.productCode }
     ]),
-    createScenarioADetailSection('catch-area', 'Catch area', confidenceLabel, confidenceTagClass, [
+    createDetailSection('catch-area', 'Catch area', [
       { label: 'Catch Area', value: document.catchArea },
       { label: 'Catch Date from', value: document.catchDateFrom },
       { label: 'Catch Date to', value: document.catchDateTo }
     ]),
-    createScenarioADetailSection('fishing-gear', 'Fishing gear', confidenceLabel, confidenceTagClass, [
+    createDetailSection('fishing-gear', 'Fishing gear', [
       { label: 'Fishing License No.', value: document.fishingLicenseNumber },
       { label: 'Fishing Gear', value: document.fishingGear }
     ]),
-    createScenarioADetailSection('weight-quantity', 'Weight/quantity', confidenceLabel, confidenceTagClass, [
+    createDetailSection('weight-quantity', 'Weight/quantity', [
       { label: 'Estimated weight to be landed in kg', value: document.estimatedWeightToBeLandedKg },
       { label: 'Net catch weight in kg', value: document.netCatchWeightKg },
       { label: 'Verified weight landed in kg', value: document.verifiedWeightLandedKg }
     ]),
-    createScenarioADetailSection('vessel-id-and-flag-state', 'Vessel ID and flag State', confidenceLabel, confidenceTagClass, [
+    createDetailSection('vessel-id-and-flag-state', 'Vessel ID and flag State', [
       { label: 'Vessel Name', value: document.vesselName },
       { label: 'Flag - home port and registration number', value: document.flagHomePortAndRegistrationNumber },
       { label: 'Call sign', value: document.callSign },
       { label: 'IMO number or other unique identifier', value: document.imoNumberOrOtherUniqueIdentifier }
     ]),
-    createScenarioADetailSection('exporter-details', 'exporter details', confidenceLabel, confidenceTagClass, [
+    createDetailSection('exporter-details', 'exporter details', [
       { label: 'Name of Exporter', value: document.nameOfExporter },
       { label: 'Exporter Address', value: document.exporterAddress }
     ]),
-    createScenarioADetailSection('importer-details', 'Importer details', confidenceLabel, confidenceTagClass, [
+    createDetailSection('importer-details', 'Importer details', [
       { label: 'Importer Company', value: document.importerCompany },
       { label: 'Importer Name', value: document.importerName },
       { label: 'Importer address', value: document.importerAddress },
       { label: 'Importer EORI number', value: document.importerEoriNumber },
       { label: 'Importer contact details', value: document.importerContactDetails }
     ]),
-    createScenarioADetailSection('importer-agent-details', 'Importer agent details', confidenceLabel, confidenceTagClass, [
+    createDetailSection('importer-agent-details', 'Importer agent details', [
       { label: 'Importer Representative Company', value: document.importerRepresentativeCompany },
       { label: 'Importer Representative Name', value: document.importerRepresentativeName },
       { label: 'Importer Representative address', value: document.importerRepresentativeAddress },
       { label: 'Importer Representative EORI number', value: document.importerRepresentativeEoriNumber },
       { label: 'Importer Representative contact details', value: document.importerRepresentativeContactDetails }
     ]),
-    createScenarioADetailSection('importer-declaration', 'Importer Declaration', confidenceLabel, confidenceTagClass, [
+    createDetailSection('importer-declaration', 'Importer Declaration', [
       { label: 'Product Description', value: document.productDescription },
       { label: 'CN code', value: document.cnCode },
       { label: 'Net weight in kg', value: document.importerDeclarationNetWeightKg },
       { label: 'Net fishery product weight in kg', value: document.netFisheryProductWeightKg }
     ]),
-    createScenarioADetailSection('transport-details', 'Transport details', confidenceLabel, confidenceTagClass, [
+    createDetailSection('transport-details', 'Transport details', [
       { label: 'Name', value: document.transportName },
       { label: 'Address', value: document.transportAddress },
       { label: 'Means of transport upon arrival', value: document.meansOfTransportUponArrival },
@@ -383,10 +407,10 @@ const buildScenarioADocumentPresentation = (document) => {
       { label: 'Point of destination', value: document.pointOfDestination },
       { label: 'Container Numbers', value: document.containerNumbers }
     ]),
-    createScenarioADetailSection('storage-statement-reference-numbers', 'Storage statement reference numbers', confidenceLabel, confidenceTagClass, [
+    createDetailSection('storage-statement-reference-numbers', 'Storage statement reference numbers', [
       { label: 'Document number', value: document.storageStatementDocumentNumber }
     ]),
-    createScenarioADetailSection('processing-statement-reference-numbers', 'Processing statement reference numbers', confidenceLabel, confidenceTagClass, [
+    createDetailSection('processing-statement-reference-numbers', 'Processing statement reference numbers', [
       { label: 'Document number', value: document.processingStatementReference }
     ])
   ]
@@ -706,6 +730,12 @@ const applyScenarioADocumentOverride = (document, override = null) => {
   if (Object.prototype.hasOwnProperty.call(override, 'transportDocumentReference')) {
     updatedDocument.shipmentTransportReference = override.transportDocumentReference
   }
+
+  const editedHighConfidenceFieldKeys = Array.isArray(override.__highConfidenceEditedFields)
+    ? Array.from(new Set(override.__highConfidenceEditedFields.filter((item) => typeof item === 'string' && item.trim())))
+    : []
+
+  updatedDocument.editedHighConfidenceFieldKeys = editedHighConfidenceFieldKeys
 
   return {
     ...updatedDocument,
@@ -1704,9 +1734,18 @@ router.post('/review-extraction-a/document/:documentId/change/:sectionKey', (req
   const existingOverride = (data['scenario-a-document-overrides'][document.id] && typeof data['scenario-a-document-overrides'][document.id] === 'object')
     ? data['scenario-a-document-overrides'][document.id]
     : {}
+  const existingHighConfidenceEditedFields = Array.isArray(existingOverride.__highConfidenceEditedFields)
+    ? existingOverride.__highConfidenceEditedFields
+    : []
+  const newlyPromotedFieldKeys = sectionConfig.fields
+    .filter((field) => sectionOverride[field.key])
+    .map((field) => field.key)
+  const highConfidenceEditedFields = Array.from(new Set([...existingHighConfidenceEditedFields, ...newlyPromotedFieldKeys]))
+
   data['scenario-a-document-overrides'][document.id] = {
     ...existingOverride,
-    ...sectionOverride
+    ...sectionOverride,
+    __highConfidenceEditedFields: highConfidenceEditedFields
   }
 
   const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
@@ -1748,7 +1787,17 @@ router.post('/review-extraction-a/document/:documentId/change', (req, res) => {
   if (!data['scenario-a-document-overrides'] || typeof data['scenario-a-document-overrides'] !== 'object') {
     data['scenario-a-document-overrides'] = {}
   }
-  data['scenario-a-document-overrides'][document.id] = override
+  const existingOverride = (data['scenario-a-document-overrides'][document.id] && typeof data['scenario-a-document-overrides'][document.id] === 'object')
+    ? data['scenario-a-document-overrides'][document.id]
+    : {}
+  const existingHighConfidenceEditedFields = Array.isArray(existingOverride.__highConfidenceEditedFields)
+    ? existingOverride.__highConfidenceEditedFields
+    : []
+  data['scenario-a-document-overrides'][document.id] = {
+    ...existingOverride,
+    ...override,
+    __highConfidenceEditedFields: existingHighConfidenceEditedFields
+  }
 
   const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
   return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
