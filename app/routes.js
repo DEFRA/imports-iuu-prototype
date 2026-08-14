@@ -1468,14 +1468,27 @@ router.get('/upload-documents', (req, res) => {
 
 router.post('/upload-documents', (req, res) => {
   const data = req.session.data
-  const files = getUploadedFilesFromRequest(req, 'documents')
-  const selectedViaClient = req.body['documents-selected'] === 'true'
+  const files = getUploadedFilesFromRequest(req, 'fileUpload1')
+  const inputFileNameValue = String(req.body.fileUpload1 || '').trim()
+  const inputFileName = inputFileNameValue ? path.basename(inputFileNameValue.replace(/\\/g, '/')) : ''
   const clientFileNamesRaw = req.body['documents-file-names'] || ''
-  const clientFileNames = String(clientFileNamesRaw)
+  const clientFileNamesFromScript = String(clientFileNamesRaw)
     .split('|')
     .map((name) => name.trim())
     .filter(Boolean)
+  const clientFileNames = clientFileNamesFromScript.length > 0
+    ? clientFileNamesFromScript
+    : (inputFileName ? [inputFileName] : [])
   const existingUploads = Array.isArray(data['uploaded-documents']) ? data['uploaded-documents'] : []
+  const uploadValidationError = 'You need to upload at least one document'
+
+  if (!files.length && !clientFileNames.length && !existingUploads.length) {
+    return res.render('upload-documents', {
+      hasErrors: true,
+      errorList: [{ text: uploadValidationError, href: '#file-upload-1' }],
+      errorMap: { 'file-upload-1': uploadValidationError }
+    })
+  }
 
   if (files.length > 0) {
     data['uploaded-documents'] = files.map((file, index) => ({
@@ -1483,10 +1496,8 @@ router.post('/upload-documents', (req, res) => {
     }))
   } else if (clientFileNames.length > 0) {
     data['uploaded-documents'] = clientFileNames.map((filename) => ({ filename }))
-  } else if (existingUploads.length > 0) {
-    data['uploaded-documents'] = existingUploads
   } else {
-    data['uploaded-documents'] = [{ filename: 'uploaded-document-1.pdf' }]
+    data['uploaded-documents'] = existingUploads
   }
 
   data['catch-cert-uploaded-files'] = data['uploaded-documents'].map((item) => item.filename)
