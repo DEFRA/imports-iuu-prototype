@@ -17,6 +17,14 @@ const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
 const supportedExtractionVariants = new Set(['a', 'b'])
 const reviewExtractionReturnPaths = new Set(['/review-extraction-a'])
 
+const normalizeReviewExtractionReturnPath = (value) => {
+  if (typeof value !== 'string') return ''
+  const trimmedValue = value.trim()
+  if (!trimmedValue) return ''
+  const normalizedPath = trimmedValue.startsWith('/') ? trimmedValue : '/' + trimmedValue
+  return reviewExtractionReturnPaths.has(normalizedPath) ? normalizedPath : ''
+}
+
 const isExtractionJourney = (data) => Boolean(data && data['extraction-variant'])
 const getDocumentsCompleteRedirect = (data) => isExtractionJourney(data) ? '/processing' : '/check-answers'
 
@@ -1056,10 +1064,24 @@ router.post('/transport-details', (req, res) => {
 // -------------------------------------------------------
 // Arrival details
 // -------------------------------------------------------
+router.get('/arrival-details', (req, res) => {
+  const data = req.session.data
+  data['arrival-details-return-to'] = normalizeReviewExtractionReturnPath(req.query.returnTo)
+  res.render('arrival-details')
+})
+
 router.post('/arrival-details', (req, res) => {
   const data = req.session.data
+  const returnTo = normalizeReviewExtractionReturnPath(data['arrival-details-return-to'])
+
+  if (returnTo) {
+    data['arrival-details-return-to'] = ''
+    return res.redirect(returnTo)
+  }
+
   const hasVariantFlow = Boolean(data['extraction-variant'])
   if (hasVariantFlow) {
+    data['commodity-details-return-to'] = ''
     return res.redirect('/commodity-details')
   }
   return res.redirect('/species-details')
@@ -1068,9 +1090,18 @@ router.post('/arrival-details', (req, res) => {
 // -------------------------------------------------------
 // Commodity details (Scenario A and Scenario B extraction journeys)
 // -------------------------------------------------------
+router.get('/commodity-details', (req, res) => {
+  const data = req.session.data
+  if (Object.prototype.hasOwnProperty.call(req.query, 'returnTo')) {
+    data['commodity-details-return-to'] = normalizeReviewExtractionReturnPath(req.query.returnTo)
+  }
+  res.render('commodity-details')
+})
+
 router.post('/commodity-details', (req, res) => {
   const data = req.session.data
   const action = req.body.action || 'continue'
+  const returnTo = normalizeReviewExtractionReturnPath(data['commodity-details-return-to'])
 
   if (!Array.isArray(data['commodity-details-list'])) {
     data['commodity-details-list'] = []
@@ -1095,6 +1126,11 @@ router.post('/commodity-details', (req, res) => {
 
   if (action === 'add-another') {
     return res.redirect('/commodity-details')
+  }
+
+  if (returnTo) {
+    data['commodity-details-return-to'] = ''
+    return res.redirect(returnTo)
   }
 
   res.redirect('/upload-documents')
