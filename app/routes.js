@@ -706,35 +706,41 @@ const applyScenarioADocumentOverride = (document, override = null) => {
 }
 
 const buildScenarioADocuments = (seedData) => {
-  const documents = []
-  const statuses = [
-    ...Array.from({ length: 16 }, () => 'complete'),
-    ...Array.from({ length: 2 }, () => 'needs-review'),
-    'incomplete',
-    'manual-check'
-  ]
-  const documentTypes = [
-    ...Array.from({ length: 12 }, () => 'Catch Certificate'),
-    ...Array.from({ length: 4 }, () => 'Processing Statement'),
-    ...Array.from({ length: 2 }, () => 'Non-Manipulation Declaration'),
-    ...Array.from({ length: 2 }, () => 'Additional document')
-  ]
-  const confidenceByStatus = {
-    complete: [99, 98, 98, 97, 97, 96, 96, 96, 95, 95, 94, 94, 93, 93, 92, 91],
-    'needs-review': [79, 74],
-    incomplete: [59],
-    'manual-check': [43]
-  }
-  const counters = { complete: 0, 'needs-review': 0, incomplete: 0, 'manual-check': 0 }
+  const documentPlan = [
+    // Manual checks first in the table.
+    { documentType: 'Catch Certificate', status: 'manual-check', confidence: 43 },
+    { documentType: 'Processing Statement', status: 'manual-check', confidence: 41 },
 
-  for (let i = 0; i < documentTypes.length; i++) {
-    const status = statuses[i]
-    const statusIndex = counters[status]
-    counters[status] = statusIndex + 1
-    const confidence = confidenceByStatus[status][statusIndex]
-    documents.push(createScenarioADocument(i, documentTypes[i], confidence, status, seedData))
-  }
-  return documents
+    // Review-required documents after manual checks.
+    { documentType: 'Catch Certificate', status: 'needs-review', confidence: 79 },
+    { documentType: 'Non-Manipulation Declaration', status: 'needs-review', confidence: 74 },
+
+    // Remaining Catch Certificates.
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 99 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 98 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 97 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 96 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 96 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 95 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 94 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 93 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 92 },
+    { documentType: 'Catch Certificate', status: 'complete', confidence: 91 },
+
+    // Remaining Processing Statements.
+    { documentType: 'Processing Statement', status: 'complete', confidence: 99 },
+    { documentType: 'Processing Statement', status: 'complete', confidence: 98 },
+
+    // Non-Manipulation Declarations.
+    { documentType: 'Non-Manipulation Declaration', status: 'complete', confidence: 98 },
+    { documentType: 'Non-Manipulation Declaration', status: 'complete', confidence: 97 },
+
+    // All Additional documents are complete with high confidence.
+    { documentType: 'Additional document', status: 'complete', confidence: 99 },
+    { documentType: 'Additional document', status: 'complete', confidence: 98 }
+  ]
+
+  return documentPlan.map((item, index) => createScenarioADocument(index, item.documentType, item.confidence, item.status, seedData))
 }
 
 const getScenarioADocumentTemplate = (documentType) => {
