@@ -184,10 +184,11 @@ const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTag
     confidenceLabel,
     confidenceTagClass,
     rows: rows.map((row) => {
-      const fieldKey = getScenarioAFieldKeyForRow(key, row.label)
+      const fieldKey = row.fieldKey || getScenarioAFieldKeyForRow(key, row.label)
       const hasEditedHighConfidence = Boolean(fieldKey && row.value && editedHighConfidenceFields.has(fieldKey))
 
       return {
+        fieldKey,
         label: row.label,
         value: row.value || '',
         isMissing: !row.value,
@@ -204,6 +205,26 @@ const getScenarioAFieldKeyForRow = (sectionKey, rowLabel) => {
 
   const matchingField = sectionConfig.fields.find((field) => field.label === rowLabel)
   return matchingField && matchingField.key ? matchingField.key : ''
+}
+
+const buildScenarioAExtractedFieldKey = (rowLabel, rowIndex) => {
+  const normalizedLabel = String(rowLabel || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+  const labelPart = normalizedLabel || 'field'
+  return 'extracted-field-' + String(rowIndex + 1).padStart(3, '0') + '-' + labelPart
+}
+
+const getScenarioAExtractedFieldControl = (rowLabel, rowValue) => {
+  const normalizedLabel = String(rowLabel || '').toLowerCase()
+  const valueLength = String(rowValue || '').length
+
+  if (/address|details|context|date and time/.test(normalizedLabel) || valueLength > 80) {
+    return { control: 'textarea', rows: 3 }
+  }
+
+  return { control: 'input' }
 }
 
 const scenarioASectionEditConfigs = {
@@ -738,6 +759,56 @@ const applyScenarioADocumentOverride = (document, override = null) => {
 
   updatedDocument.editedHighConfidenceFieldKeys = editedHighConfidenceFieldKeys
 
+  const extractedFieldOverrides = (override.__extractedFieldOverrides && typeof override.__extractedFieldOverrides === 'object')
+    ? override.__extractedFieldOverrides
+    : {}
+  const extractedFieldOverrideEntries = Object.entries(extractedFieldOverrides)
+  const hasExtractedSection = Array.isArray(updatedDocument.detailSections) && updatedDocument.detailSections.some((section) => section.key === 'extracted-fields')
+  const hasExtractedFieldOverrides = extractedFieldOverrideEntries.length > 0
+
+  if (hasExtractedSection || hasExtractedFieldOverrides) {
+    const baseExtractedSection = hasExtractedSection
+      ? updatedDocument.detailSections.find((section) => section.key === 'extracted-fields')
+      : null
+
+    const fallbackRows = extractedFieldOverrideEntries
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([fieldKey, value]) => ({
+        fieldKey,
+        label: fieldKey,
+        value
+      }))
+    const baseRows = (baseExtractedSection && Array.isArray(baseExtractedSection.rows)) ? baseExtractedSection.rows : fallbackRows
+    const mergedRows = baseRows.map((row, rowIndex) => {
+      const fieldKey = row.fieldKey || buildScenarioAExtractedFieldKey(row.label, rowIndex)
+      const fieldValue = Object.prototype.hasOwnProperty.call(extractedFieldOverrides, fieldKey)
+        ? extractedFieldOverrides[fieldKey]
+        : row.value
+
+      return {
+        fieldKey,
+        label: row.label,
+        value: fieldValue
+      }
+    })
+    const sectionTitle = (baseExtractedSection && baseExtractedSection.title) ? baseExtractedSection.title : (updatedDocument.documentType + ' details')
+    const confidenceLabel = updatedDocument.extractionConfidenceLabel || getConfidenceLabel(updatedDocument.extractionConfidence)
+    const confidenceTagClass = updatedDocument.extractionConfidenceTagClass || getConfidenceTagClass(updatedDocument.extractionConfidence)
+
+    updatedDocument.detailSections = [
+      createScenarioADetailSection(
+        'extracted-fields',
+        sectionTitle,
+        confidenceLabel,
+        confidenceTagClass,
+        mergedRows,
+        editedHighConfidenceFieldKeys
+      )
+    ]
+
+    return updatedDocument
+  }
+
   return {
     ...updatedDocument,
     ...buildScenarioADocumentPresentation(updatedDocument)
@@ -835,8 +906,8 @@ const buildScenarioADocuments = (seedData) => {
       detailSections: [{
         key: 'extracted-fields',
         title: seedDocument.documentType + ' details',
-        editable: false,
-        rows: extractedFields.map((field) => ({
+        rows: extractedFields.map((field, rowIndex) => ({
+          fieldKey: buildScenarioAExtractedFieldKey(field.label, rowIndex),
           label: field.label,
           value: field.value,
           isMissing: !field.value,
@@ -865,6 +936,16 @@ const getScenarioADocumentTemplate = (documentType) => {
   }
 
   return templateByType[documentType] || 'review-extraction-a-document-catch-certificate'
+}
+
+const getScenarioADocumentChangeTemplate = (documentType) => {
+  const templateByType = {
+    'Non-Manipulation Declaration': 'review-extraction-a-document-non-manipulation-declaration-change',
+    'Processing Statement': 'review-extraction-a-document-processing-statement-change',
+    'Catch Certificate': 'review-extraction-a-document-catch-certificate-change'
+  }
+
+  return templateByType[documentType] || 'review-extraction-a-document-card-change'
 }
 
 const buildScenarioAExtractionSummary = (documents) => {
@@ -1766,14 +1847,46 @@ router.get('/review-extraction-a/document/:documentId/change/:sectionKey', (req,
     return res.redirect('/review-extraction-a#document-summary')
   }
 
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  if (req.params.sectionKey === 'extracted-fields') {
+    const extractedSection = Array.isArray(document.detailSections)
+      ? document.detailSections.find((section) => section.key === 'extracted-fields')
+      : null
+
+    if (!extractedSection || !Array.isArray(extractedSection.rows)) {
+      const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+      return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+    }
+
+    const sectionFields = extractedSection.rows.map((row, rowIndex) => {
+      const fieldKey = row.fieldKey || buildScenarioAExtractedFieldKey(row.label, rowIndex)
+      const fieldControl = getScenarioAExtractedFieldControl(row.label, row.value)
+
+      return {
+        key: fieldKey,
+        label: row.label,
+        value: row.value || '',
+        control: fieldControl.control,
+        rows: fieldControl.rows
+      }
+    })
+
+    return res.render(getScenarioADocumentChangeTemplate(document.documentType), {
+      document,
+      sectionKey: req.params.sectionKey,
+      sectionTitle: extractedSection.title,
+      sectionFields,
+      tablePage
+    })
+  }
+
   const sectionConfig = scenarioASectionEditConfigs[req.params.sectionKey]
   if (!sectionConfig) {
     const tablePageQuery = req.query.tablePage ? '?tablePage=' + encodeURIComponent(req.query.tablePage) : ''
     return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
   }
-
-  const requestedTablePage = parseInt(req.query.tablePage, 10)
-  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
   const sectionFields = sectionConfig.fields.map((field) => ({
     ...field,
     value: Object.prototype.hasOwnProperty.call(document, field.key) ? document[field.key] : ''
@@ -1799,14 +1912,62 @@ router.post('/review-extraction-a/document/:documentId/change/:sectionKey', (req
     return res.redirect('/review-extraction-a#document-summary')
   }
 
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  if (req.params.sectionKey === 'extracted-fields') {
+    const extractedSection = Array.isArray(document.detailSections)
+      ? document.detailSections.find((section) => section.key === 'extracted-fields')
+      : null
+
+    if (!extractedSection || !Array.isArray(extractedSection.rows)) {
+      const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+      return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+    }
+
+    if (!data['scenario-a-document-overrides'] || typeof data['scenario-a-document-overrides'] !== 'object') {
+      data['scenario-a-document-overrides'] = {}
+    }
+
+    const existingOverride = (data['scenario-a-document-overrides'][document.id] && typeof data['scenario-a-document-overrides'][document.id] === 'object')
+      ? data['scenario-a-document-overrides'][document.id]
+      : {}
+    const existingHighConfidenceEditedFields = Array.isArray(existingOverride.__highConfidenceEditedFields)
+      ? existingOverride.__highConfidenceEditedFields
+      : []
+    const normalizeValue = (value) => String(value || '').trim()
+    const extractedFieldOverrides = (existingOverride.__extractedFieldOverrides && typeof existingOverride.__extractedFieldOverrides === 'object')
+      ? { ...existingOverride.__extractedFieldOverrides }
+      : {}
+    const newlyPromotedFieldKeys = []
+
+    for (const [rowIndex, row] of extractedSection.rows.entries()) {
+      const fieldKey = row.fieldKey || buildScenarioAExtractedFieldKey(row.label, rowIndex)
+      const fieldValue = normalizeValue(req.body[fieldKey])
+      extractedFieldOverrides[fieldKey] = fieldValue
+
+      if (fieldValue) {
+        newlyPromotedFieldKeys.push(fieldKey)
+      }
+    }
+
+    const highConfidenceEditedFields = Array.from(new Set([...existingHighConfidenceEditedFields, ...newlyPromotedFieldKeys]))
+
+    data['scenario-a-document-overrides'][document.id] = {
+      ...existingOverride,
+      __extractedFieldOverrides: extractedFieldOverrides,
+      __highConfidenceEditedFields: highConfidenceEditedFields
+    }
+
+    const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+    return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+  }
+
   const sectionConfig = scenarioASectionEditConfigs[req.params.sectionKey]
   if (!sectionConfig) {
     const tablePageQuery = req.query.tablePage ? '?tablePage=' + encodeURIComponent(req.query.tablePage) : ''
     return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
   }
-
-  const requestedTablePage = parseInt(req.query.tablePage, 10)
-  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
   const normalizeValue = (value) => String(value || '').trim()
   const sectionOverride = {}
 
