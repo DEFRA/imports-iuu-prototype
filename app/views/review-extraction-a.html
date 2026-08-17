@@ -88,21 +88,21 @@
         <dl class="govuk-summary-list govuk-!-margin-bottom-0">
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Documents analysed</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['documentsAnalysed'] }}</dd>
+            <dd class="govuk-summary-list__value">{{ extractionSummary.documentsAnalysed }}</dd>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Manual check required</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['manualCheckRequired'] }}</dd>
+            <dd class="govuk-summary-list__value">{{ extractionSummary.manualCheckRequired }}</dd>
             <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--red">Manual check required</strong></dd>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Needs review</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['reviewRequiredTotal'] }}</dd>
+            <dd class="govuk-summary-list__value">{{ extractionSummary.reviewRequiredTotal }}</dd>
             <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Needs review</strong></dd>
           </div>
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Complete</dt>
-            <dd class="govuk-summary-list__value">{{ data['scenario-a-summary']['complete'] }}</dd>
+            <dd class="govuk-summary-list__value">{{ extractionSummary.complete }}</dd>
             <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">Complete</strong></dd>
           </div>
         </dl>
