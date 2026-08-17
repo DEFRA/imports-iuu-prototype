@@ -766,7 +766,7 @@ const applyScenarioADocumentOverride = (document, override = null) => {
   const hasExtractedSection = Array.isArray(updatedDocument.detailSections) && updatedDocument.detailSections.some((section) => section.key === 'extracted-fields')
   const hasExtractedFieldOverrides = extractedFieldOverrideEntries.length > 0
 
-  if (hasExtractedSection || hasExtractedFieldOverrides) {
+  if (hasExtractedSection || (hasExtractedFieldOverrides && updatedDocument.documentType !== 'Catch Certificate')) {
     const baseExtractedSection = hasExtractedSection
       ? updatedDocument.detailSections.find((section) => section.key === 'extracted-fields')
       : null
@@ -921,6 +921,13 @@ const buildScenarioADocuments = (seedData) => {
       netCatchWeightKg: fieldValues['Net Catch Weight In Kg'] || fieldValues['Weight In'] || '',
       importerCompany: fieldValues['Importer Company'] || '',
       processingStatementReference: fieldValues['Document Number'] || ''
+    }
+
+    if (seedDocument.documentType === 'Catch Certificate') {
+      return {
+        ...updatedDocument,
+        ...buildScenarioADocumentPresentation(updatedDocument)
+      }
     }
 
     return updatedDocument
