@@ -14,6 +14,7 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'sample-documents')
+const prototypeSeedDocuments = require('./data/prototype-seed-documents.json')
 const supportedExtractionVariants = new Set(['a', 'b'])
 const reviewExtractionReturnPaths = new Set(['/review-extraction-a'])
 
@@ -744,41 +745,115 @@ const applyScenarioADocumentOverride = (document, override = null) => {
 }
 
 const buildScenarioADocuments = (seedData) => {
-  const documentPlan = [
-    // Manual checks first in the table.
-    { documentType: 'Catch Certificate', status: 'manual-check', confidence: 43 },
-    { documentType: 'Processing Statement', status: 'manual-check', confidence: 41 },
-
-    // Review-required documents after manual checks.
-    { documentType: 'Catch Certificate', status: 'needs-review', confidence: 79 },
-    { documentType: 'Non-Manipulation Declaration', status: 'needs-review', confidence: 74 },
-
-    // Remaining Catch Certificates.
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 99 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 98 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 97 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 96 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 96 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 95 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 94 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 93 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 92 },
-    { documentType: 'Catch Certificate', status: 'complete', confidence: 91 },
-
-    // Remaining Processing Statements.
-    { documentType: 'Processing Statement', status: 'complete', confidence: 99 },
-    { documentType: 'Processing Statement', status: 'complete', confidence: 98 },
-
-    // Non-Manipulation Declarations.
-    { documentType: 'Non-Manipulation Declaration', status: 'complete', confidence: 98 },
-    { documentType: 'Non-Manipulation Declaration', status: 'complete', confidence: 97 },
-
-    // All Additional documents are complete with high confidence.
-    { documentType: 'Additional document', status: 'complete', confidence: 99 },
-    { documentType: 'Additional document', status: 'complete', confidence: 98 }
+  const manualCheckMissingFields = [
+    'Validating Authority Name',
+    'Validating Authority Address',
+    'Product Code',
+    'Catch Area',
+    'Catch Date From',
+    'Catch Date To',
+    'Fishing License No.',
+    'Fishing Gear',
+    'Estimated Weight To Be Landed In Kg',
+    'Net Catch Weight In Kg',
+    'Verified Weight Landed In Kg',
+    'Flag - Home Port And Registration Number',
+    'Call Sign',
+    'IMO Number Or Other Unique Identifier',
+    'Name Of Exporter',
+    'Exporter Address',
+    'Importer EORI Number',
+    'Importer Contact Details',
+    'Importer Representative Company',
+    'Importer Representative Name',
+    'Importer Representative Address',
+    'Importer Representative EORI Number',
+    'Importer Representative Contact Details',
+    'Product Description',
+    'CN Code',
+    'Net Weight In Kg',
+    'Net Fishery Product Weight In Kg',
+    'Transport Document Reference',
+    'Country Of Exportation Port/Airport/Other Point Of Departure',
+    'Container Numbers'
   ]
+  const needsReviewMissingFields = [
+    'Validating Authority Address',
+    'Catch Area',
+    'Catch Date To',
+    'Verified Weight Landed In Kg',
+    'IMO Number Or Other Unique Identifier',
+    'Transport Document Reference'
+  ]
+  const documentStates = {
+    'CC-001': {
+      statusKey: 'manual-check',
+      confidence: 43,
+      missingFields: manualCheckMissingFields
+    },
+    'CC-002': {
+      statusKey: 'manual-check',
+      confidence: 41,
+      missingFields: manualCheckMissingFields
+    },
+    'CC-003': {
+      statusKey: 'needs-review',
+      confidence: 79,
+      missingFields: needsReviewMissingFields
+    },
+    'CC-004': {
+      statusKey: 'needs-review',
+      confidence: 74,
+      missingFields: needsReviewMissingFields
+    }
+  }
 
-  return documentPlan.map((item, index) => createScenarioADocument(index, item.documentType, item.confidence, item.status, seedData))
+  return prototypeSeedDocuments.map((seedDocument, index) => {
+    const state = documentStates[seedDocument.reference] || {
+      statusKey: 'complete',
+      confidence: 91 + (index % 9),
+      missingFields: []
+    }
+    const missingFields = new Set(state.missingFields)
+    const extractedFields = seedDocument.fields.map((field) => ({
+      ...field,
+      value: missingFields.has(field.label) ? '' : field.value
+    }))
+    const fieldsExtracted = extractedFields.filter((field) => field.value).length
+    const confidenceLabel = getConfidenceLabel(state.confidence)
+    const confidenceTagClass = getConfidenceTagClass(state.confidence)
+    const document = createScenarioADocument(index, seedDocument.documentType, state.confidence, state.statusKey, seedData)
+    const fieldValues = Object.fromEntries(extractedFields.map((field) => [field.label, field.value]))
+    const updatedDocument = {
+      ...document,
+      reference: seedDocument.reference,
+      documentNumber: seedDocument.documentNumber,
+      referenceNumber: seedDocument.documentNumber,
+      fieldsExtracted,
+      totalFields: seedDocument.fields.length,
+      fieldsExtractedDisplay: fieldsExtracted + '/' + seedDocument.fields.length,
+      detailSections: [{
+        key: 'extracted-fields',
+        title: seedDocument.documentType + ' details',
+        editable: false,
+        rows: extractedFields.map((field) => ({
+          label: field.label,
+          value: field.value,
+          isMissing: !field.value,
+          fieldConfidenceLabel: confidenceLabel,
+          fieldConfidenceTagClass: confidenceTagClass
+        }))
+      }],
+      species: fieldValues.Species || '',
+      vesselName: fieldValues['Vessel Name'] || '',
+      catchArea: fieldValues['Catch Area'] || '',
+      netCatchWeightKg: fieldValues['Net Catch Weight In Kg'] || fieldValues['Weight In'] || '',
+      importerCompany: fieldValues['Importer Company'] || '',
+      processingStatementReference: fieldValues['Document Number'] || ''
+    }
+
+    return updatedDocument
+  })
 }
 
 const getScenarioADocumentTemplate = (documentType) => {
@@ -1595,6 +1670,7 @@ router.get('/review-extraction-a', (req, res) => {
   }
 
   res.render('review-extraction-a', {
+    extractionSummary: data['scenario-a-summary'],
     totalDocuments,
     tableDocuments,
     tablePage,
