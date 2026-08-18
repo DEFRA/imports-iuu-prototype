@@ -12,7 +12,7 @@
     <div class="govuk-grid-row govuk-!-margin-bottom-6">
       <div class="govuk-grid-column-one-quarter">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Awaiting inspection</p>
-        <p class="govuk-heading-l govuk-!-margin-bottom-0">3</p>
+        <p class="govuk-heading-l govuk-!-margin-bottom-0">{{ toInspectCount }}</p>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <p class="govuk-body-s govuk-!-margin-bottom-1">In progress</p>
@@ -34,7 +34,7 @@
       <h2 class="govuk-tabs__title">Inspection work queue</h2>
       <ul class="govuk-tabs__list">
         <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-          <a class="govuk-tabs__tab" href="#to-inspect">To inspect (3)</a>
+          <a class="govuk-tabs__tab" href="#to-inspect">To inspect ({{ toInspectCount }})</a>
         </li>
         <li class="govuk-tabs__list-item">
           <a class="govuk-tabs__tab" href="#in-progress">In progress (1)</a>
@@ -52,13 +52,14 @@
           <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" data-module="govuk-button">Search</button>
         </form>
 
-        <p class="govuk-body govuk-!-margin-bottom-4">Showing <strong>1 to 3</strong> of <strong>3</strong> results</p>
+        <p class="govuk-body govuk-!-margin-bottom-4">Showing <strong>1 to {{ toInspectCount }}</strong> of <strong>{{ toInspectCount }}</strong> results</p>
 
         <table class="govuk-table">
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th class="govuk-table__header" scope="col">Reference</th>
               <th class="govuk-table__header" scope="col">Importer</th>
+              <th class="govuk-table__header" scope="col">Days until expected</th>
               <th class="govuk-table__header" scope="col">Arrival</th>
               <th class="govuk-table__header" scope="col">Product and quantity</th>
               <th class="govuk-table__header" scope="col">Vessel or country</th>
@@ -68,39 +69,38 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell"><a href="/inspection/GB-IUU-2026-10482" class="govuk-link">GB-IUU-2026-10482</a></td>
-              <td class="govuk-table__cell">Atlantic Seafoods Ltd</td>
-              <td class="govuk-table__cell">3 Aug 2026<br>2:30pm</td>
-              <td class="govuk-table__cell">Frozen yellowfin tuna<br>24,800 kg · 1,240 cartons</td>
-              <td class="govuk-table__cell">MV Ocean Star<br>Senegal</td>
-              <td class="govuk-table__cell">
-                <strong class="govuk-tag govuk-tag--red govuk-!-margin-bottom-1">Mismatch flagged</strong><br>
-                Notification weight differs from catch certificate
-              </td>
-              <td class="govuk-table__cell">Catch certificate received<br>Processing statement received<br>NMD received</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--red">Inspection required</strong></td>
-            </tr>
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">GB-IUU-2026-10510</td>
-              <td class="govuk-table__cell">Harbour Catch Imports</td>
-              <td class="govuk-table__cell">3 Aug 2026<br>6:10pm</td>
-              <td class="govuk-table__cell">Crab meat<br>4,500 kg · 450 boxes</td>
-              <td class="govuk-table__cell">FV Arktis<br>Norway</td>
-              <td class="govuk-table__cell">Authority verification pending</td>
-              <td class="govuk-table__cell">Catch certificate received<br>PS and NMD — authority check in progress</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--blue">Ready to start</strong></td>
-            </tr>
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">GB-IUU-2026-10344</td>
-              <td class="govuk-table__cell">North Coast Marine Exports</td>
-              <td class="govuk-table__cell">4 Aug 2026<br>9:00am</td>
-              <td class="govuk-table__cell">Frozen cod fillets<br>9,200 kg · 920 boxes</td>
-              <td class="govuk-table__cell">Icelandic waters</td>
-              <td class="govuk-table__cell">Random selection</td>
-              <td class="govuk-table__cell">Catch certificate received<br>Processing statement received</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--grey">Awaiting allocation</strong></td>
-            </tr>
+            {% for notification in inspectionNotifications %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                  {% if notification.hasJourneyLink %}
+                    <a href="/inspection/{{ notification.reference }}" class="govuk-link">{{ notification.reference }}</a>
+                  {% else %}
+                    {{ notification.reference }}
+                  {% endif %}
+                </td>
+                <td class="govuk-table__cell">{{ notification.importer }}</td>
+                <td class="govuk-table__cell">{{ notification.daysUntilExpected }}</td>
+                <td class="govuk-table__cell">{{ notification.arrivalDateDisplay }}<br>{{ notification.arrivalTime }}</td>
+                <td class="govuk-table__cell">{{ notification.product }}<br>{{ notification.quantity }}</td>
+                <td class="govuk-table__cell">
+                  {% for line in notification.vesselOrCountryLines %}
+                    {{ line }}{% if not loop.last %}<br>{% endif %}
+                  {% endfor %}
+                </td>
+                <td class="govuk-table__cell">
+                  {% if notification.reasonTagText %}
+                    <strong class="govuk-tag {{ notification.reasonTagClass }} govuk-!-margin-bottom-1">{{ notification.reasonTagText }}</strong><br>
+                  {% endif %}
+                  {{ notification.reasonText }}
+                </td>
+                <td class="govuk-table__cell">
+                  {% for line in notification.documentsLines %}
+                    {{ line }}{% if not loop.last %}<br>{% endif %}
+                  {% endfor %}
+                </td>
+                <td class="govuk-table__cell"><strong class="govuk-tag {{ notification.statusTagClass }}">{{ notification.statusTagText }}</strong></td>
+              </tr>
+            {% endfor %}
           </tbody>
         </table>
 

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l">IUU notification reference GB-IUU-2026-10482</span>
+    <span class="govuk-caption-l">IUU notification reference {{ inspectionNotification.reference or "GB-IUU-2026-10482" }}</span>
     <h1 class="govuk-heading-xl">Consignment overview</h1>
     <div class="govuk-inset-text">All information shown is fictional and for user research only.</div>
   </div>
@@ -19,7 +19,7 @@
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Declared quantity</dt><dd class="govuk-summary-list__value">24,800 kg (catch certificate)</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Exporting country</dt><dd class="govuk-summary-list__value">Senegal</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">MV Ocean Star (IMO 9214567)</dd></div>
-      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">Port of Felixstowe, 3 August 2026 at 2:30pm</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">Port of Felixstowe, {{ inspectionNotification.arrivalDateDisplay or "3 Aug 2026" }} at {{ inspectionNotification.arrivalTime or "2:30pm" }}</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Container and expected seal</dt><dd class="govuk-summary-list__value">MSCU 7391842, seal SN448901, 1,240 cartons expected</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">IUU documents received</dt><dd class="govuk-summary-list__value">Catch certificate (CC-SEN-2026-7784)<br>Processing statement (PS-SEN-2026-0441)<br>Non-manipulation declaration (NMD-MMO-2026-0093)</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Checks already performed</dt><dd class="govuk-summary-list__value">Notification to document comparison flagged a possible weight mismatch; authority verification pending</dd></div>
