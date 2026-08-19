@@ -16,7 +16,7 @@
       </div>
       <div class="govuk-grid-column-one-quarter">
         <p class="govuk-body-s govuk-!-margin-bottom-1">In progress</p>
-        <p class="govuk-heading-l govuk-!-margin-bottom-0">1</p>
+        <p class="govuk-heading-l govuk-!-margin-bottom-0">{{ inProgressCount }}</p>
       </div>
       <div class="govuk-grid-column-one-quarter">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Completed today</p>
@@ -37,22 +37,58 @@
           <a class="govuk-tabs__tab" href="#to-inspect">To inspect ({{ toInspectCount }})</a>
         </li>
         <li class="govuk-tabs__list-item">
-          <a class="govuk-tabs__tab" href="#in-progress">In progress (1)</a>
+          <a class="govuk-tabs__tab" href="#in-progress">In progress ({{ inProgressCount }})</a>
         </li>
       </ul>
 
       <div class="govuk-tabs__panel" id="to-inspect">
         <form method="get" action="/inspections" class="govuk-!-margin-bottom-4">
-          <div class="govuk-form-group govuk-!-margin-bottom-2">
-            <label class="govuk-label" for="search-queue">
-              Search by reference, importer or vessel
-            </label>
-            <input class="govuk-input govuk-input--width-30" id="search-queue" name="search" type="search" value="{{ data['search'] }}">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h3 class="govuk-fieldset__heading">Filter notifications</h3>
+            </legend>
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="filter-reference">
+                    Reference
+                  </label>
+                  <input class="govuk-input govuk-input--width-20" id="filter-reference" name="filter-reference" type="text" value="{{ inspectionFilters.reference }}">
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="filter-importer">
+                    Importer
+                  </label>
+                  <input class="govuk-input govuk-input--width-20" id="filter-importer" name="filter-importer" type="text" value="{{ inspectionFilters.importer }}">
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="filter-days-until-expected">
+                    Days until expected
+                  </label>
+                  <input class="govuk-input govuk-input--width-5" id="filter-days-until-expected" name="filter-days-until-expected" type="text" inputmode="numeric" value="{{ inspectionFilters.daysUntilExpected }}">
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="filter-arrival">
+                    Arrival
+                  </label>
+                  <input class="govuk-input govuk-input--width-20" id="filter-arrival" name="filter-arrival" type="text" value="{{ inspectionFilters.arrival }}">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <div class="govuk-button-group govuk-!-margin-bottom-0">
+            <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">Apply filters</button>
+            <a href="/inspections" class="govuk-link">Clear filters</a>
           </div>
-          <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" data-module="govuk-button">Search</button>
         </form>
 
-        <p class="govuk-body govuk-!-margin-bottom-4">Showing <strong>1 to {{ toInspectCount }}</strong> of <strong>{{ toInspectCount }}</strong> results</p>
+        <p class="govuk-body govuk-!-margin-bottom-4">Showing <strong>{{ filteredToInspectStart }} to {{ filteredToInspectCount }}</strong> of <strong>{{ toInspectCount }}</strong> results</p>
 
         <table class="govuk-table">
           <thead class="govuk-table__head">
@@ -69,80 +105,125 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            {% for notification in inspectionNotifications %}
+            {% if filteredToInspectCount > 0 %}
+              {% for notification in inspectionNotifications %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">
+                    {% if notification.hasJourneyLink %}
+                      <a href="/inspection/{{ notification.reference }}" class="govuk-link">{{ notification.reference }}</a>
+                    {% else %}
+                      {{ notification.reference }}
+                    {% endif %}
+                  </td>
+                  <td class="govuk-table__cell">{{ notification.importer }}</td>
+                  <td class="govuk-table__cell">{{ notification.daysUntilExpected }}</td>
+                  <td class="govuk-table__cell">{{ notification.arrivalDateDisplay }}<br>{{ notification.arrivalTime }}</td>
+                  <td class="govuk-table__cell">{{ notification.product }}<br>{{ notification.quantity }}</td>
+                  <td class="govuk-table__cell">
+                    {% for line in notification.vesselOrCountryLines %}
+                      {{ line }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {% if notification.reasonTagText %}
+                      <strong class="govuk-tag {{ notification.reasonTagClass }} govuk-!-margin-bottom-1">{{ notification.reasonTagText }}</strong><br>
+                    {% endif %}
+                    {{ notification.reasonText }}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {% for line in notification.documentsLines %}
+                      {{ line }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+                  <td class="govuk-table__cell"><strong class="govuk-tag {{ notification.statusTagClass }}">{{ notification.statusTagText }}</strong></td>
+                </tr>
+              {% endfor %}
+            {% else %}
               <tr class="govuk-table__row">
-                <td class="govuk-table__cell">
-                  {% if notification.hasJourneyLink %}
-                    <a href="/inspection/{{ notification.reference }}" class="govuk-link">{{ notification.reference }}</a>
-                  {% else %}
-                    {{ notification.reference }}
-                  {% endif %}
-                </td>
-                <td class="govuk-table__cell">{{ notification.importer }}</td>
-                <td class="govuk-table__cell">{{ notification.daysUntilExpected }}</td>
-                <td class="govuk-table__cell">{{ notification.arrivalDateDisplay }}<br>{{ notification.arrivalTime }}</td>
-                <td class="govuk-table__cell">{{ notification.product }}<br>{{ notification.quantity }}</td>
-                <td class="govuk-table__cell">
-                  {% for line in notification.vesselOrCountryLines %}
-                    {{ line }}{% if not loop.last %}<br>{% endif %}
-                  {% endfor %}
-                </td>
-                <td class="govuk-table__cell">
-                  {% if notification.reasonTagText %}
-                    <strong class="govuk-tag {{ notification.reasonTagClass }} govuk-!-margin-bottom-1">{{ notification.reasonTagText }}</strong><br>
-                  {% endif %}
-                  {{ notification.reasonText }}
-                </td>
-                <td class="govuk-table__cell">
-                  {% for line in notification.documentsLines %}
-                    {{ line }}{% if not loop.last %}<br>{% endif %}
-                  {% endfor %}
-                </td>
-                <td class="govuk-table__cell"><strong class="govuk-tag {{ notification.statusTagClass }}">{{ notification.statusTagText }}</strong></td>
+                <td class="govuk-table__cell" colspan="9">No inspections match these filters.</td>
               </tr>
-            {% endfor %}
+            {% endif %}
           </tbody>
         </table>
 
-        <nav class="govuk-pagination" role="navigation" aria-label="Pagination">
-          <ul class="govuk-pagination__list">
-            <li class="govuk-pagination__item govuk-pagination__item--current">
-              <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 1" aria-current="page">1</a>
-            </li>
-            <li class="govuk-pagination__item">
-              <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 2">2</a>
-            </li>
-            <li class="govuk-pagination__item">
-              <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 3">3</a>
-            </li>
-          </ul>
-          <div class="govuk-pagination__next">
-            <a class="govuk-link govuk-pagination__link" href="#" rel="next">
-              <span class="govuk-pagination__link-title">Next<span class="govuk-visually-hidden"> page</span></span>
-              <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" focusable="false" aria-hidden="true" viewBox="0 0 15 13"><path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7246z"/></svg>
-            </a>
-          </div>
-        </nav>
+        {% if not hasActiveInspectionFilters %}
+          <nav class="govuk-pagination" role="navigation" aria-label="Pagination">
+            <ul class="govuk-pagination__list">
+              <li class="govuk-pagination__item govuk-pagination__item--current">
+                <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 1" aria-current="page">1</a>
+              </li>
+              <li class="govuk-pagination__item">
+                <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 2">2</a>
+              </li>
+              <li class="govuk-pagination__item">
+                <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 3">3</a>
+              </li>
+            </ul>
+            <div class="govuk-pagination__next">
+              <a class="govuk-link govuk-pagination__link" href="#" rel="next">
+                <span class="govuk-pagination__link-title">Next<span class="govuk-visually-hidden"> page</span></span>
+                <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" focusable="false" aria-hidden="true" viewBox="0 0 15 13"><path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7246z"/></svg>
+              </a>
+            </div>
+          </nav>
+        {% endif %}
       </div>
 
       <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="in-progress">
-        <form method="get" action="/inspections" class="govuk-!-margin-bottom-4">
-          <div class="govuk-form-group govuk-!-margin-bottom-2">
-            <label class="govuk-label" for="search-progress">
-              Search by reference, importer or vessel
-            </label>
-            <input class="govuk-input govuk-input--width-30" id="search-progress" name="search-progress" type="search" value="{{ data['search-progress'] }}">
+        <form method="get" action="/inspections#in-progress" class="govuk-!-margin-bottom-4">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h3 class="govuk-fieldset__heading">Filter notifications</h3>
+            </legend>
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="in-progress-filter-reference">
+                    Reference
+                  </label>
+                  <input class="govuk-input govuk-input--width-20" id="in-progress-filter-reference" name="in-progress-filter-reference" type="text" value="{{ inProgressInspectionFilters.reference }}">
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="in-progress-filter-importer">
+                    Importer
+                  </label>
+                  <input class="govuk-input govuk-input--width-20" id="in-progress-filter-importer" name="in-progress-filter-importer" type="text" value="{{ inProgressInspectionFilters.importer }}">
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="in-progress-filter-days-until-expected">
+                    Days until expected
+                  </label>
+                  <input class="govuk-input govuk-input--width-5" id="in-progress-filter-days-until-expected" name="in-progress-filter-days-until-expected" type="text" inputmode="numeric" value="{{ inProgressInspectionFilters.daysUntilExpected }}">
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-quarter">
+                <div class="govuk-form-group govuk-!-margin-bottom-3">
+                  <label class="govuk-label" for="in-progress-filter-arrival">
+                    Arrival
+                  </label>
+                  <input class="govuk-input govuk-input--width-20" id="in-progress-filter-arrival" name="in-progress-filter-arrival" type="text" value="{{ inProgressInspectionFilters.arrival }}">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <div class="govuk-button-group govuk-!-margin-bottom-0">
+            <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">Apply filters</button>
+            <a href="/inspections#in-progress" class="govuk-link">Clear filters</a>
           </div>
-          <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" data-module="govuk-button">Search</button>
         </form>
 
-        <p class="govuk-body govuk-!-margin-bottom-4">Showing <strong>1 to 1</strong> of <strong>1</strong> result</p>
+        <p class="govuk-body govuk-!-margin-bottom-4">Showing <strong>{{ filteredInProgressStart }} to {{ filteredInProgressCount }}</strong> of <strong>{{ inProgressCount }}</strong> result{% if inProgressCount != 1 %}s{% endif %}</p>
 
         <table class="govuk-table">
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th class="govuk-table__header" scope="col">Reference</th>
               <th class="govuk-table__header" scope="col">Importer</th>
+              <th class="govuk-table__header" scope="col">Days until expected</th>
               <th class="govuk-table__header" scope="col">Arrival</th>
               <th class="govuk-table__header" scope="col">Product and quantity</th>
               <th class="govuk-table__header" scope="col">Vessel or country</th>
@@ -152,20 +233,33 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">GB-IUU-2026-10188</td>
-              <td class="govuk-table__cell">Ocean Harvest Imports</td>
-              <td class="govuk-table__cell">3 Aug 2026<br>10:15am</td>
-              <td class="govuk-table__cell">Frozen scallops<br>3,200 kg · 320 cartons</td>
-              <td class="govuk-table__cell">Japan</td>
-              <td class="govuk-table__cell">
-                Documentary — complete<br>
-                Identity — complete<br>
-                Physical — in progress
-              </td>
-              <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--yellow">Physical checks</strong></td>
-              <td class="govuk-table__cell">Alex Morgan</td>
-            </tr>
+            {% if filteredInProgressCount > 0 %}
+              {% for inspection in inProgressInspections %}
+                <tr class="govuk-table__row">
+                  <td class="govuk-table__cell">{{ inspection.reference }}</td>
+                  <td class="govuk-table__cell">{{ inspection.importer }}</td>
+                  <td class="govuk-table__cell">{{ inspection.daysUntilExpected }}</td>
+                  <td class="govuk-table__cell">{{ inspection.arrivalDateDisplay }}<br>{{ inspection.arrivalTime }}</td>
+                  <td class="govuk-table__cell">{{ inspection.product }}<br>{{ inspection.quantity }}</td>
+                  <td class="govuk-table__cell">
+                    {% for line in inspection.vesselOrCountryLines %}
+                      {{ line }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+                  <td class="govuk-table__cell">
+                    {% for line in inspection.checksCompletedLines %}
+                      {{ line }}{% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+                  <td class="govuk-table__cell"><strong class="govuk-tag {{ inspection.currentStageTagClass }}">{{ inspection.currentStageTagText }}</strong></td>
+                  <td class="govuk-table__cell">{{ inspection.assignedOfficer }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell" colspan="9">No inspections match these filters.</td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
       </div>
