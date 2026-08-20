@@ -69,6 +69,13 @@ This service prototype covers fish and fish product import notifications into Gr
 
 The prototype also includes a separate inspection journey for Port Health Authority officers.
 
+- Part 1 code location:
+  - Routes: `app/routes/index.js`
+  - Views: `app/views/part1/` (grouped into `entry/`, `manual/`, `extraction/`, `review/`, `submission/`)
+- Part 2 code location:
+  - Routes: `app/routes/part2/inspection/`
+  - Views: `app/views/part2/inspection/` (grouped into `dashboard/`, `case/`, `journey/`, `support/`)
+
 - Entry points:
   - `/` Prototype selector
   - `/inspections` Inspection work queue
