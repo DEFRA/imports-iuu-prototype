@@ -14,7 +14,59 @@ module.exports = [
     reasonText: 'Notification weight differs from catch certificate',
     documentsLines: ['Catch certificate received', 'Processing statement received', 'NMD received'],
     statusTagText: 'Inspection required',
-    statusTagClass: 'govuk-tag--red'
+    statusTagClass: 'govuk-tag--red',
+    regulatoryStatus: 'Inspection required',
+    port: 'Port of Felixstowe',
+    declaredWeight: '26,200 kg',
+    productDescription: 'Frozen yellowfin tuna loins',
+    commodityCode: '0303 42 12',
+    declaredQuantity: '24,800 kg (1,240 cartons)',
+    commodities: [
+      { description: 'Frozen yellowfin tuna', commodityCode: '0303 42 12', declaredQuantity: '18,600 kg' },
+      { description: 'Frozen bigeye tuna', commodityCode: '0303 44 10', declaredQuantity: '6,200 kg' }
+    ],
+    commodityWeightComparisons: [
+      {
+        description: 'Frozen yellowfin tuna',
+        commodityCode: '0303 42 12',
+        notificationWeight: '18,600 kg',
+        catchCertificateWeight: '24,800 kg',
+        catchCertificateReferences: ['CC-SEN-2026-7784', 'CC-SEN-2026-7785'],
+        processingStatementWeight: '24,800 kg',
+        nonManipulationDeclarationWeight: '24,800 kg'
+      },
+      {
+        description: 'Frozen bigeye tuna',
+        commodityCode: '0303 44 10',
+        notificationWeight: '6,200 kg',
+        catchCertificateWeight: '6,200 kg',
+        catchCertificateReferences: ['CC-SEN-2026-7784'],
+        processingStatementWeight: '6,200 kg',
+        nonManipulationDeclarationWeight: '6,200 kg'
+      }
+    ],
+    exportingCountry: 'Senegal',
+    vesselName: 'MV Ocean Star',
+    imoNumber: '9214567',
+    containerNumber: 'MSCU 7391842',
+    documents: [
+      { type: 'Catch certificates', count: 1, references: ['CC-SEN-2026-7784'] },
+      { type: 'Processing statements', count: 1, references: ['PS-SEN-2026-0441'] },
+      { type: 'Non-manipulation declarations', count: 1, references: ['NMD-MMO-2026-0093'] },
+      { type: 'Additional documents', count: 0, references: [] }
+    ],
+    evidenceSummary: [
+      { type: 'Catch certificate', status: 'Received', statusClass: 'govuk-tag--green', details: 'CC-SEN-2026-7784' },
+      { type: 'Processing statement', status: 'Received', statusClass: 'govuk-tag--green', details: 'PS-SEN-2026-0441' },
+      { type: 'Non-manipulation declaration', status: 'Received', statusClass: 'govuk-tag--green', details: 'NMD-MMO-2026-0093' },
+      { type: 'Weight comparison', status: 'Possible mismatch', statusClass: 'govuk-tag--yellow', details: 'Notification is 1,400 kg heavier than the catch certificate' },
+      { type: 'Authority verification', status: 'Pending', statusClass: 'govuk-tag--grey', details: 'Verification has not been completed' }
+    ],
+    riskFlags: [
+      { status: 'Issue', label: 'Mismatch with declared commodity', details: 'There is a potential mismatch with commodity on declaration and supplied evidence' },
+      { status: 'Issue', label: 'Missing Evidence', details: 'There is a potential missing Evidence' },
+      { status: 'Issue', label: 'Importer declaration', details: 'Importer declaration data missing' }
+    ]
   },
   {
     reference: 'GB-IUU-2026-10510',

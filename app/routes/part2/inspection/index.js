@@ -4,12 +4,17 @@ const {
 } = require('./notifications')
 const { buildInspectionDashboardViewModel } = require('./services/inspection-dashboard-service')
 const inspectionOverviewFallbackReference = 'GB-IUU-2026-11001'
+const path = require('path')
+const documentNavigationService = require('./document-navigation-service')
+const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', '..', 'sample-documents')
 
 const inspectionViewPathLookup = {
   inspections: 'dashboard/inspections',
   'inspections-completed': 'dashboard/inspections-completed',
   'consignment-overview': 'case/consignment-overview',
   'source-documents': 'case/source-documents',
+  'document-details': 'case/document-details',
+  'additional-document-viewer': 'case/additional-document-viewer',
   'confirm-details': 'journey/confirm-details',
   'check-documents': 'journey/check-documents',
   'identity-checks': 'journey/identity-checks',
@@ -45,8 +50,11 @@ const buildInspectionErrorContext = (errors) => {
   }
 }
 
-const renderInspectionPage = (res, viewName, errors = []) => {
-  res.render(inspectionView(viewName), buildInspectionErrorContext(errors))
+const renderInspectionPage = (res, viewName, errors = [], context = {}) => {
+  res.render(inspectionView(viewName), {
+    ...buildInspectionErrorContext(errors),
+    ...context
+  })
 }
 
 const renderInspectionNotImplementedPage = (res) => {
@@ -77,7 +85,11 @@ const registerInspectionRoutes = (router) => {
   router.get('/inspections', (req, res) => {
     req.session.data['inspection-officer-name'] = req.session.data['inspection-officer-name'] || 'Alex Morgan'
     req.session.data['inspection-officer-org'] = req.session.data['inspection-officer-org'] || 'Port of Felixstowe Port Health Authority'
-    const dashboardViewModel = buildInspectionDashboardViewModel(req.query)
+    const documentaryDashboardStatus = req.session.data['documentary-dashboard-status']
+    const statusOverrides = documentaryDashboardStatus
+      ? { [inspectionReference]: documentaryDashboardStatus }
+      : {}
+    const dashboardViewModel = buildInspectionDashboardViewModel(req.query, new Date(), statusOverrides)
     res.render(inspectionView('inspections'), dashboardViewModel)
   })
 
@@ -90,14 +102,50 @@ const registerInspectionRoutes = (router) => {
     if (!inspectionNotification) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('consignment-overview'), { inspectionNotification })
+    res.render(inspectionView('consignment-overview'), {
+      inspectionNotification,
+      documentReferenceGroups: documentNavigationService.getReferenceGroups(),
+      documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
+    })
   })
 
   router.get('/inspection/:reference/documents', (req, res) => {
     if (req.params.reference !== inspectionReference) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('source-documents'))
+    const inspectionNotification = getInspectionNotificationByReference(inspectionReference)
+    res.render(inspectionView('source-documents'), {
+      inspectionReference,
+      documentReferenceGroups: documentNavigationService.getReferenceGroups(),
+      documentLinksByReference: documentNavigationService.getDocumentLinksByReference(),
+      commodityWeightComparisons: inspectionNotification.commodityWeightComparisons
+    })
+  })
+
+  router.get('/documents/:type/:id', (req, res) => {
+    if (req.params.type === 'additional') {
+      const selectedDocument = documentNavigationService.getAdditionalDocument(req.params.id)
+      if (!selectedDocument) return res.status(404).render(inspectionView('inspection-not-implemented'))
+      return res.render(inspectionView('additional-document-viewer'), {
+        inspectionReference,
+        additionalDocuments: documentNavigationService.getAdditionalDocuments(),
+        selectedDocument
+      })
+    }
+    const document = documentNavigationService.getDocument(req.params.type, req.params.id)
+    if (!document) return res.status(404).render(inspectionView('inspection-not-implemented'))
+    res.render(inspectionView('document-details'), {
+      document,
+      documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
+    })
+  })
+
+  router.get('/documents/additional/file/:id', (req, res) => {
+    const document = documentNavigationService.getAdditionalDocument(req.params.id)
+    if (!document || document.previewType !== 'pdf' || !document.sourceFile) return res.sendStatus(404)
+    const filePath = path.join(sampleDocumentsPath, document.sourceFile)
+    if (req.query.download === '1') return res.download(filePath, document.name)
+    res.sendFile(filePath)
   })
 
   router.get('/inspection-assumptions', (req, res) => {
@@ -137,7 +185,7 @@ const registerInspectionRoutes = (router) => {
     if (req.params.reference !== inspectionReference) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('check-documents'))
+    res.render(inspectionView('check-documents'), { inspectionReference })
   })
 
   router.post('/inspection/:reference/check-documents', (req, res) => {
@@ -145,15 +193,29 @@ const registerInspectionRoutes = (router) => {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
-    const result = data['documents-check-result']
-    const details = data['documents-discrepancy-details']
+    const outcome = data['documentary-check-outcome']
+    const comments = data['documentary-check-comments']
+    const intervention = data['documentary-intervention']
     const errors = []
-    if (!result) errors.push({ name: 'documents-check-result', text: 'Select the documentary check result' })
-    if ((result === 'minor-discrepancy' || result === 'not-acceptable') && !details) {
-      errors.push({ name: 'documents-discrepancy-details', text: 'Describe the discrepancy' })
+    if (!outcome) errors.push({ name: 'documentary-check-outcome', text: 'Select the documentary check outcome' })
+    if (outcome === 'satisfactory' && !comments) errors.push({ name: 'documentary-check-comments', text: 'Enter comments' })
+    if (outcome === 'requires-intervention' && !intervention) errors.push({ name: 'documentary-intervention', text: 'Select an intervention' })
+    if (errors.length) {
+      return renderInspectionPage(res, 'check-documents', errors, { inspectionReference })
     }
-    if (errors.length) return renderInspectionPage(res, 'check-documents', errors)
-    res.redirect(`/inspection/${inspectionReference}/identity-checks`)
+    const dashboardStatuses = {
+      satisfactory: { statusCode: 'COMPLETED', statusLabel: 'Satisfactory', statusTagClass: 'govuk-tag--green' },
+      'satisfactory-following-intervention': { statusCode: 'COMPLETED', statusLabel: 'Satisfactory following intervention', statusTagClass: 'govuk-tag--green' },
+      'not-satisfactory': { statusCode: 'REQUIRES_DOCUMENT_CHECK', statusLabel: 'Not satisfactory', statusTagClass: 'govuk-tag--red' }
+    }
+    const interventionStatuses = {
+      'request-information': { statusCode: 'REQUEST_ADDITIONAL_INFORMATION' },
+      'referred-to-mmo': { statusCode: 'REFERRED_TO_MMO' }
+    }
+    data['documentary-dashboard-status'] = outcome === 'requires-intervention'
+      ? interventionStatuses[intervention]
+      : dashboardStatuses[outcome]
+    res.redirect('/inspections')
   })
 
   router.get('/inspection/:reference/identity-checks', (req, res) => {

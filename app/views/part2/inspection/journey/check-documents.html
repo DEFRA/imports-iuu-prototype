@@ -9,40 +9,36 @@
     <form method="post">
       <h1 class="govuk-heading-l">Check the documents</h1>
 
-      <h2 class="govuk-heading-m">IUU documents submitted</h2>
-      <dl class="govuk-summary-list govuk-!-margin-bottom-4">
-        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Catch certificate</dt><dd class="govuk-summary-list__value">CC-SEN-2026-7784 — Direction des Pêches Maritimes, Senegal</dd></div>
-        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Processing statement</dt><dd class="govuk-summary-list__value">PS-SEN-2026-0441 — Dakar Fish Processing SAS</dd></div>
-        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Non-manipulation declaration</dt><dd class="govuk-summary-list__value">NMD-MMO-2026-0093 — Marine Management Organisation</dd></div>
-      </dl>
-
-      <h2 class="govuk-heading-m">Flagged discrepancy</h2>
-      <p class="govuk-body">A possible mismatch was identified between the weight declared in the import notification and the weight recorded on the catch certificate.</p>
-      <table class="govuk-table govuk-!-margin-bottom-4">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row"><th class="govuk-table__header" scope="row">Weight declared in notification</th><td class="govuk-table__cell">26,200 kg</td></tr>
-          <tr class="govuk-table__row"><th class="govuk-table__header" scope="row">Weight on catch certificate (CC-SEN-2026-7784)</th><td class="govuk-table__cell">24,800 kg</td></tr>
-          <tr class="govuk-table__row"><th class="govuk-table__header" scope="row">Difference</th><td class="govuk-table__cell"><strong>1,400 kg (5.6%)</strong></td></tr>
-        </tbody>
-      </table>
-      <p class="govuk-body"><a href="/inspection/GB-IUU-2026-10482/documents" class="govuk-link">View IUU documents</a></p>
-
-      <div class="govuk-form-group{% if errorMap['documents-check-result'] %} govuk-form-group--error{% endif %}">
-        <fieldset class="govuk-fieldset" aria-describedby="documents-check-result-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Are the documents complete, valid and consistent?</legend>
-          {% if errorMap['documents-check-result'] %}<p class="govuk-error-message">{{ errorMap['documents-check-result'] }}</p>{% endif %}
+      <div class="govuk-form-group{% if errorMap['documentary-check-outcome'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Documentary check outcome</legend>
+          {% if errorMap['documentary-check-outcome'] %}<p class="govuk-error-message">{{ errorMap['documentary-check-outcome'] }}</p>{% endif %}
           <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documents-check-result" name="documents-check-result" type="radio" value="acceptable" {{ checked("documents-check-result", "acceptable") }}><label class="govuk-label govuk-radios__label" for="documents-check-result">Yes, the documents are acceptable</label></div>
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documents-check-result-2" name="documents-check-result" type="radio" value="minor-discrepancy" {{ checked("documents-check-result", "minor-discrepancy") }}><label class="govuk-label govuk-radios__label" for="documents-check-result-2">There is a minor discrepancy</label></div>
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documents-check-result-3" name="documents-check-result" type="radio" value="not-acceptable" {{ checked("documents-check-result", "not-acceptable") }}><label class="govuk-label govuk-radios__label" for="documents-check-result-3">No, the documents are not acceptable</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome" name="documentary-check-outcome" type="radio" value="satisfactory" data-aria-controls="conditional-satisfactory-comments" {{ checked("documentary-check-outcome", "satisfactory") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome">Satisfactory</label></div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-satisfactory-comments">
+              <div class="govuk-form-group{% if errorMap['documentary-check-comments'] %} govuk-form-group--error{% endif %}">
+                <label class="govuk-label" for="documentary-check-comments">Comments</label>
+                {% if errorMap['documentary-check-comments'] %}<p class="govuk-error-message">{{ errorMap['documentary-check-comments'] }}</p>{% endif %}
+                <textarea class="govuk-textarea" id="documentary-check-comments" name="documentary-check-comments" rows="4">{{ data['documentary-check-comments'] }}</textarea>
+              </div>
+            </div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-2" name="documentary-check-outcome" type="radio" value="satisfactory-following-intervention" {{ checked("documentary-check-outcome", "satisfactory-following-intervention") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-2">Satisfactory - following intervention</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-3" name="documentary-check-outcome" type="radio" value="requires-intervention" data-aria-controls="conditional-documentary-intervention" {{ checked("documentary-check-outcome", "requires-intervention") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-3">Requires Intervention</label></div>
+            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-documentary-intervention">
+              <div class="govuk-form-group{% if errorMap['documentary-intervention'] %} govuk-form-group--error{% endif %}">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend">Select an intervention</legend>
+                  {% if errorMap['documentary-intervention'] %}<p class="govuk-error-message">{{ errorMap['documentary-intervention'] }}</p>{% endif %}
+                  <div class="govuk-radios govuk-radios--small">
+                    <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-intervention" name="documentary-intervention" type="radio" value="request-information" {{ checked("documentary-intervention", "request-information") }}><label class="govuk-label govuk-radios__label" for="documentary-intervention">Request additional information from Importer</label></div>
+                    <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-intervention-2" name="documentary-intervention" type="radio" value="referred-to-mmo" {{ checked("documentary-intervention", "referred-to-mmo") }}><label class="govuk-label govuk-radios__label" for="documentary-intervention-2">Referred to MMO</label></div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-4" name="documentary-check-outcome" type="radio" value="not-satisfactory" {{ checked("documentary-check-outcome", "not-satisfactory") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-4">Not Satisfactory</label></div>
           </div>
         </fieldset>
-      </div>
-
-      <div class="govuk-form-group{% if errorMap['documents-discrepancy-details'] %} govuk-form-group--error{% endif %}">
-        <label class="govuk-label" for="documents-discrepancy-details">Discrepancy details (if applicable)</label>
-        {% if errorMap['documents-discrepancy-details'] %}<p class="govuk-error-message">{{ errorMap['documents-discrepancy-details'] }}</p>{% endif %}
-        <textarea class="govuk-textarea" id="documents-discrepancy-details" name="documents-discrepancy-details" rows="4">{{ data['documents-discrepancy-details'] }}</textarea>
       </div>
       <button class="govuk-button" data-module="govuk-button">Continue</button>
     </form>

@@ -292,8 +292,8 @@ const mapConsignmentForView = (consignment) => ({
   species: consignment.species,
   declaredWeightDisplay: formatWeightKg(consignment.declaredWeightKg),
   documentsProvidedLines: buildDocumentsProvidedText(consignment),
-  statusLabel: STATUS_LABELS[consignment.status],
-  statusTagClass: STATUS_TAG_CLASSES[consignment.status],
+  statusLabel: consignment.statusLabelOverride || STATUS_LABELS[consignment.status],
+  statusTagClass: consignment.statusTagClassOverride || STATUS_TAG_CLASSES[consignment.status],
   riskFlags: consignment.riskFlags.map((riskFlagCode) => ({
     code: riskFlagCode,
     text: RISK_FLAG_LABELS[riskFlagCode]
@@ -321,9 +321,18 @@ const buildTabViewModel = (consignments, filters, tabId, requestedPage) => {
   }
 }
 
-const buildInspectionDashboardViewModel = (query = {}, today = new Date()) => {
+const buildInspectionDashboardViewModel = (query = {}, today = new Date(), statusOverrides = {}) => {
   const filters = buildDashboardFilters(query)
-  const consignments = mockConsignmentSummariesApi.listConsignmentSummaries(today)
+  const consignments = mockConsignmentSummariesApi.listConsignmentSummaries(today).map((consignment) => {
+    const override = statusOverrides[consignment.reference]
+    if (!override) return consignment
+    return {
+      ...consignment,
+      status: override.statusCode,
+      statusLabelOverride: override.statusLabel,
+      statusTagClassOverride: override.statusTagClass
+    }
+  })
   const forReviewConsignments = consignments.filter((consignment) => consignment.status !== 'IN_PROGRESS')
   const inProgressConsignments = consignments.filter((consignment) => consignment.status === 'IN_PROGRESS')
 
