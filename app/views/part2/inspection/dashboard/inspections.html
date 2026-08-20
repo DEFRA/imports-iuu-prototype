@@ -235,22 +235,22 @@
     <h1 class="govuk-heading-xl">Inspections</h1>
     <div class="govuk-inset-text">All records on this screen are fictional and used for Alpha research.</div>
 
-    <div class="govuk-grid-row govuk-!-margin-bottom-6">
-      <div class="govuk-grid-column-one-quarter">
+    <div class="inspection-dashboard__summary-grid govuk-!-margin-bottom-6">
+      <div class="inspection-dashboard__summary-card">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Awaiting inspection</p>
-        <p class="govuk-heading-l govuk-!-margin-bottom-0">{{ forReviewCount }}</p>
+        <p class="govuk-heading-l govuk-!-margin-bottom-0 inspection-dashboard__summary-value">{{ forReviewCount }}</p>
       </div>
-      <div class="govuk-grid-column-one-quarter">
+      <div class="inspection-dashboard__summary-card">
         <p class="govuk-body-s govuk-!-margin-bottom-1">In progress</p>
-        <p class="govuk-heading-l govuk-!-margin-bottom-0">{{ inProgressCount }}</p>
+        <p class="govuk-heading-l govuk-!-margin-bottom-0 inspection-dashboard__summary-value">{{ inProgressCount }}</p>
       </div>
-      <div class="govuk-grid-column-one-quarter">
+      <div class="inspection-dashboard__summary-card">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Completed today</p>
-        <p class="govuk-heading-l govuk-!-margin-bottom-0">{{ completedTodayCount }}</p>
+        <p class="govuk-heading-l govuk-!-margin-bottom-0 inspection-dashboard__summary-value">{{ completedTodayCount }}</p>
       </div>
-      <div class="govuk-grid-column-one-quarter">
+      <div class="inspection-dashboard__summary-card {% if mismatchesFlaggedCount > 0 %}inspection-dashboard__summary-card--action{% else %}inspection-dashboard__summary-card--clear{% endif %}">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Mismatches flagged</p>
-        <p class="govuk-heading-l govuk-!-margin-bottom-0">
+        <p class="govuk-heading-l govuk-!-margin-bottom-0 inspection-dashboard__summary-value">
           {{ mismatchesFlaggedCount }}
           {% if mismatchesFlaggedCount > 0 %}
             <strong class="govuk-tag govuk-tag--red">Action needed</strong>
