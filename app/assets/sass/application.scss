@@ -35,3 +35,31 @@
   margin-bottom: 24px;
   background-color: #ffffff;
 }
+
+.inspection-dashboard__row {
+  cursor: pointer;
+}
+
+.inspection-dashboard__row:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: -3px;
+}
+
+.inspection-dashboard__risk-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+}
+
+.inspection-dashboard__risk-list .govuk-tag {
+  margin-bottom: 0;
+}
+
+.inspection-dashboard__risk-list .inspection-dashboard__risk-tag {
+  background-color: transparent;
+  border: 1px solid #b1b4b6;
+  color: #0b0c0c;
+}

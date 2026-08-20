@@ -1,8 +1,9 @@
 const {
-  buildInspectionNotifications,
   getInspectionNotificationByReference,
   inspectionReference
 } = require('./notifications')
+const { buildInspectionDashboardViewModel } = require('./services/inspection-dashboard-service')
+const inspectionOverviewFallbackReference = 'GB-IUU-2026-11001'
 
 const inspectionViewPathLookup = {
   inspections: 'dashboard/inspections',
@@ -52,49 +53,21 @@ const renderInspectionNotImplementedPage = (res) => {
   res.render(inspectionView('inspection-not-implemented'))
 }
 
-const normalizeFilterValue = (value) => String(value || '').trim()
+const buildInspectionOverviewNotification = (reference) => {
+  const matchedNotification = getInspectionNotificationByReference(reference)
+  if (matchedNotification) return matchedNotification
 
-const buildInspectionFilters = (query = {}, prefix = 'filter') => ({
-  reference: normalizeFilterValue(query[`${prefix}-reference`]),
-  importer: normalizeFilterValue(query[`${prefix}-importer`]),
-  daysUntilExpected: normalizeFilterValue(query[`${prefix}-days-until-expected`]),
-  arrival: normalizeFilterValue(query[`${prefix}-arrival`])
-})
-
-const filterInspectionNotifications = (inspectionNotifications, filters) => {
-  const referenceFilter = filters.reference.toLowerCase()
-  const importerFilter = filters.importer.toLowerCase()
-  const daysUntilExpectedFilter = filters.daysUntilExpected
-  const arrivalFilter = filters.arrival.toLowerCase()
-
-  return inspectionNotifications.filter((notification) => {
-    const arrivalDisplay = `${notification.arrivalDateDisplay} ${notification.arrivalTime}`.toLowerCase()
-
-    return (
-      (!referenceFilter || notification.reference.toLowerCase().includes(referenceFilter)) &&
-      (!importerFilter || notification.importer.toLowerCase().includes(importerFilter)) &&
-      (!daysUntilExpectedFilter || String(notification.daysUntilExpected).includes(daysUntilExpectedFilter)) &&
-      (!arrivalFilter || arrivalDisplay.includes(arrivalFilter))
-    )
-  })
-}
-
-const buildInProgressInspectionNotifications = () => ([
-  {
-    reference: 'GB-IUU-2026-10188',
-    importer: 'Ocean Harvest Imports',
-    daysUntilExpected: 15,
-    arrivalDateDisplay: '3 Aug 2026',
-    arrivalTime: '10:15am',
-    product: 'Frozen scallops',
-    quantity: '3,200 kg · 320 cartons',
-    vesselOrCountryLines: ['Japan'],
-    checksCompletedLines: ['Documentary — complete', 'Identity — complete', 'Physical — in progress'],
-    currentStageTagText: 'Physical checks',
-    currentStageTagClass: 'govuk-tag--yellow',
-    assignedOfficer: 'Alex Morgan'
+  if (reference === inspectionOverviewFallbackReference) {
+    const inspectionNotification = getInspectionNotificationByReference(inspectionReference)
+    if (!inspectionNotification) return null
+    return {
+      ...inspectionNotification,
+      reference
+    }
   }
-])
+
+  return null
+}
 
 const registerInspectionRoutes = (router) => {
   router.get('/prototype-selector', (req, res) => {
@@ -104,29 +77,8 @@ const registerInspectionRoutes = (router) => {
   router.get('/inspections', (req, res) => {
     req.session.data['inspection-officer-name'] = req.session.data['inspection-officer-name'] || 'Alex Morgan'
     req.session.data['inspection-officer-org'] = req.session.data['inspection-officer-org'] || 'Port of Felixstowe Port Health Authority'
-    const inspectionNotifications = buildInspectionNotifications()
-    const inProgressInspections = buildInProgressInspectionNotifications()
-
-    const inspectionFilters = buildInspectionFilters(req.query)
-    const filteredInspectionNotifications = filterInspectionNotifications(inspectionNotifications, inspectionFilters)
-    const filteredToInspectCount = filteredInspectionNotifications.length
-    const inProgressInspectionFilters = buildInspectionFilters(req.query, 'in-progress-filter')
-    const filteredInProgressInspections = filterInspectionNotifications(inProgressInspections, inProgressInspectionFilters)
-    const filteredInProgressCount = filteredInProgressInspections.length
-
-    res.render(inspectionView('inspections'), {
-      inspectionNotifications: filteredInspectionNotifications,
-      inspectionFilters,
-      hasActiveInspectionFilters: Object.values(inspectionFilters).some((filterValue) => filterValue.length > 0),
-      filteredToInspectCount,
-      filteredToInspectStart: filteredToInspectCount > 0 ? 1 : 0,
-      toInspectCount: inspectionNotifications.length,
-      inProgressInspections: filteredInProgressInspections,
-      inProgressCount: inProgressInspections.length,
-      inProgressInspectionFilters,
-      filteredInProgressCount,
-      filteredInProgressStart: filteredInProgressCount > 0 ? 1 : 0
-    })
+    const dashboardViewModel = buildInspectionDashboardViewModel(req.query)
+    res.render(inspectionView('inspections'), dashboardViewModel)
   })
 
   router.get('/inspections/completed', (req, res) => {
@@ -134,10 +86,10 @@ const registerInspectionRoutes = (router) => {
   })
 
   router.get('/inspection/:reference', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
+    if (!inspectionNotification) {
       return renderInspectionNotImplementedPage(res)
     }
-    const inspectionNotification = getInspectionNotificationByReference(inspectionReference)
     res.render(inspectionView('consignment-overview'), { inspectionNotification })
   })
 

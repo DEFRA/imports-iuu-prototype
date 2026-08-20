@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "govuk-prototype-kit dev",
     "serve": "govuk-prototype-kit serve",
-    "start": "govuk-prototype-kit start"
+    "start": "govuk-prototype-kit start",
+    "test": "node --test app/routes/part2/inspection/services/**/*.test.js"
   },
   "dependencies": {
     "@govuk-prototype-kit/common-templates": "3.0.0",
