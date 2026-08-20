@@ -138,63 +138,101 @@
   <p class="govuk-body govuk-!-margin-bottom-4">
     Showing <strong>{{ tabData.filteredStart }} to {{ tabData.filteredEnd }}</strong> of <strong>{{ tabData.filteredTotalCount }}</strong> result{% if tabData.filteredTotalCount != 1 %}s{% endif %}
   </p>
-  <table class="govuk-table">
+  <table class="govuk-table inspection-dashboard__stacked-table">
     <caption class="govuk-table__caption govuk-visually-hidden">{{ tabLabel }} consignments requiring documentary inspection</caption>
-    <thead class="govuk-table__head">
+    <thead class="govuk-table__head govuk-visually-hidden">
       <tr class="govuk-table__row">
-        <th class="govuk-table__header" scope="col">Reference</th>
-        <th class="govuk-table__header" scope="col">Origin</th>
-        <th class="govuk-table__header" scope="col">Importer</th>
-        <th class="govuk-table__header" scope="col">Estimated Arrival</th>
-        <th class="govuk-table__header" scope="col">Days Until Arrival</th>
-        <th class="govuk-table__header" scope="col">Commodity Code</th>
-        <th class="govuk-table__header" scope="col">Species / Weight</th>
-        <th class="govuk-table__header" scope="col">Documents Provided</th>
-        <th class="govuk-table__header" scope="col">Status</th>
-        <th class="govuk-table__header" scope="col">Potential Risk Flags</th>
+        <th class="govuk-table__header" scope="col">Consignment details</th>
       </tr>
     </thead>
     <tbody class="govuk-table__body">
       {% if tabData.filteredTotalCount > 0 %}
         {% for consignment in tabData.rows %}
-          <tr class="govuk-table__row inspection-dashboard__row" data-row-href="{{ consignment.detailPath }}" tabindex="0" role="link" aria-label="Open consignment {{ consignment.reference }}">
-            <td class="govuk-table__cell"><a href="{{ consignment.detailPath }}" class="govuk-link">{{ consignment.reference }}</a></td>
-            <td class="govuk-table__cell">{{ consignment.originCountry }}</td>
-            <td class="govuk-table__cell">{{ consignment.importer }}</td>
-            <td class="govuk-table__cell">{{ consignment.estimatedArrivalDateDisplay }}<br>{{ consignment.estimatedArrivalTimeDisplay }}</td>
-            <td class="govuk-table__cell"><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">{{ consignment.daysUntilArrival }}</strong></td>
-            <td class="govuk-table__cell">
-              {% for commodityCode in consignment.commodityCodes %}
-                {{ commodityCode }}{% if not loop.last %}<br>{% endif %}
-              {% endfor %}
-            </td>
-            <td class="govuk-table__cell">{{ consignment.species }}<br>{{ consignment.declaredWeightDisplay }}</td>
-            <td class="govuk-table__cell">
-              {% if consignment.documentsProvidedLines.length > 0 %}
-                {% for documentLine in consignment.documentsProvidedLines %}
-                  {{ documentLine }}{% if not loop.last %}<br>{% endif %}
-                {% endfor %}
-              {% else %}
-                <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
-              {% endif %}
-            </td>
-            <td class="govuk-table__cell"><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></td>
-            <td class="govuk-table__cell">
-              {% if consignment.riskFlags.length > 0 %}
-                <ul class="inspection-dashboard__risk-list" aria-label="Risk indicators for {{ consignment.reference }}">
-                  {% for riskFlag in consignment.riskFlags %}
-                    <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
-              {% endif %}
+          <tr class="govuk-table__row inspection-dashboard__row inspection-dashboard__stacked-row" data-row-href="{{ consignment.detailPath }}" tabindex="0" role="link" aria-label="Open consignment {{ consignment.reference }}">
+            <td class="govuk-table__cell inspection-dashboard__stacked-cell">
+              <div class="inspection-dashboard__detail-grid">
+                <div class="inspection-dashboard__detail-column">
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Reference</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0"><a href="{{ consignment.detailPath }}" class="govuk-link">{{ consignment.reference }}</a></p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Origin</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.originCountry }}</p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Importer</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.importer }}</p>
+                  </div>
+                </div>
+
+                <div class="inspection-dashboard__detail-column">
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Estimated arrival</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.estimatedArrivalDateDisplay }}, {{ consignment.estimatedArrivalTimeDisplay }}</p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Commodity code</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">
+                      {% for commodityCode in consignment.commodityCodes %}
+                        {{ commodityCode }}{% if not loop.last %}<br>{% endif %}
+                      {% endfor %}
+                    </p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Species</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.species }}</p>
+                  </div>
+                </div>
+
+                <div class="inspection-dashboard__detail-column">
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Weight</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.declaredWeightDisplay }}</p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Documents provided</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0">
+                      {% if consignment.documentsProvidedLines.length > 0 %}
+                        {% for documentLine in consignment.documentsProvidedLines %}
+                          {{ documentLine }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                      {% else %}
+                        <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
+                      {% endif %}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="inspection-dashboard__detail-column">
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Days until arrival</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0"><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">{{ consignment.daysUntilArrival }}</strong></p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Status</p>
+                    <p class="govuk-body govuk-!-margin-bottom-0"><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></p>
+                  </div>
+                  <div class="inspection-dashboard__detail-item">
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Potential risk flags</p>
+                    {% if consignment.riskFlags.length > 0 %}
+                      <ul class="inspection-dashboard__risk-list" aria-label="Risk indicators for {{ consignment.reference }}">
+                        {% for riskFlag in consignment.riskFlags %}
+                          <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
             </td>
           </tr>
         {% endfor %}
       {% else %}
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell" colspan="10">No consignments match these filters.</td>
+          <td class="govuk-table__cell" colspan="1">No consignments match these filters.</td>
         </tr>
       {% endif %}
     </tbody>
@@ -232,7 +270,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <span class="govuk-caption-l">Signed in as Alex Morgan, Port of Felixstowe Port Health Authority</span>
-    <h1 class="govuk-heading-xl">Inspections</h1>
+    <h1 class="govuk-heading-xl">Import Notifications</h1>
     <div class="govuk-inset-text">All records on this screen are fictional and used for Alpha research.</div>
 
     <div class="inspection-dashboard__summary-grid govuk-!-margin-bottom-6">

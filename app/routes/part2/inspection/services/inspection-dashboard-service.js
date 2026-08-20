@@ -7,7 +7,7 @@ const {
 const ALL_FILTER_VALUE = '__all__'
 const FOR_REVIEW_TAB = 'for-review'
 const IN_PROGRESS_TAB = 'in-progress'
-const DEFAULT_SORT_BY = 'estimated-arrival'
+const DEFAULT_SORT_BY = 'days-until-arrival'
 const DEFAULT_SORT_ORDER = 'asc'
 const PAGE_SIZE = 5
 
