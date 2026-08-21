@@ -19,9 +19,9 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Importer</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.importer }}</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Exporting country</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.exportingCountry }}</dd></div>
-      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.vesselName }} (IMO {{ inspectionNotification.imoNumber }})</dd></div>
-      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.port }}, {{ inspectionNotification.arrivalDateDisplay }} at {{ inspectionNotification.arrivalTime }}</dd></div>
-      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Container</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.containerNumber }}</dd></div>
+      {% if inspectionNotification.vesselName %}<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.vesselName }}{% if inspectionNotification.imoNumber %} (IMO {{ inspectionNotification.imoNumber }}){% endif %}</dd></div>{% endif %}
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">{% if inspectionNotification.port %}{{ inspectionNotification.port }}, {% endif %}{{ inspectionNotification.arrivalDateDisplay }}{% if inspectionNotification.arrivalTime %} at {{ inspectionNotification.arrivalTime }}{% endif %}</dd></div>
+      {% if inspectionNotification.containerNumber %}<div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Container</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.containerNumber }}</dd></div>{% endif %}
     </dl>
 
     <h2 class="govuk-heading-m">Commodity details</h2>
@@ -47,7 +47,7 @@
     <div class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
-        Warning: Possible discrepancy detected: notification declares Skipjack Tuna (118,000 kg) but the attached Catch Certificate also contains Yellowfin Tuna (34,000 kg). Declared and certified quantities do not reconcile.
+        Warning: {{ inspectionNotification.warningText or "Possible discrepancy detected: notification declares Skipjack Tuna (118,000 kg) but the attached Catch Certificate also contains Yellowfin Tuna (34,000 kg). Declared and certified quantities do not reconcile." }}
       </strong>
     </div>
 
@@ -65,12 +65,14 @@
         {% for group in documentReferenceGroups %}
           <tr class="govuk-table__row">
             <th scope="row" class="govuk-table__header">{{ group.typeLabel }}{% if group.links.length != 1 %}s{% endif %}</th>
-            <td class="govuk-table__cell">{{ group.links.length }}</td>
-            <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--green">Received</strong></td>
+            <td class="govuk-table__cell">{{ group.count }}</td>
+            <td class="govuk-table__cell"><strong class="govuk-tag {% if group.count %}govuk-tag--green{% else %}govuk-tag--red{% endif %}">{% if group.count %}Received{% else %}Not provided{% endif %}</strong></td>
             <td class="govuk-table__cell">
               {% for link in group.links %}
                 {{ documentLink(link) }}{% if not loop.last %}<br>{% endif %}
               {% endfor %}
+              {% if group.count > group.links.length %}<span class="govuk-body-s">{{ group.count - group.links.length }} more submitted</span>{% endif %}
+              {% if not group.count %}<span class="govuk-visually-hidden">No references</span>{% endif %}
             </td>
           </tr>
         {% endfor %}

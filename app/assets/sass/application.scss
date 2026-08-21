@@ -5,6 +5,11 @@
 
 // Add extra styles here
 
+.govuk-table__container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .review-extraction-section-header {
 	display: flex;
 	justify-content: space-between;

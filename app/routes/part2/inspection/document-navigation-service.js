@@ -46,6 +46,10 @@ const documentNavigationService = {
     return inspectionDocuments.find((document) => document.type === type && document.id === id)
   },
 
+  getDocumentById (id) {
+    return inspectionDocuments.find((document) => document.id === id)
+  },
+
   getAdditionalDocuments () {
     return additionalDocuments.map((document) => ({
       ...document,
@@ -63,24 +67,26 @@ const documentNavigationService = {
     return this.getAdditionalDocuments().find((document) => document.id === id)
   },
 
-  getReferenceGroups () {
-    const groups = inspectionDocuments
-      .filter((document) => document.type !== 'additional')
-      .reduce((groups, document) => {
-      let group = groups.find((item) => item.type === document.type)
-      if (!group) {
-        group = { type: document.type, typeLabel: document.typeLabel, links: [] }
-        groups.push(group)
-      }
-      group.links.push(this.getDocumentLink(document.id))
-      return groups
-    }, [])
-    groups.push({
+  getReferenceGroups (consignmentReference) {
+    const documentTypes = [
+      { type: 'catch-certificate', typeLabel: 'Catch certificate' },
+      { type: 'processing-statement', typeLabel: 'Processing statement' },
+      { type: 'nmd', typeLabel: 'Non-manipulation declaration' }
+    ]
+    const groups = documentTypes.map(({ type, typeLabel }) => ({
+      type,
+      typeLabel,
+      links: inspectionDocuments
+        .filter((document) => document.type === type && (!consignmentReference || document.consignmentReference === consignmentReference))
+        .map((document) => this.getDocumentLink(document.id))
+    }))
+    return groups.concat({
       type: 'additional',
       typeLabel: 'Additional document',
-      links: additionalDocuments.map((document) => this.getDocumentLink(document.id))
+      links: additionalDocuments
+        .filter((document) => !consignmentReference || document.consignmentReference === consignmentReference)
+        .map((document) => this.getDocumentLink(document.id))
     })
-    return groups
   }
 }
 

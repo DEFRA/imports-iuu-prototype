@@ -1,4 +1,5 @@
 {% extends "layouts/main.html" %}
+{% from "part2/inspection/components/document-reference-list.njk" import documentReferenceList %}
 {% set pageName = "Check the documents" %}
 {% block content %}
 <div class="govuk-grid-row">
@@ -8,6 +9,17 @@
     {% endif %}
     <form method="post">
       <h1 class="govuk-heading-l">Check the documents</h1>
+
+      <h2 class="govuk-heading-m">Documents to check</h2>
+      {{ documentReferenceList(documentReferenceGroups, true) }}
+      <p class="govuk-body"><a class="govuk-link" href="/inspection/{{ inspectionReference }}/documents">View document comparison and assessment summary</a></p>
+
+      {% if inspectionNotification.warningText %}
+        <div class="govuk-warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <strong class="govuk-warning-text__text">Warning: {{ inspectionNotification.warningText }}</strong>
+        </div>
+      {% endif %}
 
       <div class="govuk-form-group{% if errorMap['documentary-check-outcome'] %} govuk-form-group--error{% endif %}">
         <fieldset class="govuk-fieldset">

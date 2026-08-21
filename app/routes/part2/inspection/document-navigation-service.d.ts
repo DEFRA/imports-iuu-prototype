@@ -19,9 +19,10 @@ export interface DocumentNavigationService {
   getDocumentLink(id: string): DocumentLink | undefined
   getDocumentLinksByReference(): Record<string, DocumentLink | undefined>
   getDocument(type: string, id: string): InspectionDocument | undefined
+  getDocumentById(id: string): InspectionDocument | undefined
   getAdditionalDocuments(): Array<AdditionalDocument & { href: string, previewUrl: string, downloadUrl: string }>
   getAdditionalDocument(id: string): (AdditionalDocument & { href: string, previewUrl: string, downloadUrl: string }) | undefined
-  getReferenceGroups(): DocumentReferenceList[]
+  getReferenceGroups(consignmentReference?: string): DocumentReferenceList[]
 }
 
 declare const documentNavigationService: DocumentNavigationService
