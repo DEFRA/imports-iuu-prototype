@@ -10,6 +10,38 @@
   overflow-x: auto;
 }
 
+.document-evidence-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.document-evidence-summary__panel {
+  border: 1px solid #b1b4b6;
+  border-top: 4px solid #00703c;
+  padding: 20px 15px 15px;
+}
+
+.document-evidence-summary__panel--review {
+  border-top-color: #f3b72b;
+}
+
+.document-evidence-summary__panel .govuk-heading-s {
+  margin-bottom: 15px;
+}
+
+.document-evidence-summary__panel .govuk-body {
+  margin-bottom: 0;
+  margin-top: 10px;
+}
+
+@media (max-width: 48.0525em) {
+  .document-evidence-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 .review-extraction-section-header {
 	display: flex;
 	justify-content: space-between;

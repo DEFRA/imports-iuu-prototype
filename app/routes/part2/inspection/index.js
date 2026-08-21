@@ -115,6 +115,12 @@ const buildInspectionOverviewNotification = (reference) => {
         { reference: 'SYC/SFA/10/2026-SW0454', catchCertificateWeight: '64,000 kg', processingStatementWeight: 'Not represented', status: 'Missing', statusClass: 'govuk-tag--red' },
         { reference: 'CL-2026-44-000079-N', catchCertificateWeight: '100,000 kg', processingStatementWeight: '100,000 kg', status: 'Referenced', statusClass: 'govuk-tag--green' }
       ],
+      documentEvidenceSummary: [
+        { title: 'Catch certificates', status: 'Received', statusClass: 'govuk-tag--green', panelClass: 'document-evidence-summary__panel--received', details: '4 documents supplied.' },
+        { title: 'Processing statement', status: 'Review needed', statusClass: 'govuk-tag--yellow', panelClass: 'document-evidence-summary__panel--review', details: '1 document supplied. 1 catch certificate is not referenced.' },
+        { title: 'Non-manipulation declaration', status: 'Not applicable', statusClass: 'govuk-tag--grey', panelClass: 'document-evidence-summary__panel--received', details: 'No NMD expected for this scenario.' },
+        { title: 'Notification to document comparison', status: 'Possible mismatch', statusClass: 'govuk-tag--yellow', panelClass: 'document-evidence-summary__panel--review', details: 'Weight and evidence reconciliation require review.' }
+      ],
       assessmentSummary: dashboardConsignment.assessmentSummary,
       documentCounts: {
         'catch-certificate': dashboardConsignment.catchCertificateCount,

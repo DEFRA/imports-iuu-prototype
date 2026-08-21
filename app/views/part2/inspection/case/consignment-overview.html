@@ -52,32 +52,44 @@
     </div>
 
     <h2 class="govuk-heading-m">Document evidence summary</h2>
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Evidence type</th>
-          <th scope="col" class="govuk-table__header">Count</th>
-          <th scope="col" class="govuk-table__header">Status</th>
-          <th scope="col" class="govuk-table__header">Reference numbers</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        {% for group in documentReferenceGroups %}
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{{ group.typeLabel }}{% if group.links.length != 1 %}s{% endif %}</th>
-            <td class="govuk-table__cell">{{ group.count }}</td>
-            <td class="govuk-table__cell"><strong class="govuk-tag {% if group.count %}govuk-tag--green{% else %}govuk-tag--red{% endif %}">{% if group.count %}Received{% else %}Not provided{% endif %}</strong></td>
-            <td class="govuk-table__cell">
-              {% for link in group.links %}
-                {{ documentLink(link) }}{% if not loop.last %}<br>{% endif %}
-              {% endfor %}
-              {% if group.count > group.links.length %}<span class="govuk-body-s">{{ group.count - group.links.length }} more submitted</span>{% endif %}
-              {% if not group.count %}<span class="govuk-visually-hidden">No references</span>{% endif %}
-            </td>
-          </tr>
+    {% if inspectionNotification.documentEvidenceSummary %}
+      <div class="document-evidence-summary">
+        {% for item in inspectionNotification.documentEvidenceSummary %}
+          <section class="document-evidence-summary__panel {{ item.panelClass }}">
+            <h3 class="govuk-heading-s">{{ item.title }}</h3>
+            <strong class="govuk-tag {{ item.statusClass }}">{{ item.status }}</strong>
+            <p class="govuk-body">{{ item.details }}</p>
+          </section>
         {% endfor %}
-      </tbody>
-    </table>
+      </div>
+    {% else %}
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Evidence type</th>
+            <th scope="col" class="govuk-table__header">Count</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+            <th scope="col" class="govuk-table__header">Reference numbers</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for group in documentReferenceGroups %}
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header">{{ group.typeLabel }}{% if group.links.length != 1 %}s{% endif %}</th>
+              <td class="govuk-table__cell">{{ group.count }}</td>
+              <td class="govuk-table__cell"><strong class="govuk-tag {% if group.count %}govuk-tag--green{% else %}govuk-tag--red{% endif %}">{% if group.count %}Received{% else %}Not provided{% endif %}</strong></td>
+              <td class="govuk-table__cell">
+                {% for link in group.links %}
+                  {{ documentLink(link) }}{% if not loop.last %}<br>{% endif %}
+                {% endfor %}
+                {% if group.count > group.links.length %}<span class="govuk-body-s">{{ group.count - group.links.length }} more submitted</span>{% endif %}
+                {% if not group.count %}<span class="govuk-visually-hidden">No references</span>{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
 
     <h2 class="govuk-heading-m">Potential risk flags</h2>
     <table class="govuk-table">
