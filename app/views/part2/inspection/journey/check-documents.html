@@ -24,35 +24,37 @@
       <div class="govuk-form-group{% if errorMap['documentary-check-outcome'] %} govuk-form-group--error{% endif %}">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Documentary check outcome</legend>
+          <div class="govuk-hint">Select the outcome of this documentary check.</div>
           {% if errorMap['documentary-check-outcome'] %}<p class="govuk-error-message">{{ errorMap['documentary-check-outcome'] }}</p>{% endif %}
           <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome" name="documentary-check-outcome" type="radio" value="satisfactory" data-aria-controls="conditional-satisfactory-comments" {{ checked("documentary-check-outcome", "satisfactory") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome">Satisfactory</label></div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-satisfactory-comments">
-              <div class="govuk-form-group{% if errorMap['documentary-check-comments'] %} govuk-form-group--error{% endif %}">
-                <label class="govuk-label" for="documentary-check-comments">Comments</label>
-                {% if errorMap['documentary-check-comments'] %}<p class="govuk-error-message">{{ errorMap['documentary-check-comments'] }}</p>{% endif %}
-                <textarea class="govuk-textarea" id="documentary-check-comments" name="documentary-check-comments" rows="4">{{ data['documentary-check-comments'] }}</textarea>
-              </div>
-            </div>
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-2" name="documentary-check-outcome" type="radio" value="satisfactory-following-intervention" {{ checked("documentary-check-outcome", "satisfactory-following-intervention") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-2">Satisfactory - following intervention</label></div>
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-3" name="documentary-check-outcome" type="radio" value="requires-intervention" data-aria-controls="conditional-documentary-intervention" {{ checked("documentary-check-outcome", "requires-intervention") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-3">Requires Intervention</label></div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-documentary-intervention">
-              <div class="govuk-form-group{% if errorMap['documentary-intervention'] %} govuk-form-group--error{% endif %}">
-                <fieldset class="govuk-fieldset">
-                  <legend class="govuk-fieldset__legend">Select an intervention</legend>
-                  {% if errorMap['documentary-intervention'] %}<p class="govuk-error-message">{{ errorMap['documentary-intervention'] }}</p>{% endif %}
-                  <div class="govuk-radios govuk-radios--small">
-                    <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-intervention" name="documentary-intervention" type="radio" value="request-information" {{ checked("documentary-intervention", "request-information") }}><label class="govuk-label govuk-radios__label" for="documentary-intervention">Request additional information from Importer</label></div>
-                    <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-intervention-2" name="documentary-intervention" type="radio" value="referred-to-mmo" {{ checked("documentary-intervention", "referred-to-mmo") }}><label class="govuk-label govuk-radios__label" for="documentary-intervention-2">Referred to MMO</label></div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-4" name="documentary-check-outcome" type="radio" value="not-satisfactory" {{ checked("documentary-check-outcome", "not-satisfactory") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-4">Not Satisfactory</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome" name="documentary-check-outcome" type="radio" value="satisfactory" {{ checked("documentary-check-outcome", "satisfactory") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome">Satisfactory</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-2" name="documentary-check-outcome" type="radio" value="satisfactory-following-intervention" {{ checked("documentary-check-outcome", "satisfactory-following-intervention") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-2">Satisfactory following intervention</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-3" name="documentary-check-outcome" type="radio" value="requires-intervention" data-aria-controls="conditional-documentary-intervention" {{ checked("documentary-check-outcome", "requires-intervention") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-3">Requires intervention</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="documentary-check-outcome-4" name="documentary-check-outcome" type="radio" value="not-satisfactory" {{ checked("documentary-check-outcome", "not-satisfactory") }}><label class="govuk-label govuk-radios__label" for="documentary-check-outcome-4">Not satisfactory</label></div>
           </div>
         </fieldset>
       </div>
-      <button class="govuk-button" data-module="govuk-button">Continue</button>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="documentary-check-comments">Comments</label>
+        <div class="govuk-hint" id="documentary-check-comments-hint">Add comments about the decision, if needed.</div>
+        <textarea class="govuk-textarea" id="documentary-check-comments" name="documentary-check-comments" rows="4" aria-describedby="documentary-check-comments-hint">{{ data['documentary-check-comments'] }}</textarea>
+      </div>
+
+      <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-documentary-intervention">
+        <div class="govuk-form-group{% if errorMap['documentary-intervention'] %} govuk-form-group--error{% endif %}">
+          <label class="govuk-label govuk-label--s" for="documentary-intervention">Intervention action</label>
+          <div class="govuk-hint" id="documentary-intervention-hint">Select what should happen next.</div>
+          {% if errorMap['documentary-intervention'] %}<p class="govuk-error-message">{{ errorMap['documentary-intervention'] }}</p>{% endif %}
+          <select class="govuk-select{% if errorMap['documentary-intervention'] %} govuk-select--error{% endif %}" id="documentary-intervention" name="documentary-intervention" aria-describedby="documentary-intervention-hint">
+            <option value="">Select action</option>
+            <option value="request-information"{% if data['documentary-intervention'] == 'request-information' %} selected{% endif %}>Request additional information from importer</option>
+            <option value="referred-to-mmo"{% if data['documentary-intervention'] == 'referred-to-mmo' %} selected{% endif %}>Refer to MMO</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">Save documentary check</button>
     </form>
   </div>
 </div>

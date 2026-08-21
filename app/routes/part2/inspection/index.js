@@ -270,12 +270,10 @@ const registerInspectionRoutes = (router) => {
     }
     const data = req.session.data
     const outcome = data['documentary-check-outcome']
-    const comments = data['documentary-check-comments']
     const intervention = data['documentary-intervention']
     const errors = []
     if (!outcome) errors.push({ name: 'documentary-check-outcome', text: 'Select the documentary check outcome' })
-    if (outcome === 'satisfactory' && !comments) errors.push({ name: 'documentary-check-comments', text: 'Enter comments' })
-    if (outcome === 'requires-intervention' && !intervention) errors.push({ name: 'documentary-intervention', text: 'Select an intervention' })
+    if (outcome === 'requires-intervention' && !intervention) errors.push({ name: 'documentary-intervention', text: 'Select an intervention action' })
     if (errors.length) {
       const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
       return renderInspectionPage(res, 'check-documents', errors, {
