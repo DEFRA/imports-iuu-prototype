@@ -18,6 +18,7 @@ const inspectionViewPathLookup = {
   'additional-document-viewer': 'case/additional-document-viewer',
   'confirm-details': 'journey/confirm-details',
   'check-documents': 'journey/check-documents',
+  'documentary-check-confirmation': 'journey/documentary-check-confirmation',
   'identity-checks': 'journey/identity-checks',
   'physical-checks': 'journey/physical-checks',
   findings: 'journey/findings',
@@ -289,14 +290,39 @@ const registerInspectionRoutes = (router) => {
       'not-satisfactory': { statusCode: 'REQUIRES_DOCUMENT_CHECK', statusLabel: 'Not satisfactory', statusTagClass: 'govuk-tag--red' }
     }
     const interventionStatuses = {
-      'request-information': { statusCode: 'REQUEST_ADDITIONAL_INFORMATION' },
-      'referred-to-mmo': { statusCode: 'REFERRED_TO_MMO' }
+      'request-information': { statusCode: 'REQUEST_ADDITIONAL_INFORMATION', statusLabel: 'Request Additional Information from Importer', statusTagClass: 'govuk-tag--yellow' },
+      'referred-to-mmo': { statusCode: 'REFERRED_TO_MMO', statusLabel: 'Referred To MMO', statusTagClass: 'govuk-tag--purple' }
     }
     data['documentary-dashboard-status'] = outcome === 'requires-intervention'
       ? interventionStatuses[intervention]
       : dashboardStatuses[outcome]
     data['documentary-dashboard-reference'] = req.params.reference
-    res.redirect('/inspections')
+    res.redirect(`/inspection/${req.params.reference}/documentary-check-saved`)
+  })
+
+  router.get('/inspection/:reference/documentary-check-saved', (req, res) => {
+    const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
+    const data = req.session.data
+    if (!inspectionNotification || data['documentary-dashboard-reference'] !== req.params.reference || !data['documentary-dashboard-status']) {
+      return res.redirect(`/inspection/${req.params.reference}/check-documents`)
+    }
+    const outcomeLabels = {
+      satisfactory: 'Satisfactory',
+      'satisfactory-following-intervention': 'Satisfactory following intervention',
+      'requires-intervention': 'Requires intervention',
+      'not-satisfactory': 'Not satisfactory'
+    }
+    const interventionLabels = {
+      'request-information': 'Request additional information from importer',
+      'referred-to-mmo': 'Refer to MMO'
+    }
+    res.render(inspectionView('documentary-check-confirmation'), {
+      inspectionNotification,
+      completedDate: formatDashboardDate(new Date()),
+      outcomeLabel: outcomeLabels[data['documentary-check-outcome']],
+      interventionLabel: interventionLabels[data['documentary-intervention']],
+      dashboardStatus: data['documentary-dashboard-status']
+    })
   })
 
   router.get('/inspection/:reference/identity-checks', (req, res) => {
