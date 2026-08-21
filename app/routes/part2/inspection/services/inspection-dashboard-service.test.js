@@ -15,7 +15,7 @@ test('filters consignments by reference and importer-name search', () => {
   const consignments = mockConsignmentSummariesApi.listConsignmentSummaries(fixedToday)
   const filters = buildDashboardFilters({
     'search-reference': '11001',
-    'search-importer-name': 'atlantic'
+    'search-importer-name': 'new england'
   })
 
   const filtered = filterConsignments(consignments, filters)
@@ -26,9 +26,9 @@ test('filters consignments by reference and importer-name search', () => {
 test('filters consignments by importer, status, origin, arrival range and risk indicator', () => {
   const consignments = mockConsignmentSummariesApi.listConsignmentSummaries(fixedToday)
   const filters = buildDashboardFilters({
-    'filter-importer': 'Atlantic Seafoods Ltd',
+    'filter-importer': 'New England Seafood International Ltd',
     'filter-status': 'REQUIRES_DOCUMENT_CHECK',
-    'filter-origin': 'Senegal',
+    'filter-origin': 'France',
     'filter-arrival-from': '2026-01-03',
     'filter-arrival-to': '2026-01-03',
     'filter-risk-indicator': 'WEIGHT_MISMATCH'
@@ -92,5 +92,5 @@ test('paginates dashboard results with five rows per page', () => {
 test('maps document counts as separate display lines', () => {
   const viewModel = buildInspectionDashboardViewModel({}, fixedToday)
   const firstConsignment = viewModel.forReview.rows[0]
-  assert.deepEqual(firstConsignment.documentsProvidedLines, ['CC(1)'])
+  assert.deepEqual(firstConsignment.documentsProvidedLines, ['CC(1)', 'ADD(4)'])
 })

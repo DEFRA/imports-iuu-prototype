@@ -34,11 +34,17 @@ const documentNavigationService = {
   },
 
   getDocumentLinksByReference () {
-    const references = [
-      ...inspectionDocuments.map((document) => document.reference),
-      ...additionalDocuments.map((document) => document.id)
-    ]
-    return Object.fromEntries(references.map((reference) => [reference, this.getDocumentLink(reference)]))
+    const inspectionDocumentReferenceLinks = inspectionDocuments.map((document) => (
+      [document.reference, this.getDocumentLink(document.id)]
+    ))
+    const additionalDocumentLinks = additionalDocuments.map((document) => (
+      [document.id, this.getDocumentLink(document.id)]
+    ))
+
+    return Object.fromEntries([
+      ...inspectionDocumentReferenceLinks,
+      ...additionalDocumentLinks
+    ])
   },
 
   getDocument (type, id) {

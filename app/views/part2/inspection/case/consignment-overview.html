@@ -2,93 +2,122 @@
 {% from "part2/inspection/components/document-reference-list.njk" import documentLink %}
 
 {% set pageName = "Consignment overview" %}
+{% set documents = inspectionNotification.documents or [] %}
+{% set evidenceSummary = inspectionNotification.evidenceSummary or [] %}
+{% set riskFlags = inspectionNotification.riskFlags or [] %}
 
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l">Consignment reference</span>
-    <h1 class="govuk-heading-xl">Consignment overview</h1>
-    <p class="govuk-body-l">{{ inspectionNotification.reference or "GB-IUU-2026-10482" }}</p>
-    <div class="govuk-inset-text">All information shown is fictional and for user research only.</div>
-  </div>
-</div>
-
-<div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-m">Consignment summary</h2>
-    <dl class="govuk-summary-list">
+    <div class="inspection-case__header">
+      <div class="inspection-case__title-block">
+        <p class="govuk-body-l inspection-case__reference">Consignment {{ inspectionNotification.reference or "GB-IUU-2026-11001" }}</p>
+        <h1 class="govuk-heading-xl">Consignment overview</h1>
+      </div>
+      <div class="inspection-case__status-card">
+        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Current regulatory status</p>
+        <p class="inspection-case__status-value">{{ inspectionNotification.statusTagText or inspectionNotification.regulatoryStatus or "Requires document check" }}</p>
+      </div>
+    </div>
+
+    <p class="govuk-body-l inspection-case__lead">Review the consignment summary, evidence received and potential risk flags before starting the documentary check.</p>
+
+    <div class="inspection-case__summary-grid">
+      <div class="inspection-case__summary-card inspection-case__summary-card--arrival">
+        <p class="govuk-body govuk-!-margin-bottom-1">Estimated arrival</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.arrivalDateDisplay }}, {{ inspectionNotification.arrivalTime }}</p>
+        <p class="govuk-body govuk-!-margin-bottom-0">{{ inspectionNotification.port }}</p>
+      </div>
+      <div class="inspection-case__summary-card">
+        <p class="govuk-body govuk-!-margin-bottom-1">Importer</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.importer }}</p>
+        {% if inspectionNotification.importerEori %}
+          <p class="govuk-body govuk-!-margin-bottom-0">EORI: {{ inspectionNotification.importerEori }}</p>
+        {% endif %}
+      </div>
+      <div class="inspection-case__summary-card">
+        <p class="govuk-body govuk-!-margin-bottom-1">Declared weight</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.declaredWeight }}</p>
+        <p class="govuk-body govuk-!-margin-bottom-0">{{ inspectionNotification.productDescription }}</p>
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-l">Consignment details</h2>
+    <dl class="govuk-summary-list inspection-case__summary-list">
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Importer</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.importer }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Product description and commodity</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.productDescription }}<br>Commodity code: {{ inspectionNotification.commodityCode }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Declared quantity</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.declaredQuantity }}</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Exporting country</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.exportingCountry }}</dd></div>
-      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.vesselName }} (IMO {{ inspectionNotification.imoNumber }})</dd></div>
-      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.port }}, {{ inspectionNotification.arrivalDateDisplay }} at {{ inspectionNotification.arrivalTime }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Vessel</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.vesselName }}<br>IMO {{ inspectionNotification.imoNumber }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Arrival details</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.port }}<br>{{ inspectionNotification.arrivalDateDisplay }} at {{ inspectionNotification.arrivalTime }}</dd></div>
       <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Container</dt><dd class="govuk-summary-list__value">{{ inspectionNotification.containerNumber }}</dd></div>
     </dl>
 
-    <h2 class="govuk-heading-m">Commodity details</h2>
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Product description</th>
-          <th scope="col" class="govuk-table__header">Commodity code</th>
-          <th scope="col" class="govuk-table__header">Weight</th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        {% for commodity in inspectionNotification.commodities %}
-          <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{{ commodity.description }}</th>
-            <td class="govuk-table__cell">{{ commodity.commodityCode }}</td>
-            <td class="govuk-table__cell">{{ commodity.declaredQuantity }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <div class="govuk-warning-text">
-      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      <strong class="govuk-warning-text__text">
-        Warning: Possible discrepancy detected: notification declares Skipjack Tuna (118,000 kg) but the attached Catch Certificate also contains Yellowfin Tuna (34,000 kg). Declared and certified quantities do not reconcile.
-      </strong>
+    <h2 class="govuk-heading-l">IUU documents received</h2>
+    <div class="inspection-case__documents-grid">
+      {% for documentGroup in documents %}
+        <section class="inspection-case__document-card" aria-label="{{ documentGroup.type }}">
+          <h3 class="govuk-heading-m">{{ documentGroup.type }}</h3>
+          {% if documentGroup.count == 0 %}
+            <p class="govuk-body">No documents received.</p>
+          {% else %}
+            <p class="govuk-body">{{ documentGroup.count }} document{% if documentGroup.count != 1 %}s{% endif %} received.</p>
+          {% endif %}
+          {% if documentGroup.references.length > 0 %}
+            <ul class="govuk-list govuk-list--bullet inspection-case__document-links">
+              {% for reference in documentGroup.references %}
+                {% if documentLinksByReference[reference] %}
+                  <li>{{ documentLink(documentLinksByReference[reference]) }}</li>
+                {% else %}
+                  <li>{{ reference }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </section>
+      {% endfor %}
     </div>
 
-    <h2 class="govuk-heading-m">Document evidence summary</h2>
-    <table class="govuk-table">
+    <h2 class="govuk-heading-l">Document evidence summary</h2>
+    <table class="govuk-table inspection-case__evidence-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">Evidence type</th>
-          <th scope="col" class="govuk-table__header">Count</th>
           <th scope="col" class="govuk-table__header">Status</th>
-          <th scope="col" class="govuk-table__header">Reference numbers</th>
+          <th scope="col" class="govuk-table__header">Details</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        {% for group in documentReferenceGroups %}
+        {% for evidence in evidenceSummary %}
           <tr class="govuk-table__row">
-            <th scope="row" class="govuk-table__header">{{ group.typeLabel }}{% if group.links.length != 1 %}s{% endif %}</th>
-            <td class="govuk-table__cell">{{ group.links.length }}</td>
-            <td class="govuk-table__cell"><strong class="govuk-tag govuk-tag--green">Received</strong></td>
-            <td class="govuk-table__cell">
-              {% for link in group.links %}
-                {{ documentLink(link) }}{% if not loop.last %}<br>{% endif %}
-              {% endfor %}
-            </td>
+            <th scope="row" class="govuk-table__header">{{ evidence.type }}</th>
+            <td class="govuk-table__cell"><strong class="govuk-tag {{ evidence.statusClass }}">{{ evidence.status }}</strong></td>
+            <td class="govuk-table__cell">{{ evidence.details }}</td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <h2 class="govuk-heading-m">Potential risk flags</h2>
-    <table class="govuk-table">
-      <thead class="govuk-table__head"><tr class="govuk-table__row"><th scope="col" class="govuk-table__header">Status</th><th scope="col" class="govuk-table__header">Risk Flag</th><th scope="col" class="govuk-table__header">Risk Overview</th></tr></thead>
-      <tbody class="govuk-table__body">
-        {% for risk in inspectionNotification.riskFlags %}
-          <tr class="govuk-table__row"><td class="govuk-table__cell">{{ risk.status }}</td><th scope="row" class="govuk-table__header">{{ risk.label }}</th><td class="govuk-table__cell">{{ risk.details }}</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="inspection-case__risk-panel">
+      <h3 class="govuk-heading-m">Potential risk flags</h3>
+      {% if riskFlags.length > 0 %}
+        <ul class="govuk-list inspection-case__risk-list">
+          {% for risk in riskFlags %}
+            <li>
+              <span class="inspection-case__risk-icon" aria-hidden="true">!</span>
+              <span>{{ risk.details or risk.label }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="govuk-body govuk-!-margin-bottom-0">No risk flags recorded.</p>
+      {% endif %}
+    </div>
 
-    <a href="/inspection/{{ inspectionNotification.reference }}/check-documents" role="button" draggable="false" class="govuk-button" data-module="govuk-button">Start documentary check</a>
-    <p class="govuk-body"><a href="/inspection/{{ inspectionNotification.reference }}/documents" class="govuk-link">View original documents</a></p>
+    <div class="govuk-button-group">
+      <a href="/inspection/{{ inspectionNotification.reference }}/check-documents" role="button" draggable="false" class="govuk-button" data-module="govuk-button">Start document check</a>
+      <a href="/inspection/{{ inspectionNotification.reference }}/documents" class="govuk-link">Go to check documents</a>
+    </div>
   </div>
 </div>
 {% endblock %}

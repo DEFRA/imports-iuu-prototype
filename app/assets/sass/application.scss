@@ -136,6 +136,129 @@
   margin-left: 6px;
 }
 
+.inspection-case__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.inspection-case__title-block .govuk-heading-xl {
+  margin-bottom: 16px;
+}
+
+.inspection-case__reference {
+  color: #505a5f;
+  margin-bottom: 6px;
+}
+
+.inspection-case__status-card {
+  border: 1px solid #f3d9a0;
+  background-color: #fff;
+  padding: 16px;
+  min-width: 260px;
+}
+
+.inspection-case__status-value {
+  margin: 0;
+  display: inline-block;
+  background-color: #fff0b3;
+  padding: 6px 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.inspection-case__lead {
+  max-width: 44ch;
+  margin-bottom: 24px;
+}
+
+.inspection-case__summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.inspection-case__summary-card {
+  border: 1px solid #b1b4b6;
+  background-color: #f8f8f8;
+  padding: 16px;
+}
+
+.inspection-case__summary-card--arrival {
+  background-color: #eef4fa;
+}
+
+.inspection-case__summary-list {
+  margin-bottom: 36px;
+}
+
+.inspection-case__summary-list .govuk-summary-list__key {
+  width: 32%;
+}
+
+.inspection-case__documents-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.inspection-case__document-card {
+  border: 1px solid #b1b4b6;
+  padding: 16px;
+}
+
+.inspection-case__document-links {
+  margin-bottom: 0;
+}
+
+.inspection-case__evidence-table {
+  margin-bottom: 24px;
+}
+
+.inspection-case__risk-panel {
+  border: 1px solid #f1b8af;
+  background-color: #fef7f7;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.inspection-case__risk-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.inspection-case__risk-list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.inspection-case__risk-list li:last-child {
+  margin-bottom: 0;
+}
+
+.inspection-case__risk-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #f1b8af;
+  color: #d4351c;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
 @media (max-width: 48.0525em) {
   .inspection-dashboard__summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -143,6 +266,23 @@
 
   .inspection-dashboard__detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inspection-case__header {
+    flex-direction: column;
+  }
+
+  .inspection-case__status-card {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .inspection-case__summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inspection-case__documents-grid {
+    grid-template-columns: 1fr;
   }
 }
 

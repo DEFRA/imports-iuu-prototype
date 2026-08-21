@@ -4,20 +4,20 @@ module.exports = [
   {
     id: 'consignment-11001',
     reference: 'GB-IUU-2026-11001',
-    importer: 'Atlantic Seafoods Ltd',
-    originCountry: 'Senegal',
+    importer: 'New England Seafood International Ltd',
+    originCountry: 'France',
     arrivalOffsetDays: 2,
     arrivalTime: '9:00am',
-    commodityCodes: ['03021900'],
-    species: 'Yellowfin tuna (YFT)',
-    declaredWeightKg: 24800,
+    commodityCodes: ['030343'],
+    species: 'Skipjack tuna (Katsuwonus pelamis)',
+    declaredWeightKg: 118000,
     catchCertificateCount: 1,
     processingStatementCount: 0,
     nmdCount: 0,
-    additionalDocumentCount: 0,
+    additionalDocumentCount: 4,
     status: 'REQUIRES_DOCUMENT_CHECK',
-    riskFlags: ['WEIGHT_MISMATCH'],
-    riskNotes: 'Weight Reconciliation (Fail). CC has multiple vessels but different weights, weights in CC do not match the declaration.'
+    riskFlags: ['COMMODITY_MISMATCH', 'WEIGHT_MISMATCH', 'MISSING_EVIDENCE', 'IMPORTER_DECLARATION_MISSING'],
+    riskNotes: 'Weight Reconciliation (Fail). Catch Certificate contains both Skipjack and Yellowfin tuna, and certified weight exceeds the declaration by 34,000 kg.'
   },
   {
     id: 'consignment-11002',
