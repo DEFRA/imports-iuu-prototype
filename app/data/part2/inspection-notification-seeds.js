@@ -1,71 +1,70 @@
 module.exports = [
   {
-    reference: 'GB-IUU-2026-10482',
+    reference: 'GB-IUU-2026-11001',
     hasJourneyLink: true,
-    importer: 'Atlantic Seafoods Ltd',
-    arrivalOffsetDays: 3,
-    arrivalTime: '2:30pm',
+    importer: 'New England Seafood International Ltd',
+    importerEori: 'GB222333444000',
+    arrivalOffsetDays: 2,
+    arrivalTime: '9:00am',
     submittedDaysAgo: 7,
-    product: 'Frozen yellowfin tuna',
-    quantity: '24,800 kg · 1,240 cartons',
-    vesselOrCountryLines: ['MV Ocean Star', 'Senegal'],
+    product: 'Skipjack tuna',
+    quantity: '118,000 kg',
+    vesselOrCountryLines: ['PENDRUC', 'France'],
     reasonTagText: 'Mismatch flagged',
     reasonTagClass: 'govuk-tag--red',
-    reasonText: 'Notification weight differs from catch certificate',
-    documentsLines: ['Catch certificate received', 'Processing statement received', 'NMD received'],
-    statusTagText: 'Inspection required',
+    reasonText: 'Catch certificate contains undeclared Yellowfin tuna',
+    documentsLines: ['Catch certificate received', 'Potential missing evidence flagged'],
+    statusTagText: 'Requires document check',
     statusTagClass: 'govuk-tag--red',
-    regulatoryStatus: 'Inspection required',
-    port: 'Port of Felixstowe',
-    declaredWeight: '26,200 kg',
-    productDescription: 'Frozen yellowfin tuna loins',
-    commodityCode: '0303 42 12',
-    declaredQuantity: '24,800 kg (1,240 cartons)',
+    regulatoryStatus: 'Requires document check',
+    port: 'Port of Grimsby',
+    declaredWeight: '118,000 kg',
+    productDescription: 'Skipjack tuna',
+    commodityCode: '030343',
+    declaredQuantity: '118,000 kg',
     commodities: [
-      { description: 'Frozen yellowfin tuna', commodityCode: '0303 42 12', declaredQuantity: '18,600 kg' },
-      { description: 'Frozen bigeye tuna', commodityCode: '0303 44 10', declaredQuantity: '6,200 kg' }
+      { description: 'Skipjack tuna (Katsuwonus pelamis)', commodityCode: '030343', declaredQuantity: '118,000 kg' }
     ],
     commodityWeightComparisons: [
       {
-        description: 'Frozen yellowfin tuna',
-        commodityCode: '0303 42 12',
-        notificationWeight: '18,600 kg',
-        catchCertificateWeight: '24,800 kg',
-        catchCertificateReferences: ['CC-SEN-2026-7784', 'CC-SEN-2026-7785'],
-        processingStatementWeight: '24,800 kg',
-        nonManipulationDeclarationWeight: '24,800 kg'
+        description: 'Skipjack tuna (Katsuwonus pelamis)',
+        commodityCode: '030343',
+        notificationWeight: '118,000 kg',
+        catchCertificateWeight: '118,000 kg',
+        catchCertificateReferences: ['FRA 2026 CSP 000205'],
+        processingStatementWeight: 'Not provided',
+        nonManipulationDeclarationWeight: 'Not provided'
       },
       {
-        description: 'Frozen bigeye tuna',
-        commodityCode: '0303 44 10',
-        notificationWeight: '6,200 kg',
-        catchCertificateWeight: '6,200 kg',
-        catchCertificateReferences: ['CC-SEN-2026-7784'],
-        processingStatementWeight: '6,200 kg',
-        nonManipulationDeclarationWeight: '6,200 kg'
+        description: 'Yellowfin tuna (Thunnus albacares)',
+        commodityCode: '030342',
+        notificationWeight: 'Not declared',
+        catchCertificateWeight: '34,000 kg',
+        catchCertificateReferences: ['FRA 2026 CSP 000205'],
+        processingStatementWeight: 'Not provided',
+        nonManipulationDeclarationWeight: 'Not provided'
       }
     ],
-    exportingCountry: 'Senegal',
-    vesselName: 'MV Ocean Star',
-    imoNumber: '9214567',
-    containerNumber: 'MSCU 7391842',
+    exportingCountry: 'France',
+    vesselName: 'PENDRUC',
+    imoNumber: '9741102',
+    containerNumber: 'MSCU2205101',
     documents: [
-      { type: 'Catch certificates', count: 1, references: ['CC-SEN-2026-7784'] },
-      { type: 'Processing statements', count: 1, references: ['PS-SEN-2026-0441'] },
-      { type: 'Non-manipulation declarations', count: 1, references: ['NMD-MMO-2026-0093'] },
-      { type: 'Additional documents', count: 0, references: [] }
+      { type: 'Catch certificates', count: 1, references: ['FRA 2026 CSP 000205'] },
+      { type: 'Processing statements', count: 0, references: [] },
+      { type: 'Non-manipulation declarations', count: 0, references: [] },
+      { type: 'Additional documents', count: 4, references: ['BOL-2026-55190', 'INV-2026-88421', 'TRN-2026-10982', 'SUP-2026-00418'] }
     ],
     evidenceSummary: [
-      { type: 'Catch certificate', status: 'Received', statusClass: 'govuk-tag--green', details: 'CC-SEN-2026-7784' },
-      { type: 'Processing statement', status: 'Received', statusClass: 'govuk-tag--green', details: 'PS-SEN-2026-0441' },
-      { type: 'Non-manipulation declaration', status: 'Received', statusClass: 'govuk-tag--green', details: 'NMD-MMO-2026-0093' },
-      { type: 'Weight comparison', status: 'Possible mismatch', statusClass: 'govuk-tag--yellow', details: 'Notification is 1,400 kg heavier than the catch certificate' },
+      { type: 'Catch certificate', status: 'Received', statusClass: 'govuk-tag--green', details: 'FRA 2026 CSP 000205' },
+      { type: 'Weight comparison', status: 'Possible mismatch', statusClass: 'govuk-tag--yellow', details: 'Catch Certificate contains additional Yellowfin Tuna not present in the declaration' },
+      { type: 'Evidence completeness', status: 'Issue', statusClass: 'govuk-tag--red', details: 'Not all expected catch certificates supplied' },
       { type: 'Authority verification', status: 'Pending', statusClass: 'govuk-tag--grey', details: 'Verification has not been completed' }
     ],
     riskFlags: [
       { status: 'Issue', label: 'Mismatch with declared commodity', details: 'There is a potential mismatch with commodity on declaration and supplied evidence' },
-      { status: 'Issue', label: 'Missing Evidence', details: 'There is a potential missing Evidence' },
-      { status: 'Issue', label: 'Importer declaration', details: 'Importer declaration data missing' }
+      { status: 'Issue', label: 'Missing Evidence', details: 'Not all expected catch certificates supplied' },
+      { status: 'Issue', label: 'Importer declaration', details: 'Importer declaration not completed' }
     ]
   },
   {

@@ -323,7 +323,7 @@ const registerInspectionRoutes = (router) => {
     if (req.params.reference !== inspectionReference) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('check-record'))
+    res.render(inspectionView('check-record'), { inspectionReference })
   })
 
   router.post('/inspection/:reference/check-record', (req, res) => {
@@ -335,7 +335,7 @@ const registerInspectionRoutes = (router) => {
       delete data['inspection-record-confirmed']
       return renderInspectionPage(res, 'check-record', [
         { name: 'inspection-record-confirmed', text: 'Confirm that the inspection record is complete and accurate to the best of your knowledge' }
-      ])
+      ], { inspectionReference })
     }
     res.redirect(`/inspection/${inspectionReference}/confirmation`)
   })
@@ -344,7 +344,7 @@ const registerInspectionRoutes = (router) => {
     if (req.params.reference !== inspectionReference) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('inspection-confirmation'))
+    res.render(inspectionView('inspection-confirmation'), { inspectionReference })
   })
 }
 
