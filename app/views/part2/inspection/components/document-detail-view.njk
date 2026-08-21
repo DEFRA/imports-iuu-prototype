@@ -5,6 +5,10 @@
   <h1 class="govuk-heading-xl">{{ document.reference }}</h1>
   <div class="govuk-inset-text">This evidence document is fictional and for user research only.</div>
 
+  {% if document.originalFileUrl %}
+    <p class="govuk-body"><a class="govuk-button govuk-button--secondary" href="{{ document.originalFileUrl }}">View original file</a></p>
+  {% endif %}
+
   <dl class="govuk-summary-list govuk-!-margin-bottom-7">
     <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document type</dt><dd class="govuk-summary-list__value">{{ document.typeLabel }}</dd></div>
     <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document reference</dt><dd class="govuk-summary-list__value">{{ document.reference }}</dd></div>

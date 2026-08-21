@@ -73,12 +73,16 @@ const assertSeedValid = (seed) => {
     throw new Error('Each consignment seed must be an object')
   }
 
-  if (!seed.id || !seed.reference || !seed.importer || !seed.originCountry || !seed.species || !seed.arrivalTime) {
+  if (!seed.id || !seed.reference || !seed.importer || !seed.originCountry || !seed.species) {
     throw new Error(`Missing required consignment data for ${seed.reference || seed.id || 'unknown reference'}`)
   }
 
-  if (!Number.isInteger(seed.arrivalOffsetDays) || seed.arrivalOffsetDays < 2 || seed.arrivalOffsetDays > 45) {
+  if (!seed.arrivalDate && (!Number.isInteger(seed.arrivalOffsetDays) || seed.arrivalOffsetDays < 2 || seed.arrivalOffsetDays > 45)) {
     throw new Error(`arrivalOffsetDays must be between 2 and 45 for ${seed.reference}`)
+  }
+
+  if (seed.arrivalDate && Number.isNaN(Date.parse(seed.arrivalDate + 'T00:00:00Z'))) {
+    throw new Error(`Invalid arrivalDate for ${seed.reference}`)
   }
 
   if (!Array.isArray(seed.commodityCodes) || seed.commodityCodes.length === 0) {
@@ -108,7 +112,9 @@ const assertSeedValid = (seed) => {
 
 const buildConsignmentSummary = (seed, startOfToday) => {
   assertSeedValid(seed)
-  const estimatedArrival = addDays(startOfToday, seed.arrivalOffsetDays)
+  const estimatedArrival = seed.arrivalDate
+    ? new Date(seed.arrivalDate + 'T00:00:00Z')
+    : addDays(startOfToday, seed.arrivalOffsetDays)
 
   return {
     id: seed.id,
@@ -127,7 +133,12 @@ const buildConsignmentSummary = (seed, startOfToday) => {
     additionalDocumentCount: seed.additionalDocumentCount,
     status: seed.status,
     riskFlags: seed.riskFlags,
-    riskNotes: seed.riskNotes || ''
+    riskNotes: seed.riskNotes || '',
+    warningText: seed.warningText,
+    assessmentSummary: seed.assessmentSummary,
+    port: seed.port,
+    containerNumber: seed.containerNumber,
+    vesselName: seed.vesselName
   }
 }
 
