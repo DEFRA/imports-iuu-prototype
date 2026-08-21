@@ -96,7 +96,7 @@
       <thead class="govuk-table__head"><tr class="govuk-table__row"><th scope="col" class="govuk-table__header">Status</th><th scope="col" class="govuk-table__header">Risk Flag</th><th scope="col" class="govuk-table__header">Risk Overview</th></tr></thead>
       <tbody class="govuk-table__body">
         {% for risk in inspectionNotification.riskFlags %}
-          <tr class="govuk-table__row"><td class="govuk-table__cell">{{ risk.status }}</td><th scope="row" class="govuk-table__header">{{ risk.label }}</th><td class="govuk-table__cell">{{ risk.details }}</td></tr>
+          <tr class="govuk-table__row"><td class="govuk-table__cell"><strong class="govuk-tag {% if risk.status == 'No issue' %}govuk-tag--green{% elif risk.status == 'Review' %}govuk-tag--yellow{% else %}govuk-tag--red{% endif %}">{{ risk.status }}</strong></td><th scope="row" class="govuk-table__header">{{ risk.label }}</th><td class="govuk-table__cell">{{ risk.details }}</td></tr>
         {% endfor %}
       </tbody>
     </table>
