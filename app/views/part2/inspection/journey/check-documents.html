@@ -11,7 +11,7 @@
       <h1 class="govuk-heading-l">Check the documents</h1>
 
       <h2 class="govuk-heading-m">Documents to check</h2>
-      {{ documentReferenceList(documentReferenceGroups, true) }}
+      {{ documentReferenceList(documentReferenceGroups) }}
       <p class="govuk-body"><a class="govuk-link" href="/inspection/{{ inspectionReference }}/documents">View document comparison and assessment summary</a></p>
 
       {% if inspectionNotification.warningText %}
