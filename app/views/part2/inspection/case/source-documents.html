@@ -38,32 +38,6 @@
       </table>
     </div>
 
-    {% if catchCertificateComparisons %}
-      <h2 class="govuk-heading-m">Catch certificate reconciliation</h2>
-      <div class="govuk-table__container" tabindex="0">
-        <table class="govuk-table">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Catch certificate</th>
-            <th scope="col" class="govuk-table__header">Weight on CC</th>
-            <th scope="col" class="govuk-table__header">Weight on PS</th>
-            <th scope="col" class="govuk-table__header">Status</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-          {% for comparison in catchCertificateComparisons %}
-            <tr class="govuk-table__row">
-              <th scope="row" class="govuk-table__header">{{ documentLink(documentLinksByReference[comparison.reference]) }}</th>
-              <td class="govuk-table__cell">{{ comparison.catchCertificateWeight }}</td>
-              <td class="govuk-table__cell">{{ comparison.processingStatementWeight }}</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag {{ comparison.statusClass }}">{{ comparison.status }}</strong></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-        </table>
-      </div>
-    {% endif %}
-
     <h2 class="govuk-heading-m">Documentary assessment summary</h2>
     <p class="govuk-body">{{ assessmentSummary or "The documentary evidence supplied does not fully reconcile with the import notification. The Catch Certificate contains an additional commodity that has not been declared within the notification. As a result, the certified weight exceeds the declared quantity. Additional clarification or amended documentation should be requested before the consignment can be assessed as satisfactory." }}</p>
 

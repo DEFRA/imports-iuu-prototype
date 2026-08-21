@@ -109,12 +109,6 @@ const buildInspectionOverviewNotification = (reference) => {
         processingStatementWeight: '296,000 kg',
         nonManipulationDeclarationWeight: 'Not supplied'
       }],
-      catchCertificateComparisons: [
-        { reference: 'ESP/SGCI/AI/2026/101', catchCertificateWeight: '118,000 kg', processingStatementWeight: '118,000 kg', status: 'Referenced', statusClass: 'govuk-tag--green' },
-        { reference: 'FRA 2026 CSP 000101', catchCertificateWeight: '78,000 kg', processingStatementWeight: '78,000 kg', status: 'Referenced', statusClass: 'govuk-tag--green' },
-        { reference: 'SYC/SFA/10/2026-SW0454', catchCertificateWeight: '64,000 kg', processingStatementWeight: 'Not represented', status: 'Missing', statusClass: 'govuk-tag--red' },
-        { reference: 'CL-2026-44-000079-N', catchCertificateWeight: '100,000 kg', processingStatementWeight: '100,000 kg', status: 'Referenced', statusClass: 'govuk-tag--green' }
-      ],
       documentEvidenceSummary: [
         { title: 'Catch certificates', status: 'Received', statusClass: 'govuk-tag--green', panelClass: 'document-evidence-summary__panel--received', details: '4 documents supplied.' },
         { title: 'Processing statement', status: 'Review needed', statusClass: 'govuk-tag--yellow', panelClass: 'document-evidence-summary__panel--review', details: '1 document supplied. 1 catch certificate is not referenced.' },
@@ -183,7 +177,6 @@ const registerInspectionRoutes = (router) => {
       documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference),
       documentLinksByReference: documentNavigationService.getDocumentLinksByReference(),
       commodityWeightComparisons: inspectionNotification.commodityWeightComparisons,
-      catchCertificateComparisons: inspectionNotification.catchCertificateComparisons,
       assessmentSummary: inspectionNotification.assessmentSummary
     })
   })
