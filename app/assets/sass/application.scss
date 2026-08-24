@@ -359,6 +359,121 @@
   margin-top: 2px;
 }
 
+.inspection-overview__tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-bottom: 32px;
+}
+
+.inspection-overview__tag-list .govuk-tag {
+  display: inline-block;
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  max-width: none;
+  padding: 5px 9px 4px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.inspection-overview__status-tag {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.inspection-overview__risk-tag {
+  background-color: transparent;
+  border: 1px solid #b1b4b6;
+  color: #0b0c0c;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.inspection-overview__warning {
+  margin-bottom: 20px;
+}
+
+.inspection-overview__warning-text {
+  font-weight: 400;
+}
+
+.inspection-overview__warning-label {
+  font-weight: 700;
+}
+
+.inspection-overview__summary-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 30px;
+}
+
+.inspection-overview__summary-card {
+  border: 1px solid #b1b4b6;
+  min-height: 132px;
+  padding: 12px;
+}
+
+.inspection-overview__summary-label {
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+}
+
+.inspection-overview__evidence-groups {
+  margin-bottom: 24px;
+}
+
+.inspection-overview__evidence-group {
+  margin-bottom: 22px;
+}
+
+.inspection-overview__evidence-group:last-child {
+  margin-bottom: 0;
+}
+
+.inspection-overview__evidence-group-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inspection-overview__provided-tag {
+  letter-spacing: 0;
+  margin-bottom: 0;
+  text-transform: none;
+}
+
+.inspection-overview__provided-tag--provided {
+  background-color: #d2e2f1;
+  color: #003078;
+}
+
+.inspection-overview__provided-tag--missing {
+  background-color: #f3f2f1;
+  color: #505a5f;
+}
+
+.inspection-overview__evidence-reference-list {
+  border-left: 2px solid #b1b4b6;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0 0 0 14px;
+}
+
+.inspection-overview__evidence-reference-item {
+  margin-bottom: 8px;
+}
+
+.inspection-overview__evidence-reference-item:last-child {
+  margin-bottom: 0;
+}
+
+.inspection-overview__evidence-reference-item .govuk-link {
+  display: inline-block;
+  font-size: 1.0625rem;
+}
+
 @media (max-width: 48.0525em) {
   .inspection-dashboard__summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -382,6 +497,10 @@
   }
 
   .inspection-case__documents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inspection-overview__summary-grid {
     grid-template-columns: 1fr;
   }
 }

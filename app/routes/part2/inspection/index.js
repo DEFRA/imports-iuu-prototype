@@ -75,6 +75,22 @@ const formatCommodityCode = (code) => String(code)
   .replace(/^(\d{4})(\d{2})(\d{2})$/, '$1 $2 $3')
   .replace(/^(\d{4})(\d{2})$/, '$1 $2')
 
+const statusTagTextByCode = {
+  REQUIRES_DOCUMENT_CHECK: 'Requires document check',
+  IN_PROGRESS: 'In progress',
+  REQUEST_ADDITIONAL_INFORMATION: 'Request additional information',
+  REFERRED_TO_MMO: 'Referred to MMO',
+  COMPLETED: 'Completed'
+}
+
+const statusTagClassByCode = {
+  REQUIRES_DOCUMENT_CHECK: 'govuk-tag--red',
+  IN_PROGRESS: 'govuk-tag--blue',
+  REQUEST_ADDITIONAL_INFORMATION: 'govuk-tag--yellow',
+  REFERRED_TO_MMO: 'govuk-tag--purple',
+  COMPLETED: 'govuk-tag--green'
+}
+
 const buildInspectionOverviewNotification = (reference) => {
   const matchedNotification = getInspectionNotificationByReference(reference)
   if (matchedNotification) return matchedNotification
@@ -93,6 +109,12 @@ const buildInspectionOverviewNotification = (reference) => {
       vesselName: dashboardConsignment.vesselName,
       arrivalDateDisplay: formatDashboardDate(dashboardConsignment.estimatedArrival),
       arrivalTime: dashboardConsignment.arrivalTime,
+      arrivalOffsetDays: dashboardConsignment.daysUntilArrival,
+      statusTagText: statusTagTextByCode[dashboardConsignment.status],
+      statusTagClass: statusTagClassByCode[dashboardConsignment.status],
+      declaredWeight: new Intl.NumberFormat('en-GB').format(dashboardConsignment.declaredWeightKg) + ' kg',
+      productDescription: dashboardConsignment.species,
+      commodityCode: dashboardConsignment.commodityCodes.map(formatCommodityCode).join(', '),
       commodities: [{
         description: dashboardConsignment.species,
         commodityCode: dashboardConsignment.commodityCodes.map(formatCommodityCode).join(', '),
@@ -130,6 +152,35 @@ const buildInspectionOverviewNotification = (reference) => {
   return null
 }
 
+const buildOverviewEvidenceSections = (inspectionNotification, documentReferenceGroups, documentLinksByReference) => {
+  const sectionDefinitions = [
+    { type: 'catch-certificate', heading: 'Catch certificate', notificationType: 'Catch certificates' },
+    { type: 'processing-statement', heading: 'Processing statement', notificationType: 'Processing statements' },
+    { type: 'nmd', heading: 'Non manipulation document', notificationType: 'Non-manipulation declarations' },
+    { type: 'additional', heading: 'Additional documents', notificationType: 'Additional documents' }
+  ]
+
+  return sectionDefinitions.map((sectionDefinition) => {
+    const group = documentReferenceGroups.find((item) => item.type === sectionDefinition.type) || { count: 0, links: [] }
+    const notificationDocument = (inspectionNotification.documents || [])
+      .find((item) => item.type === sectionDefinition.notificationType) || { count: 0, references: [] }
+    const linkedReferences = group.links || []
+    const knownReferences = new Set(linkedReferences.map((reference) => reference.text))
+    const additionalReferences = (notificationDocument.references || [])
+      .filter((reference) => !knownReferences.has(reference))
+      .map((reference) => documentLinksByReference[reference] || {
+        text: reference
+      })
+
+    return {
+      type: sectionDefinition.type,
+      heading: sectionDefinition.heading,
+      count: typeof group.count === 'number' ? group.count : (notificationDocument.count || 0),
+      references: [...linkedReferences, ...additionalReferences]
+    }
+  })
+}
+
 const registerInspectionRoutes = (router) => {
   router.get('/prototype-selector', (req, res) => {
     res.redirect('/')
@@ -159,16 +210,23 @@ const registerInspectionRoutes = (router) => {
     const overviewViewName = req.params.reference === inspectionOverviewFallbackReference
       ? 'consignment-overview-11002'
       : 'consignment-overview'
+    const documentLinksByReference = documentNavigationService.getDocumentLinksByReference()
+    const documentReferenceGroups = documentNavigationService.getReferenceGroups(req.params.reference).map((group) => ({
+      ...group,
+      count: inspectionNotification.documentCounts?.[group.type] ?? group.links.length,
+      links: inspectionNotification.documentCounts
+        ? group.links.slice(0, inspectionNotification.documentCounts[group.type])
+        : group.links
+    }))
     res.render(inspectionView(overviewViewName), {
       inspectionNotification,
-      documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference).map((group) => ({
-        ...group,
-        count: inspectionNotification.documentCounts?.[group.type] ?? group.links.length,
-        links: inspectionNotification.documentCounts
-          ? group.links.slice(0, inspectionNotification.documentCounts[group.type])
-          : group.links
-      })),
-      documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
+      documentReferenceGroups,
+      documentLinksByReference,
+      overviewEvidenceSections: buildOverviewEvidenceSections(
+        inspectionNotification,
+        documentReferenceGroups,
+        documentLinksByReference
+      )
     })
   })
 
