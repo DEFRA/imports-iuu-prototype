@@ -31,7 +31,11 @@
       </strong>
       {% if riskFlags.length > 0 %}
         {% for risk in riskFlags %}
-          <strong class="govuk-tag inspection-overview__risk-tag">{{ risk.label or risk.details or risk }}</strong>
+          {% set riskTagText = risk.label or risk.details or risk %}
+          {% if riskTagText == "Mismatch with declared commodity" %}
+            {% set riskTagText = "Declared commodity mismatch" %}
+          {% endif %}
+          <strong class="govuk-tag inspection-overview__risk-tag">{{ riskTagText }}</strong>
         {% endfor %}
       {% else %}
         <strong class="govuk-tag inspection-overview__risk-tag">No risk identified</strong>
@@ -40,37 +44,37 @@
 
     <div class="govuk-warning-text inspection-overview__warning">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
+      <strong class="govuk-warning-text__text inspection-overview__warning-text">
+        <span class="inspection-overview__warning-label">Warning:</span>
         The documentary evidence supplied does not fully reconcile with the import notification. The Catch Certificate contains an additional commodity that has not been declared within the notification. As a result, the certified weight exceeds the declared quantity. Additional clarification or amended documentation should be requested before the consignment can be assessed as satisfactory.
       </strong>
     </div>
 
     <div class="inspection-overview__summary-grid">
       <div class="inspection-overview__summary-card">
-        <p class="govuk-body govuk-!-margin-bottom-1">Estimated arrival</p>
+        <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Estimated arrival</p>
         <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.arrivalDateDisplay }}, {{ inspectionNotification.arrivalTime }}</p>
         <p class="govuk-body govuk-!-margin-bottom-0">{{ inspectionNotification.port }}</p>
       </div>
       <div class="inspection-overview__summary-card">
-        <p class="govuk-body govuk-!-margin-bottom-1">Importer</p>
+        <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Importer</p>
         <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.importer }}</p>
         {% if inspectionNotification.importerEori %}
           <p class="govuk-body govuk-!-margin-bottom-0">EORI: {{ inspectionNotification.importerEori }}</p>
         {% endif %}
       </div>
       <div class="inspection-overview__summary-card">
-        <p class="govuk-body govuk-!-margin-bottom-1">Declared weight</p>
+        <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Declared weight</p>
         <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.declaredWeight }}</p>
         <p class="govuk-body govuk-!-margin-bottom-0">{{ inspectionNotification.productDescription }}<br>Commodity code: {{ inspectionNotification.commodityCode }}</p>
       </div>
       <div class="inspection-overview__summary-card">
-        <p class="govuk-body govuk-!-margin-bottom-1">Vessel</p>
+        <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Vessel</p>
         <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.vesselName }}{% if inspectionNotification.imoNumber %} IMO {{ inspectionNotification.imoNumber }}{% endif %}</p>
         <p class="govuk-body govuk-!-margin-bottom-0">Container: {{ inspectionNotification.containerNumber }}</p>
       </div>
       <div class="inspection-overview__summary-card">
-        <p class="govuk-body govuk-!-margin-bottom-1">Exporting country</p>
+        <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Exporting country</p>
         <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ inspectionNotification.exportingCountry }}</p>
       </div>
     </div>
@@ -151,7 +155,7 @@
         <section class="inspection-overview__evidence-group" aria-label="{{ evidenceSection.heading }}">
           <h3 class="govuk-heading-m inspection-overview__evidence-group-heading">
             {{ evidenceSection.heading }}
-            <strong class="govuk-tag govuk-tag--blue inspection-overview__provided-tag">
+            <strong class="govuk-tag inspection-overview__provided-tag {% if evidenceSection.count > 0 %}inspection-overview__provided-tag--provided{% else %}inspection-overview__provided-tag--missing{% endif %}">
               {% if evidenceSection.count > 0 %}Provided{% else %}Not provided{% endif %}
             </strong>
           </h3>

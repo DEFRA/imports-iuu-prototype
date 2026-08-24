@@ -300,13 +300,17 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 10px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .inspection-overview__tag-list .govuk-tag {
-  font-size: 0.875rem;
-  line-height: 1.2;
-  padding: 4px 8px 3px;
+  display: inline-block;
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  max-width: none;
+  padding: 5px 9px 4px;
+  white-space: nowrap;
+  width: auto;
 }
 
 .inspection-overview__status-tag {
@@ -326,6 +330,14 @@
   margin-bottom: 20px;
 }
 
+.inspection-overview__warning-text {
+  font-weight: 400;
+}
+
+.inspection-overview__warning-label {
+  font-weight: 700;
+}
+
 .inspection-overview__summary-grid {
   display: grid;
   gap: 12px;
@@ -335,7 +347,13 @@
 
 .inspection-overview__summary-card {
   border: 1px solid #b1b4b6;
-  padding: 14px;
+  min-height: 132px;
+  padding: 12px;
+}
+
+.inspection-overview__summary-label {
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
 }
 
 .inspection-overview__evidence-groups {
@@ -358,11 +376,19 @@
 }
 
 .inspection-overview__provided-tag {
-  background-color: #d2e2f1;
-  color: #003078;
   letter-spacing: 0;
   margin-bottom: 0;
   text-transform: none;
+}
+
+.inspection-overview__provided-tag--provided {
+  background-color: #d2e2f1;
+  color: #003078;
+}
+
+.inspection-overview__provided-tag--missing {
+  background-color: #f3f2f1;
+  color: #505a5f;
 }
 
 .inspection-overview__evidence-reference-list {
