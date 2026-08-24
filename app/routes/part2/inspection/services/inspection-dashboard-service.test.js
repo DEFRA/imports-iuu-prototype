@@ -73,20 +73,21 @@ test('builds tab view model so in-progress records are excluded from For Review'
 
   assert.ok(viewModel.forReview.rows.every((row) => row.statusLabel !== 'In Progress'))
   assert.ok(viewModel.inProgress.rows.every((row) => row.statusLabel === 'In Progress'))
+  assert.equal(viewModel.filterOptions.referenceOptions.length, 20)
+  assert.ok(viewModel.filterOptions.referenceOptions.includes('GB-IUU-2026-11001'))
+  assert.ok(viewModel.filterOptions.importerNameOptions.includes('Frinsa UK'))
 })
 
-test('paginates dashboard results with five rows per page', () => {
-  const firstPage = buildInspectionDashboardViewModel({}, fixedToday)
-  const secondPage = buildInspectionDashboardViewModel({ 'for-review-page': '2' }, fixedToday)
+test('lists every matching reference in each dashboard tab', () => {
+  const viewModel = buildInspectionDashboardViewModel({}, fixedToday)
 
-  assert.equal(firstPage.forReview.rows.length, 5)
-  assert.equal(firstPage.forReview.pagination.pageCount, 3)
-  assert.equal(firstPage.forReview.filteredStart, 1)
-  assert.equal(firstPage.forReview.filteredEnd, 5)
+  assert.equal(viewModel.forReview.rows.length, viewModel.forReview.filteredTotalCount)
+  assert.equal(viewModel.forReview.pagination.pageCount, 1)
+  assert.equal(viewModel.forReview.filteredStart, 1)
+  assert.equal(viewModel.forReview.filteredEnd, viewModel.forReview.filteredTotalCount)
 
-  assert.equal(secondPage.forReview.rows.length, 5)
-  assert.equal(secondPage.forReview.filteredStart, 6)
-  assert.equal(secondPage.forReview.filteredEnd, 10)
+  assert.equal(viewModel.inProgress.rows.length, viewModel.inProgress.filteredTotalCount)
+  assert.equal(viewModel.inProgress.pagination.pageCount, 1)
 })
 
 test('maps document counts as separate display lines', () => {

@@ -3,7 +3,7 @@
 {% set pageName = "Inspections" %}
 
 {% macro renderFilterPanel(tabId, filters, filterOptions) %}
-  <form method="get" action="/inspections#{{ tabId }}" class="govuk-!-margin-bottom-4" data-inspection-realtime-filter-form aria-label="Search and filter consignments">
+  <form method="get" action="/inspections#{{ tabId }}" class="govuk-!-margin-bottom-4" aria-label="Search and filter consignments">
     <input type="hidden" name="tab" value="{{ tabId }}">
     {% if tabId == 'for-review' %}
       <input type="hidden" name="for-review-page" value="1">
@@ -12,42 +12,43 @@
       <input type="hidden" name="for-review-page" value="{{ filters.forReviewPage }}">
       <input type="hidden" name="in-progress-page" value="1">
     {% endif %}
-    <fieldset class="govuk-fieldset">
-      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-        <h3 class="govuk-fieldset__heading">Search and filters</h3>
-      </legend>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-third">
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
+    <h3 class="govuk-heading-l govuk-!-margin-bottom-3">Search and filter consignments</h3>
+    <div class="inspection-dashboard__filter-panel">
+      <fieldset class="govuk-fieldset govuk-!-margin-bottom-4">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h4 class="govuk-fieldset__heading">Search</h4>
+        </legend>
+        <div class="inspection-dashboard__search-grid">
+          <div class="govuk-form-group govuk-!-margin-bottom-0">
             <label class="govuk-label" for="{{ tabId }}-search-reference">
               Reference
             </label>
-            <input class="govuk-input" id="{{ tabId }}-search-reference" name="search-reference" type="search" value="{{ filters.referenceSearch }}">
+            <input class="govuk-input" id="{{ tabId }}-search-reference" name="search-reference" type="search" list="{{ tabId }}-reference-options" autocomplete="off" value="{{ filters.referenceSearch }}">
+            <datalist id="{{ tabId }}-reference-options">
+              {% for reference in filterOptions.referenceOptions %}
+                <option value="{{ reference }}"></option>
+              {% endfor %}
+            </datalist>
           </div>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
+          <div class="govuk-form-group govuk-!-margin-bottom-0">
             <label class="govuk-label" for="{{ tabId }}-search-importer-name">
               Importer name
             </label>
-            <input class="govuk-input" id="{{ tabId }}-search-importer-name" name="search-importer-name" type="search" value="{{ filters.importerNameSearch }}">
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-filter-importer">
-              Importer (required)
-            </label>
-            <select class="govuk-select" id="{{ tabId }}-filter-importer" name="filter-importer" required>
-              {% for option in filterOptions.importerOptions %}
-                <option value="{{ option.value }}" {% if option.value == filters.importer %}selected{% endif %}>{{ option.text }}</option>
+            <input class="govuk-input" id="{{ tabId }}-search-importer-name" name="search-importer-name" type="search" list="{{ tabId }}-importer-options" autocomplete="off" value="{{ filters.importerNameSearch }}">
+            <datalist id="{{ tabId }}-importer-options">
+              {% for importer in filterOptions.importerNameOptions %}
+                <option value="{{ importer }}"></option>
               {% endfor %}
-            </select>
+            </datalist>
           </div>
         </div>
-      </div>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
+      </fieldset>
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h4 class="govuk-fieldset__heading">Filter</h4>
+        </legend>
+        <div class="inspection-dashboard__filter-grid">
           <div class="govuk-form-group govuk-!-margin-bottom-3">
             <label class="govuk-label" for="{{ tabId }}-filter-status">
               Status
@@ -58,8 +59,6 @@
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="govuk-grid-column-one-quarter">
           <div class="govuk-form-group govuk-!-margin-bottom-3">
             <label class="govuk-label" for="{{ tabId }}-filter-origin">
               Origin
@@ -70,26 +69,6 @@
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-filter-arrival-from">
-              Arrival date from
-            </label>
-            <input class="govuk-input" id="{{ tabId }}-filter-arrival-from" name="filter-arrival-from" type="date" value="{{ filters.arrivalFrom }}">
-          </div>
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-filter-arrival-to">
-              Arrival date to
-            </label>
-            <input class="govuk-input" id="{{ tabId }}-filter-arrival-to" name="filter-arrival-to" type="date" value="{{ filters.arrivalTo }}">
-          </div>
-        </div>
-      </div>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-quarter">
           <div class="govuk-form-group govuk-!-margin-bottom-3">
             <label class="govuk-label" for="{{ tabId }}-filter-risk-indicator">
               Risk indicator
@@ -101,35 +80,44 @@
             </select>
           </div>
         </div>
-        <div class="govuk-grid-column-one-quarter">
+        <div class="inspection-dashboard__date-grid">
           <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-sort-by">
-              Sort by
+            <label class="govuk-label" for="{{ tabId }}-filter-arrival-from">
+              Arrival date from
             </label>
-            <select class="govuk-select" id="{{ tabId }}-sort-by" name="sort-by">
-              {% for option in filterOptions.sortOptions %}
-                <option value="{{ option.value }}" {% if option.value == filters.sortBy %}selected{% endif %}>{{ option.text }}</option>
-              {% endfor %}
-            </select>
+            <input class="govuk-input" id="{{ tabId }}-filter-arrival-from" name="filter-arrival-from" type="date" value="{{ filters.arrivalFrom }}">
+          </div>
+          <div class="govuk-form-group govuk-!-margin-bottom-3">
+            <label class="govuk-label" for="{{ tabId }}-filter-arrival-to">
+              Arrival date to
+            </label>
+            <input class="govuk-input" id="{{ tabId }}-filter-arrival-to" name="filter-arrival-to" type="date" value="{{ filters.arrivalTo }}">
           </div>
         </div>
-        <div class="govuk-grid-column-one-quarter">
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-sort-order">
-              Sort direction
-            </label>
-            <select class="govuk-select" id="{{ tabId }}-sort-order" name="sort-order">
-              {% for option in filterOptions.sortOrderOptions %}
-                <option value="{{ option.value }}" {% if option.value == filters.sortOrder %}selected{% endif %}>{{ option.text }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
+      </fieldset>
+      <div class="govuk-button-group govuk-!-margin-bottom-0">
+        <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">Search</button>
+        <a href="/inspections?tab={{ tabId }}&for-review-page=1&in-progress-page=1#{{ tabId }}" class="govuk-link">Clear filters</a>
       </div>
-    </fieldset>
-    <div class="govuk-button-group govuk-!-margin-bottom-0">
-      <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">Apply filters</button>
-      <a href="/inspections?tab={{ tabId }}&for-review-page=1&in-progress-page=1#{{ tabId }}" class="govuk-link">Clear filters</a>
+    </div>
+
+    <div class="inspection-dashboard__sort-grid">
+      <div class="govuk-form-group govuk-!-margin-bottom-0">
+        <label class="govuk-label" for="{{ tabId }}-sort-by">Sort by</label>
+        <select class="govuk-select" id="{{ tabId }}-sort-by" name="sort-by" data-inspection-sort-control>
+          {% for option in filterOptions.sortOptions %}
+            <option value="{{ option.value }}" {% if option.value == filters.sortBy %}selected{% endif %}>{{ option.text }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="govuk-form-group govuk-!-margin-bottom-0">
+        <label class="govuk-label" for="{{ tabId }}-sort-order">Sort direction</label>
+        <select class="govuk-select" id="{{ tabId }}-sort-order" name="sort-order" data-inspection-sort-control>
+          {% for option in filterOptions.sortOrderOptions %}
+            <option value="{{ option.value }}" {% if option.value == filters.sortOrder %}selected{% endif %}>{{ option.text }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
   </form>
 {% endmacro %}
@@ -150,82 +138,64 @@
         {% for consignment in tabData.rows %}
           <tr class="govuk-table__row inspection-dashboard__row inspection-dashboard__stacked-row" data-row-href="{{ consignment.detailPath }}" tabindex="0" role="link" aria-label="Open consignment {{ consignment.reference }}">
             <td class="govuk-table__cell inspection-dashboard__stacked-cell">
-              <div class="inspection-dashboard__detail-grid">
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Reference</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0"><a href="{{ consignment.detailPath }}" class="govuk-link">{{ consignment.reference }}</a></p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Origin</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.originCountry }}</p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Importer</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.importer }}</p>
-                  </div>
-                </div>
-
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Estimated arrival</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.estimatedArrivalDateDisplay }}, {{ consignment.estimatedArrivalTimeDisplay }}</p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Commodity code</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">
-                      {% for commodityCode in consignment.commodityCodes %}
-                        {{ commodityCode }}{% if not loop.last %}<br>{% endif %}
+              <div class="inspection-dashboard__consignment">
+                <div class="inspection-dashboard__consignment-header">
+                  <a href="{{ consignment.detailPath }}" class="govuk-link govuk-!-font-weight-bold inspection-dashboard__reference">{{ consignment.reference }}</a>
+                  <ul class="inspection-dashboard__tag-list" aria-label="Status and risk indicators for {{ consignment.reference }}">
+                    <li><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></li>
+                    <li><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">Arrival in {{ consignment.daysUntilArrival }} day{% if consignment.daysUntilArrival != 1 %}s{% endif %}</strong></li>
+                    {% if consignment.riskFlags.length > 0 %}
+                      {% for riskFlag in consignment.riskFlags %}
+                        <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
                       {% endfor %}
-                    </p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Species</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.species }}</p>
-                  </div>
+                    {% else %}
+                      <li><strong class="govuk-tag govuk-tag--grey">No risk identified</strong></li>
+                    {% endif %}
+                  </ul>
                 </div>
 
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Weight</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.declaredWeightDisplay }}</p>
+                <dl class="govuk-summary-list inspection-dashboard__consignment-details">
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Arrival</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.estimatedArrivalDateDisplay }}{% if consignment.estimatedArrivalTimeDisplay %} - {{ consignment.estimatedArrivalTimeDisplay }}{% endif %}</dd>
                   </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Documents provided</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Importer</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.importer }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Origin</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.originCountry }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Species</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.species }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Commodity code</dt>
+                    <dd class="govuk-summary-list__value">
+                      {% for commodityCode in consignment.commodityCodes %}
+                        {{ commodityCode }}{% if not loop.last %}, {% endif %}
+                      {% endfor %}
+                    </dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Weight</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.declaredWeightDisplay }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Documents provided</dt>
+                    <dd class="govuk-summary-list__value">
                       {% if consignment.documentsProvidedLines.length > 0 %}
                         {% for documentLine in consignment.documentsProvidedLines %}
                           {{ documentLine }}{% if not loop.last %}, {% endif %}
                         {% endfor %}
                       {% else %}
-                        <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
+                        None
                       {% endif %}
-                    </p>
+                    </dd>
                   </div>
-                </div>
-
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Days until arrival</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0"><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">{{ consignment.daysUntilArrival }}</strong></p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Status</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0"><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Potential risk flags</p>
-                    {% if consignment.riskFlags.length > 0 %}
-                      <ul class="inspection-dashboard__risk-list" aria-label="Risk indicators for {{ consignment.reference }}">
-                        {% for riskFlag in consignment.riskFlags %}
-                          <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
-                        {% endfor %}
-                      </ul>
-                    {% else %}
-                      <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
-                    {% endif %}
-                  </div>
-                </div>
+                </dl>
               </div>
             </td>
           </tr>

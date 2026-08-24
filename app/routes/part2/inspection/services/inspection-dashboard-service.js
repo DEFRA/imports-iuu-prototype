@@ -9,7 +9,6 @@ const FOR_REVIEW_TAB = 'for-review'
 const IN_PROGRESS_TAB = 'in-progress'
 const DEFAULT_SORT_BY = 'days-until-arrival'
 const DEFAULT_SORT_ORDER = 'asc'
-const PAGE_SIZE = 5
 
 const STATUS_LABELS = {
   REQUIRES_DOCUMENT_CHECK: 'Requires Document Check',
@@ -28,7 +27,7 @@ const STATUS_TAG_CLASSES = {
 }
 
 const RISK_FLAG_LABELS = {
-  COMMODITY_MISMATCH: 'Commodity Mismatch',
+  COMMODITY_MISMATCH: 'Declared commodity mismatch',
   WEIGHT_MISMATCH: 'Weight Mismatch',
   MISSING_EVIDENCE: 'Missing Evidence',
   IMPORTER_DECLARATION_MISSING: 'Importer Declaration Missing',
@@ -210,73 +209,6 @@ const sortConsignments = (consignments, filters) => {
   return sortedConsignments
 }
 
-const buildInspectionDashboardHref = (filters, overrides = {}) => {
-  const nextTab = overrides.tab || filters.tab
-  const nextForReviewPage = overrides.forReviewPage || filters.forReviewPage
-  const nextInProgressPage = overrides.inProgressPage || filters.inProgressPage
-  const searchParams = new URLSearchParams()
-
-  searchParams.set('tab', nextTab)
-  searchParams.set('filter-importer', filters.importer)
-  searchParams.set('filter-status', filters.status)
-  searchParams.set('filter-origin', filters.origin)
-  searchParams.set('filter-risk-indicator', filters.riskIndicator)
-  searchParams.set('sort-by', filters.sortBy)
-  searchParams.set('sort-order', filters.sortOrder)
-  searchParams.set('for-review-page', String(nextForReviewPage))
-  searchParams.set('in-progress-page', String(nextInProgressPage))
-
-  if (filters.referenceSearch) searchParams.set('search-reference', filters.referenceSearch)
-  if (filters.importerNameSearch) searchParams.set('search-importer-name', filters.importerNameSearch)
-  if (filters.arrivalFrom) searchParams.set('filter-arrival-from', filters.arrivalFrom)
-  if (filters.arrivalTo) searchParams.set('filter-arrival-to', filters.arrivalTo)
-
-  return `/inspections?${searchParams.toString()}#${nextTab}`
-}
-
-const buildPaginationViewModel = (totalFilteredCount, requestedPage, tabId, filters) => {
-  if (totalFilteredCount === 0) {
-    return {
-      currentPage: 1,
-      pageCount: 0,
-      pageLinks: [],
-      previousHref: '',
-      nextHref: ''
-    }
-  }
-
-  const pageCount = Math.ceil(totalFilteredCount / PAGE_SIZE)
-  const currentPage = Math.max(1, Math.min(requestedPage, pageCount))
-  const getPageHref = (pageNumber) => {
-    if (tabId === FOR_REVIEW_TAB) {
-      return buildInspectionDashboardHref(filters, {
-        tab: FOR_REVIEW_TAB,
-        forReviewPage: pageNumber
-      })
-    }
-
-    return buildInspectionDashboardHref(filters, {
-      tab: IN_PROGRESS_TAB,
-      inProgressPage: pageNumber
-    })
-  }
-
-  return {
-    currentPage,
-    pageCount,
-    pageLinks: Array.from({ length: pageCount }, (_, index) => {
-      const pageNumber = index + 1
-      return {
-        number: pageNumber,
-        href: getPageHref(pageNumber),
-        current: pageNumber === currentPage
-      }
-    }),
-    previousHref: currentPage > 1 ? getPageHref(currentPage - 1) : '',
-    nextHref: currentPage < pageCount ? getPageHref(currentPage + 1) : ''
-  }
-}
-
 const mapConsignmentForView = (consignment) => ({
   id: consignment.id,
   reference: consignment.reference,
@@ -300,24 +232,24 @@ const mapConsignmentForView = (consignment) => ({
   }))
 })
 
-const buildTabViewModel = (consignments, filters, tabId, requestedPage) => {
+const buildTabViewModel = (consignments, filters) => {
   const filteredConsignments = filterConsignments(consignments, filters)
   const sortedConsignments = sortConsignments(filteredConsignments, filters)
-  const pagination = buildPaginationViewModel(sortedConsignments.length, requestedPage, tabId, filters)
-  const currentPageRowsStartIndex = (pagination.currentPage - 1) * PAGE_SIZE
-  const currentPageRows = sortedConsignments.slice(currentPageRowsStartIndex, currentPageRowsStartIndex + PAGE_SIZE)
-  const filteredStart = sortedConsignments.length > 0 ? currentPageRowsStartIndex + 1 : 0
-  const filteredEnd = sortedConsignments.length > 0
-    ? Math.min(currentPageRowsStartIndex + currentPageRows.length, sortedConsignments.length)
-    : 0
+  const hasRows = sortedConsignments.length > 0
 
   return {
-    rows: currentPageRows.map(mapConsignmentForView),
+    rows: sortedConsignments.map(mapConsignmentForView),
     totalCount: consignments.length,
     filteredTotalCount: sortedConsignments.length,
-    filteredStart,
-    filteredEnd,
-    pagination
+    filteredStart: hasRows ? 1 : 0,
+    filteredEnd: sortedConsignments.length,
+    pagination: {
+      currentPage: 1,
+      pageCount: hasRows ? 1 : 0,
+      pageLinks: [],
+      previousHref: '',
+      nextHref: ''
+    }
   }
 }
 
@@ -336,8 +268,8 @@ const buildInspectionDashboardViewModel = (query = {}, today = new Date(), statu
   const forReviewConsignments = consignments.filter((consignment) => consignment.status !== 'IN_PROGRESS')
   const inProgressConsignments = consignments.filter((consignment) => consignment.status === 'IN_PROGRESS')
 
-  const forReview = buildTabViewModel(forReviewConsignments, filters, FOR_REVIEW_TAB, filters.forReviewPage)
-  const inProgress = buildTabViewModel(inProgressConsignments, filters, IN_PROGRESS_TAB, filters.inProgressPage)
+  const forReview = buildTabViewModel(forReviewConsignments, filters)
+  const inProgress = buildTabViewModel(inProgressConsignments, filters)
   const uniqueImporters = [...new Set(consignments.map((consignment) => consignment.importer))].sort((first, second) => first.localeCompare(second, 'en-GB'))
   const uniqueOrigins = [...new Set(consignments.map((consignment) => consignment.originCountry))].sort((first, second) => first.localeCompare(second, 'en-GB'))
   const mismatchesFlaggedCount = consignments.filter((consignment) => {
@@ -361,7 +293,8 @@ const buildInspectionDashboardViewModel = (query = {}, today = new Date(), statu
     activeTab: filters.tab,
     dashboardFilters: filters,
     filterOptions: {
-      importerOptions: buildOptionsForValues(uniqueImporters, 'All importers'),
+      referenceOptions: consignments.map((consignment) => consignment.reference).sort((first, second) => first.localeCompare(second, 'en-GB')),
+      importerNameOptions: uniqueImporters,
       statusOptions: buildStatusOptions(),
       originOptions: buildOptionsForValues(uniqueOrigins, 'All origins'),
       riskOptions: buildRiskOptions(),
