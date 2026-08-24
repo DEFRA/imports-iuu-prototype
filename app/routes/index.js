@@ -937,23 +937,23 @@ const buildScenarioADocuments = (seedData) => {
 
 const getScenarioADocumentTemplate = (documentType) => {
   const templateByType = {
-    'Additional document': 'review-extraction-a-document-additional-document',
-    'Non-Manipulation Declaration': 'review-extraction-a-document-non-manipulation-declaration',
-    'Processing Statement': 'review-extraction-a-document-processing-statement',
-    'Catch Certificate': 'review-extraction-a-document-catch-certificate'
+    'Additional document': 'part1/review/review-extraction-a-document-additional-document',
+    'Non-Manipulation Declaration': 'part1/review/review-extraction-a-document-non-manipulation-declaration',
+    'Processing Statement': 'part1/review/review-extraction-a-document-processing-statement',
+    'Catch Certificate': 'part1/review/review-extraction-a-document-catch-certificate'
   }
 
-  return templateByType[documentType] || 'review-extraction-a-document-catch-certificate'
+  return templateByType[documentType] || 'part1/review/review-extraction-a-document-catch-certificate'
 }
 
 const getScenarioADocumentChangeTemplate = (documentType) => {
   const templateByType = {
-    'Non-Manipulation Declaration': 'review-extraction-a-document-non-manipulation-declaration-change',
-    'Processing Statement': 'review-extraction-a-document-processing-statement-change',
-    'Catch Certificate': 'review-extraction-a-document-catch-certificate-change'
+    'Non-Manipulation Declaration': 'part1/review/review-extraction-a-document-non-manipulation-declaration-change',
+    'Processing Statement': 'part1/review/review-extraction-a-document-processing-statement-change',
+    'Catch Certificate': 'part1/review/review-extraction-a-document-catch-certificate-change'
   }
 
-  return templateByType[documentType] || 'review-extraction-a-document-card-change'
+  return templateByType[documentType] || 'part1/review/review-extraction-a-document-card-change'
 }
 
 const buildScenarioAExtractionSummary = (documents) => {
@@ -1241,6 +1241,30 @@ router.get('/', (req, res, next) => {
   next()
 })
 
+const part1StaticViews = {
+  '/importer-details': 'part1/manual/importer-details',
+  '/transport-details': 'part1/manual/transport-details',
+  '/species-details': 'part1/manual/species-details',
+  '/species-list': 'part1/manual/species-list',
+  '/processing-statement-required': 'part1/manual/processing-statement-required',
+  '/processing-statement': 'part1/manual/processing-statement',
+  '/non-manipulation-declaration-required': 'part1/manual/non-manipulation-declaration-required',
+  '/non-manipulation-declaration': 'part1/manual/non-manipulation-declaration',
+  '/upload-confirmation': 'part1/extraction/upload-confirmation',
+  '/extracting': 'part1/extraction/extracting',
+  '/processing': 'part1/extraction/processing',
+  '/documents-ready': 'part1/extraction/documents-ready',
+  '/change-catch-certificate-details': 'part1/extraction/change-catch-certificate-details',
+  '/review-extraction-b': 'part1/review/review-extraction-b',
+  '/check-answers': 'part1/submission/check-answers',
+  '/declaration': 'part1/submission/declaration',
+  '/confirmation': 'part1/submission/confirmation'
+}
+
+for (const [routePath, viewPath] of Object.entries(part1StaticViews)) {
+  router.get(routePath, (req, res) => res.render(viewPath))
+}
+
 // -------------------------------------------------------
 // Importer details
 // -------------------------------------------------------
@@ -1261,7 +1285,7 @@ router.post('/transport-details', (req, res) => {
 router.get('/arrival-details', (req, res) => {
   const data = req.session.data
   data['arrival-details-return-to'] = normalizeReviewExtractionReturnPath(req.query.returnTo)
-  res.render('arrival-details')
+  res.render('part1/manual/arrival-details')
 })
 
 router.post('/arrival-details', (req, res) => {
@@ -1289,7 +1313,7 @@ router.get('/commodity-details', (req, res) => {
   if (Object.prototype.hasOwnProperty.call(req.query, 'returnTo')) {
     data['commodity-details-return-to'] = normalizeReviewExtractionReturnPath(req.query.returnTo)
   }
-  res.render('commodity-details')
+  res.render('part1/extraction/commodity-details')
 })
 
 router.post('/commodity-details', (req, res) => {
@@ -1421,7 +1445,7 @@ router.get('/catch-certificates', (req, res) => {
     data['catch-certificates-return-to'] = reviewExtractionReturnPaths.has(normalizedReturnTo) ? normalizedReturnTo : ''
   }
 
-  res.render('catch-certificates')
+  res.render('part1/manual/catch-certificates')
 })
 
 router.post('/catch-certificates', (req, res) => {
@@ -1602,21 +1626,21 @@ router.post('/check-answers', (req, res) => {
 // -------------------------------------------------------
 // Upload guidance — store extraction variant from query param
 // -------------------------------------------------------
-router.get('/upload-guidance', (req, res, next) => {
+router.get('/upload-guidance', (req, res) => {
   const variant = String(req.query.variant || 'a').toLowerCase()
   if (!supportedExtractionVariants.has(variant)) {
     return res.redirect('/')
   }
 
   req.session.data['extraction-variant'] = variant
-  next()
+  res.render('part1/extraction/upload-guidance')
 })
 
 // -------------------------------------------------------
 // Sign in
 // -------------------------------------------------------
 router.get('/sign-in', (req, res) => {
-  res.redirect('/arrival-details')
+  res.render('part1/entry/sign-in')
 })
 
 router.post('/sign-in', (req, res) => {
@@ -1627,7 +1651,7 @@ router.post('/sign-in', (req, res) => {
 // Single document upload page for extraction prototype
 // -------------------------------------------------------
 router.get('/upload-documents', (req, res) => {
-  res.render('upload-documents')
+  res.render('part1/extraction/upload-documents')
 })
 
 router.post('/upload-documents', (req, res) => {
@@ -1647,7 +1671,7 @@ router.post('/upload-documents', (req, res) => {
   const uploadValidationError = 'You need to upload at least one document'
 
   if (!files.length && !clientFileNames.length && !existingUploads.length) {
-    return res.render('upload-documents', {
+    return res.render('part1/extraction/upload-documents', {
       hasErrors: true,
       errorList: [{ text: uploadValidationError, href: '#file-upload-1' }],
       errorMap: { 'file-upload-1': uploadValidationError }
@@ -1701,7 +1725,7 @@ router.get('/change-extracted-details', (req, res) => {
   const returnTo = req.query.returnTo
   const normalizedReturnTo = typeof returnTo === 'string' && returnTo.startsWith('/') ? returnTo : '/review-extraction-a'
   req.session.data['change-extracted-details-return-to'] = normalizedReturnTo
-  res.render('change-extracted-details')
+  res.render('part1/extraction/change-extracted-details')
 })
 
 router.post('/change-extracted-details', (req, res) => {
@@ -1769,7 +1793,7 @@ router.get('/review-extraction-a', (req, res) => {
     })
   }
 
-  res.render('review-extraction-a', {
+  res.render('part1/review/review-extraction-a', {
     extractionSummary: data['scenario-a-summary'],
     totalDocuments,
     tableDocuments,
@@ -1838,7 +1862,7 @@ router.get('/review-extraction-a/document/:documentId/change', (req, res) => {
   const requestedTablePage = parseInt(req.query.tablePage, 10)
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
 
-  res.render('review-extraction-a-document-change', {
+  res.render('part1/review/review-extraction-a-document-change', {
     document,
     tablePage
   })
@@ -1900,7 +1924,7 @@ router.get('/review-extraction-a/document/:documentId/change/:sectionKey', (req,
     value: Object.prototype.hasOwnProperty.call(document, field.key) ? document[field.key] : ''
   }))
 
-  res.render('review-extraction-a-document-card-change', {
+  res.render('part1/review/review-extraction-a-document-card-change', {
     document,
     sectionKey: req.params.sectionKey,
     sectionTitle: sectionConfig.title,
