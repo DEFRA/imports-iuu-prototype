@@ -150,82 +150,64 @@
         {% for consignment in tabData.rows %}
           <tr class="govuk-table__row inspection-dashboard__row inspection-dashboard__stacked-row" data-row-href="{{ consignment.detailPath }}" tabindex="0" role="link" aria-label="Open consignment {{ consignment.reference }}">
             <td class="govuk-table__cell inspection-dashboard__stacked-cell">
-              <div class="inspection-dashboard__detail-grid">
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Reference</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0"><a href="{{ consignment.detailPath }}" class="govuk-link">{{ consignment.reference }}</a></p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Origin</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.originCountry }}</p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Importer</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.importer }}</p>
-                  </div>
-                </div>
-
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Estimated arrival</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.estimatedArrivalDateDisplay }}, {{ consignment.estimatedArrivalTimeDisplay }}</p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Commodity code</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">
-                      {% for commodityCode in consignment.commodityCodes %}
-                        {{ commodityCode }}{% if not loop.last %}<br>{% endif %}
+              <div class="inspection-dashboard__consignment">
+                <div class="inspection-dashboard__consignment-header">
+                  <a href="{{ consignment.detailPath }}" class="govuk-link govuk-!-font-weight-bold inspection-dashboard__reference">{{ consignment.reference }}</a>
+                  <ul class="inspection-dashboard__tag-list" aria-label="Status and risk indicators for {{ consignment.reference }}">
+                    <li><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></li>
+                    <li><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">Arrival in {{ consignment.daysUntilArrival }} day{% if consignment.daysUntilArrival != 1 %}s{% endif %}</strong></li>
+                    {% if consignment.riskFlags.length > 0 %}
+                      {% for riskFlag in consignment.riskFlags %}
+                        <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
                       {% endfor %}
-                    </p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Species</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.species }}</p>
-                  </div>
+                    {% else %}
+                      <li><strong class="govuk-tag govuk-tag--grey">No risk identified</strong></li>
+                    {% endif %}
+                  </ul>
                 </div>
 
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Weight</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">{{ consignment.declaredWeightDisplay }}</p>
+                <dl class="govuk-summary-list inspection-dashboard__consignment-details">
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Arrival</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.estimatedArrivalDateDisplay }}{% if consignment.estimatedArrivalTimeDisplay %} - {{ consignment.estimatedArrivalTimeDisplay }}{% endif %}</dd>
                   </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Documents provided</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0">
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Importer</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.importer }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Origin</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.originCountry }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Species</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.species }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Commodity code</dt>
+                    <dd class="govuk-summary-list__value">
+                      {% for commodityCode in consignment.commodityCodes %}
+                        {{ commodityCode }}{% if not loop.last %}, {% endif %}
+                      {% endfor %}
+                    </dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Weight</dt>
+                    <dd class="govuk-summary-list__value">{{ consignment.declaredWeightDisplay }}</dd>
+                  </div>
+                  <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">Documents provided</dt>
+                    <dd class="govuk-summary-list__value">
                       {% if consignment.documentsProvidedLines.length > 0 %}
                         {% for documentLine in consignment.documentsProvidedLines %}
                           {{ documentLine }}{% if not loop.last %}, {% endif %}
                         {% endfor %}
                       {% else %}
-                        <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
+                        None
                       {% endif %}
-                    </p>
+                    </dd>
                   </div>
-                </div>
-
-                <div class="inspection-dashboard__detail-column">
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Days until arrival</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0"><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">{{ consignment.daysUntilArrival }}</strong></p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Status</p>
-                    <p class="govuk-body govuk-!-margin-bottom-0"><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></p>
-                  </div>
-                  <div class="inspection-dashboard__detail-item">
-                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">Potential risk flags</p>
-                    {% if consignment.riskFlags.length > 0 %}
-                      <ul class="inspection-dashboard__risk-list" aria-label="Risk indicators for {{ consignment.reference }}">
-                        {% for riskFlag in consignment.riskFlags %}
-                          <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
-                        {% endfor %}
-                      </ul>
-                    {% else %}
-                      <span class="govuk-hint govuk-!-margin-bottom-0">None</span>
-                    {% endif %}
-                  </div>
-                </div>
+                </dl>
               </div>
             </td>
           </tr>
