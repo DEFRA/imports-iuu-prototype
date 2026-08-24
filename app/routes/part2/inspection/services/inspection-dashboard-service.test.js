@@ -73,6 +73,9 @@ test('builds tab view model so in-progress records are excluded from For Review'
 
   assert.ok(viewModel.forReview.rows.every((row) => row.statusLabel !== 'In Progress'))
   assert.ok(viewModel.inProgress.rows.every((row) => row.statusLabel === 'In Progress'))
+  assert.equal(viewModel.filterOptions.referenceOptions.length, 20)
+  assert.ok(viewModel.filterOptions.referenceOptions.includes('GB-IUU-2026-11001'))
+  assert.ok(viewModel.filterOptions.importerNameOptions.includes('Frinsa UK'))
 })
 
 test('lists every matching reference in each dashboard tab', () => {

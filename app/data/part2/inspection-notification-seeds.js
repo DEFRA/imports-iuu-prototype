@@ -62,7 +62,7 @@ module.exports = [
       { type: 'Authority verification', status: 'Pending', statusClass: 'govuk-tag--grey', details: 'Verification has not been completed' }
     ],
     riskFlags: [
-      { status: 'Issue', label: 'Mismatch with declared commodity', details: 'There is a potential mismatch with commodity on declaration and supplied evidence' },
+      { status: 'Issue', label: 'Declared commodity mismatch', details: 'There is a potential mismatch with commodity on declaration and supplied evidence' },
       { status: 'Issue', label: 'Missing Evidence', details: 'Not all expected catch certificates supplied' },
       { status: 'Issue', label: 'Importer declaration', details: 'Importer declaration not completed' }
     ]

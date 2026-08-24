@@ -93,6 +93,14 @@ window.GOVUKPrototypeKit.documentReady(() => {
   })
 
   const wireInspectionDashboardRealtimeFilters = () => {
+    const sortControls = Array.from(document.querySelectorAll('[data-inspection-sort-control]'))
+    for (const control of sortControls) {
+      control.addEventListener('change', () => {
+        const form = control.closest('form')
+        if (form) form.requestSubmit()
+      })
+    }
+
     const realtimeFilterForms = Array.from(document.querySelectorAll('[data-inspection-realtime-filter-form]'))
     if (!realtimeFilterForms.length) return
 

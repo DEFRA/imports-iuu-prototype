@@ -27,7 +27,7 @@ const STATUS_TAG_CLASSES = {
 }
 
 const RISK_FLAG_LABELS = {
-  COMMODITY_MISMATCH: 'Commodity Mismatch',
+  COMMODITY_MISMATCH: 'Declared commodity mismatch',
   WEIGHT_MISMATCH: 'Weight Mismatch',
   MISSING_EVIDENCE: 'Missing Evidence',
   IMPORTER_DECLARATION_MISSING: 'Importer Declaration Missing',
@@ -293,7 +293,8 @@ const buildInspectionDashboardViewModel = (query = {}, today = new Date(), statu
     activeTab: filters.tab,
     dashboardFilters: filters,
     filterOptions: {
-      importerOptions: buildOptionsForValues(uniqueImporters, 'All importers'),
+      referenceOptions: consignments.map((consignment) => consignment.reference).sort((first, second) => first.localeCompare(second, 'en-GB')),
+      importerNameOptions: uniqueImporters,
       statusOptions: buildStatusOptions(),
       originOptions: buildOptionsForValues(uniqueOrigins, 'All origins'),
       riskOptions: buildRiskOptions(),
