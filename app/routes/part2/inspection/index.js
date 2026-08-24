@@ -130,6 +130,35 @@ const buildInspectionOverviewNotification = (reference) => {
   return null
 }
 
+const buildOverviewEvidenceSections = (inspectionNotification, documentReferenceGroups, documentLinksByReference) => {
+  const sectionDefinitions = [
+    { type: 'catch-certificate', heading: 'Catch certificate', notificationType: 'Catch certificates' },
+    { type: 'processing-statement', heading: 'Processing statement', notificationType: 'Processing statements' },
+    { type: 'nmd', heading: 'Non manipulation document', notificationType: 'Non-manipulation declarations' },
+    { type: 'additional', heading: 'Additional documents', notificationType: 'Additional documents' }
+  ]
+
+  return sectionDefinitions.map((sectionDefinition) => {
+    const group = documentReferenceGroups.find((item) => item.type === sectionDefinition.type) || { count: 0, links: [] }
+    const notificationDocument = (inspectionNotification.documents || [])
+      .find((item) => item.type === sectionDefinition.notificationType) || { count: 0, references: [] }
+    const linkedReferences = group.links || []
+    const knownReferences = new Set(linkedReferences.map((reference) => reference.text))
+    const additionalReferences = (notificationDocument.references || [])
+      .filter((reference) => !knownReferences.has(reference))
+      .map((reference) => documentLinksByReference[reference] || {
+        text: reference
+      })
+
+    return {
+      type: sectionDefinition.type,
+      heading: sectionDefinition.heading,
+      count: typeof group.count === 'number' ? group.count : (notificationDocument.count || 0),
+      references: [...linkedReferences, ...additionalReferences]
+    }
+  })
+}
+
 const registerInspectionRoutes = (router) => {
   router.get('/prototype-selector', (req, res) => {
     res.redirect('/')
@@ -159,16 +188,23 @@ const registerInspectionRoutes = (router) => {
     const overviewViewName = req.params.reference === inspectionOverviewFallbackReference
       ? 'consignment-overview-11002'
       : 'consignment-overview'
+    const documentLinksByReference = documentNavigationService.getDocumentLinksByReference()
+    const documentReferenceGroups = documentNavigationService.getReferenceGroups(req.params.reference).map((group) => ({
+      ...group,
+      count: inspectionNotification.documentCounts?.[group.type] ?? group.links.length,
+      links: inspectionNotification.documentCounts
+        ? group.links.slice(0, inspectionNotification.documentCounts[group.type])
+        : group.links
+    }))
     res.render(inspectionView(overviewViewName), {
       inspectionNotification,
-      documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference).map((group) => ({
-        ...group,
-        count: inspectionNotification.documentCounts?.[group.type] ?? group.links.length,
-        links: inspectionNotification.documentCounts
-          ? group.links.slice(0, inspectionNotification.documentCounts[group.type])
-          : group.links
-      })),
-      documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
+      documentReferenceGroups,
+      documentLinksByReference,
+      overviewEvidenceSections: buildOverviewEvidenceSections(
+        inspectionNotification,
+        documentReferenceGroups,
+        documentLinksByReference
+      )
     })
   })
 
