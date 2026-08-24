@@ -75,6 +75,22 @@ const formatCommodityCode = (code) => String(code)
   .replace(/^(\d{4})(\d{2})(\d{2})$/, '$1 $2 $3')
   .replace(/^(\d{4})(\d{2})$/, '$1 $2')
 
+const statusTagTextByCode = {
+  REQUIRES_DOCUMENT_CHECK: 'Requires document check',
+  IN_PROGRESS: 'In progress',
+  REQUEST_ADDITIONAL_INFORMATION: 'Request additional information',
+  REFERRED_TO_MMO: 'Referred to MMO',
+  COMPLETED: 'Completed'
+}
+
+const statusTagClassByCode = {
+  REQUIRES_DOCUMENT_CHECK: 'govuk-tag--red',
+  IN_PROGRESS: 'govuk-tag--blue',
+  REQUEST_ADDITIONAL_INFORMATION: 'govuk-tag--yellow',
+  REFERRED_TO_MMO: 'govuk-tag--purple',
+  COMPLETED: 'govuk-tag--green'
+}
+
 const buildInspectionOverviewNotification = (reference) => {
   const matchedNotification = getInspectionNotificationByReference(reference)
   if (matchedNotification) return matchedNotification
@@ -93,6 +109,12 @@ const buildInspectionOverviewNotification = (reference) => {
       vesselName: dashboardConsignment.vesselName,
       arrivalDateDisplay: formatDashboardDate(dashboardConsignment.estimatedArrival),
       arrivalTime: dashboardConsignment.arrivalTime,
+      arrivalOffsetDays: dashboardConsignment.daysUntilArrival,
+      statusTagText: statusTagTextByCode[dashboardConsignment.status],
+      statusTagClass: statusTagClassByCode[dashboardConsignment.status],
+      declaredWeight: new Intl.NumberFormat('en-GB').format(dashboardConsignment.declaredWeightKg) + ' kg',
+      productDescription: dashboardConsignment.species,
+      commodityCode: dashboardConsignment.commodityCodes.map(formatCommodityCode).join(', '),
       commodities: [{
         description: dashboardConsignment.species,
         commodityCode: dashboardConsignment.commodityCodes.map(formatCommodityCode).join(', '),
