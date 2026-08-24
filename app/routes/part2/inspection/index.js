@@ -3,7 +3,8 @@ const {
   inspectionReference
 } = require('./notifications')
 const { buildInspectionDashboardViewModel } = require('./services/inspection-dashboard-service')
-const inspectionOverviewFallbackReference = 'GB-IUU-2026-11001'
+const { mockConsignmentSummariesApi } = require('./mock-api/consignment-summaries-api')
+const inspectionOverviewFallbackReference = 'GB-IUU-2026-11002'
 const path = require('path')
 const documentNavigationService = require('./document-navigation-service')
 const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', '..', 'sample-documents')
@@ -12,11 +13,13 @@ const inspectionViewPathLookup = {
   inspections: 'dashboard/inspections',
   'inspections-completed': 'dashboard/inspections-completed',
   'consignment-overview': 'case/consignment-overview',
+  'consignment-overview-11002': 'case/consignment-overview-11002',
   'source-documents': 'case/source-documents',
   'document-details': 'case/document-details',
   'additional-document-viewer': 'case/additional-document-viewer',
   'confirm-details': 'journey/confirm-details',
   'check-documents': 'journey/check-documents',
+  'documentary-check-confirmation': 'journey/documentary-check-confirmation',
   'identity-checks': 'journey/identity-checks',
   'physical-checks': 'journey/physical-checks',
   findings: 'journey/findings',
@@ -61,16 +64,66 @@ const renderInspectionNotImplementedPage = (res) => {
   res.render(inspectionView('inspection-not-implemented'))
 }
 
+const formatDashboardDate = (date) => new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC'
+}).format(date)
+
+const formatCommodityCode = (code) => String(code)
+  .replace(/^(\d{4})(\d{2})(\d{2})$/, '$1 $2 $3')
+  .replace(/^(\d{4})(\d{2})$/, '$1 $2')
+
 const buildInspectionOverviewNotification = (reference) => {
   const matchedNotification = getInspectionNotificationByReference(reference)
   if (matchedNotification) return matchedNotification
 
   if (reference === inspectionOverviewFallbackReference) {
-    const inspectionNotification = getInspectionNotificationByReference(inspectionReference)
-    if (!inspectionNotification) return null
+    const dashboardConsignment = mockConsignmentSummariesApi
+      .listConsignmentSummaries()
+      .find((consignment) => consignment.reference === reference)
+    if (!dashboardConsignment) return null
     return {
-      ...inspectionNotification,
-      reference
+      reference: dashboardConsignment.reference,
+      importer: dashboardConsignment.importer,
+      exportingCountry: dashboardConsignment.originCountry,
+      port: dashboardConsignment.port,
+      containerNumber: dashboardConsignment.containerNumber,
+      vesselName: dashboardConsignment.vesselName,
+      arrivalDateDisplay: formatDashboardDate(dashboardConsignment.estimatedArrival),
+      arrivalTime: dashboardConsignment.arrivalTime,
+      commodities: [{
+        description: dashboardConsignment.species,
+        commodityCode: dashboardConsignment.commodityCodes.map(formatCommodityCode).join(', '),
+        declaredQuantity: new Intl.NumberFormat('en-GB').format(dashboardConsignment.declaredWeightKg) + ' kg'
+      }],
+      warningText: dashboardConsignment.warningText,
+      riskFlags: [
+        { status: 'Issue', label: 'Weight Mismatch', details: 'Mismatch with declared weight and supplied evidence' },
+        { status: 'Issue', label: 'Missing Evidence', details: 'Missing Evidence' }
+      ],
+      commodityWeightComparisons: [{
+        description: dashboardConsignment.species,
+        commodityCode: dashboardConsignment.commodityCodes.map(formatCommodityCode).join(', '),
+        notificationWeight: '360,000 kg',
+        catchCertificateWeight: '360,000 kg',
+        processingStatementWeight: '296,000 kg',
+        nonManipulationDeclarationWeight: 'Not supplied'
+      }],
+      documentEvidenceSummary: [
+        { title: 'Catch certificates', status: 'Received', statusClass: 'govuk-tag--green', panelClass: 'document-evidence-summary__panel--received', details: '4 documents supplied.' },
+        { title: 'Processing statement', status: 'Review needed', statusClass: 'govuk-tag--yellow', panelClass: 'document-evidence-summary__panel--review', details: '1 document supplied. 1 catch certificate is not referenced.' },
+        { title: 'Non-manipulation declaration', status: 'Not applicable', statusClass: 'govuk-tag--grey', panelClass: 'document-evidence-summary__panel--received', details: 'No NMD expected for this scenario.' },
+        { title: 'Notification to document comparison', status: 'Possible mismatch', statusClass: 'govuk-tag--yellow', panelClass: 'document-evidence-summary__panel--review', details: 'Weight and evidence reconciliation require review.' }
+      ],
+      assessmentSummary: dashboardConsignment.assessmentSummary,
+      documentCounts: {
+        'catch-certificate': dashboardConsignment.catchCertificateCount,
+        'processing-statement': dashboardConsignment.processingStatementCount,
+        nmd: dashboardConsignment.nmdCount,
+        additional: dashboardConsignment.additionalDocumentCount
+      }
     }
   }
 
@@ -86,8 +139,9 @@ const registerInspectionRoutes = (router) => {
     req.session.data['inspection-officer-name'] = req.session.data['inspection-officer-name'] || 'Alex Morgan'
     req.session.data['inspection-officer-org'] = req.session.data['inspection-officer-org'] || 'Port of Felixstowe Port Health Authority'
     const documentaryDashboardStatus = req.session.data['documentary-dashboard-status']
+    const documentaryDashboardReference = req.session.data['documentary-dashboard-reference'] || inspectionReference
     const statusOverrides = documentaryDashboardStatus
-      ? { [inspectionReference]: documentaryDashboardStatus }
+      ? { [documentaryDashboardReference]: documentaryDashboardStatus }
       : {}
     const dashboardViewModel = buildInspectionDashboardViewModel(req.query, new Date(), statusOverrides)
     res.render(inspectionView('inspections'), dashboardViewModel)
@@ -102,24 +156,40 @@ const registerInspectionRoutes = (router) => {
     if (!inspectionNotification) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('consignment-overview'), {
+    const overviewViewName = req.params.reference === inspectionOverviewFallbackReference
+      ? 'consignment-overview-11002'
+      : 'consignment-overview'
+    res.render(inspectionView(overviewViewName), {
       inspectionNotification,
-      documentReferenceGroups: documentNavigationService.getReferenceGroups(),
+      documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference).map((group) => ({
+        ...group,
+        count: inspectionNotification.documentCounts?.[group.type] ?? group.links.length,
+        links: inspectionNotification.documentCounts
+          ? group.links.slice(0, inspectionNotification.documentCounts[group.type])
+          : group.links
+      })),
       documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
     })
   })
 
   router.get('/inspection/:reference/documents', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
+    if (!inspectionNotification) {
       return renderInspectionNotImplementedPage(res)
     }
-    const inspectionNotification = getInspectionNotificationByReference(inspectionReference)
     res.render(inspectionView('source-documents'), {
-      inspectionReference,
-      documentReferenceGroups: documentNavigationService.getReferenceGroups(),
+      inspectionReference: req.params.reference,
+      documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference),
       documentLinksByReference: documentNavigationService.getDocumentLinksByReference(),
-      commodityWeightComparisons: inspectionNotification.commodityWeightComparisons
+      commodityWeightComparisons: inspectionNotification.commodityWeightComparisons,
+      assessmentSummary: inspectionNotification.assessmentSummary
     })
+  })
+
+  router.get('/documents/file/:id', (req, res) => {
+    const document = documentNavigationService.getDocumentById(req.params.id)
+    if (!document?.sourceFile) return res.sendStatus(404)
+    res.sendFile(path.join(sampleDocumentsPath, document.sourceFile))
   })
 
   router.get('/documents/:type/:id', (req, res) => {
@@ -135,7 +205,12 @@ const registerInspectionRoutes = (router) => {
     const document = documentNavigationService.getDocument(req.params.type, req.params.id)
     if (!document) return res.status(404).render(inspectionView('inspection-not-implemented'))
     res.render(inspectionView('document-details'), {
-      document,
+      document: {
+        ...document,
+        originalFileUrl: document.sourceFile
+          ? `/documents/file/${encodeURIComponent(document.id)}`
+          : undefined
+      },
       documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
     })
   })
@@ -182,26 +257,36 @@ const registerInspectionRoutes = (router) => {
   })
 
   router.get('/inspection/:reference/check-documents', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
+    if (!inspectionNotification) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('check-documents'), { inspectionReference })
+    res.render(inspectionView('check-documents'), {
+      inspectionReference: req.params.reference,
+      inspectionNotification,
+      documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference),
+      documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
+    })
   })
 
   router.post('/inspection/:reference/check-documents', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!buildInspectionOverviewNotification(req.params.reference)) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
     const outcome = data['documentary-check-outcome']
-    const comments = data['documentary-check-comments']
     const intervention = data['documentary-intervention']
     const errors = []
     if (!outcome) errors.push({ name: 'documentary-check-outcome', text: 'Select the documentary check outcome' })
-    if (outcome === 'satisfactory' && !comments) errors.push({ name: 'documentary-check-comments', text: 'Enter comments' })
-    if (outcome === 'requires-intervention' && !intervention) errors.push({ name: 'documentary-intervention', text: 'Select an intervention' })
+    if (outcome === 'requires-intervention' && !intervention) errors.push({ name: 'documentary-intervention', text: 'Select an intervention action' })
     if (errors.length) {
-      return renderInspectionPage(res, 'check-documents', errors, { inspectionReference })
+      const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
+      return renderInspectionPage(res, 'check-documents', errors, {
+        inspectionReference: req.params.reference,
+        inspectionNotification,
+        documentReferenceGroups: documentNavigationService.getReferenceGroups(req.params.reference),
+        documentLinksByReference: documentNavigationService.getDocumentLinksByReference()
+      })
     }
     const dashboardStatuses = {
       satisfactory: { statusCode: 'COMPLETED', statusLabel: 'Satisfactory', statusTagClass: 'govuk-tag--green' },
@@ -209,13 +294,39 @@ const registerInspectionRoutes = (router) => {
       'not-satisfactory': { statusCode: 'REQUIRES_DOCUMENT_CHECK', statusLabel: 'Not satisfactory', statusTagClass: 'govuk-tag--red' }
     }
     const interventionStatuses = {
-      'request-information': { statusCode: 'REQUEST_ADDITIONAL_INFORMATION' },
-      'referred-to-mmo': { statusCode: 'REFERRED_TO_MMO' }
+      'request-information': { statusCode: 'REQUEST_ADDITIONAL_INFORMATION', statusLabel: 'Request Additional Information from Importer', statusTagClass: 'govuk-tag--yellow' },
+      'referred-to-mmo': { statusCode: 'REFERRED_TO_MMO', statusLabel: 'Referred To MMO', statusTagClass: 'govuk-tag--purple' }
     }
     data['documentary-dashboard-status'] = outcome === 'requires-intervention'
       ? interventionStatuses[intervention]
       : dashboardStatuses[outcome]
-    res.redirect('/inspections')
+    data['documentary-dashboard-reference'] = req.params.reference
+    res.redirect(`/inspection/${req.params.reference}/documentary-check-saved`)
+  })
+
+  router.get('/inspection/:reference/documentary-check-saved', (req, res) => {
+    const inspectionNotification = buildInspectionOverviewNotification(req.params.reference)
+    const data = req.session.data
+    if (!inspectionNotification || data['documentary-dashboard-reference'] !== req.params.reference || !data['documentary-dashboard-status']) {
+      return res.redirect(`/inspection/${req.params.reference}/check-documents`)
+    }
+    const outcomeLabels = {
+      satisfactory: 'Satisfactory',
+      'satisfactory-following-intervention': 'Satisfactory following intervention',
+      'requires-intervention': 'Requires intervention',
+      'not-satisfactory': 'Not satisfactory'
+    }
+    const interventionLabels = {
+      'request-information': 'Request additional information from importer',
+      'referred-to-mmo': 'Refer to MMO'
+    }
+    res.render(inspectionView('documentary-check-confirmation'), {
+      inspectionNotification,
+      completedDate: formatDashboardDate(new Date()),
+      outcomeLabel: outcomeLabels[data['documentary-check-outcome']],
+      interventionLabel: interventionLabels[data['documentary-intervention']],
+      dashboardStatus: data['documentary-dashboard-status']
+    })
   })
 
   router.get('/inspection/:reference/identity-checks', (req, res) => {

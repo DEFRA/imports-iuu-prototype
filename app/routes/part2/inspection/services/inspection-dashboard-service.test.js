@@ -51,7 +51,7 @@ test('sorts consignments by estimated arrival', () => {
   }))
 
   assert.equal(ascending[0].reference, 'GB-IUU-2026-11001')
-  assert.equal(descending[0].reference, 'GB-IUU-2026-11020')
+  assert.equal(descending[0].reference, 'GB-IUU-2026-11002')
 })
 
 test('sorts consignments by importer, status and consignment reference', () => {
