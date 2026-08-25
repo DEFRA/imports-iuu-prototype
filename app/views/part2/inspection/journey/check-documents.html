@@ -35,12 +35,6 @@
         </fieldset>
       </div>
 
-      <div class="govuk-form-group">
-        <label class="govuk-label govuk-label--s" for="documentary-check-comments">Comments</label>
-        <div class="govuk-hint" id="documentary-check-comments-hint">Add comments about the decision, if needed.</div>
-        <textarea class="govuk-textarea" id="documentary-check-comments" name="documentary-check-comments" rows="4" aria-describedby="documentary-check-comments-hint">{{ data['documentary-check-comments'] }}</textarea>
-      </div>
-
       <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-documentary-intervention">
         <div class="govuk-form-group{% if errorMap['documentary-intervention'] %} govuk-form-group--error{% endif %}">
           <label class="govuk-label govuk-label--s" for="documentary-intervention">Intervention action</label>
@@ -52,6 +46,12 @@
             <option value="referred-to-mmo"{% if data['documentary-intervention'] == 'referred-to-mmo' %} selected{% endif %}>Refer to MMO</option>
           </select>
         </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--s" for="documentary-check-comments">Comments</label>
+        <div class="govuk-hint" id="documentary-check-comments-hint">Add comments about the decision, if needed.</div>
+        <textarea class="govuk-textarea" id="documentary-check-comments" name="documentary-check-comments" rows="4" aria-describedby="documentary-check-comments-hint">{{ data['documentary-check-comments'] }}</textarea>
       </div>
 
       <button class="govuk-button" data-module="govuk-button">Save documentary check</button>
