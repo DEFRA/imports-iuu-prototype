@@ -7,7 +7,8 @@
   outline-offset: -3px;
 }
 
-.inspection-dashboard__filter-grid {
+.inspection-dashboard__filter-grid,
+.inspection-dashboard__search-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0 32px;
@@ -19,8 +20,6 @@
   background-color: #f3f2f1;
 }
 
-.inspection-dashboard__search-grid,
-.inspection-dashboard__date-grid,
 .inspection-dashboard__sort-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 270px));
@@ -33,16 +32,13 @@
 
 .inspection-dashboard__filter-grid > div,
 .inspection-dashboard__search-grid > div,
-.inspection-dashboard__date-grid > div,
 .inspection-dashboard__sort-grid > div,
 .inspection-dashboard__filter-grid .govuk-form-group,
 .inspection-dashboard__search-grid .govuk-form-group,
-.inspection-dashboard__date-grid .govuk-form-group,
 .inspection-dashboard__sort-grid .govuk-form-group,
 .inspection-dashboard__filter-grid .govuk-input,
 .inspection-dashboard__filter-grid .govuk-select,
 .inspection-dashboard__search-grid .govuk-input,
-.inspection-dashboard__date-grid .govuk-input,
 .inspection-dashboard__sort-grid .govuk-select {
   min-width: 0;
   width: 100%;
@@ -192,7 +188,8 @@
 }
 
 @media (max-width: 48.0525em) {
-  .inspection-dashboard__filter-grid {
+  .inspection-dashboard__filter-grid,
+  .inspection-dashboard__search-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -218,14 +215,12 @@
 
   .inspection-dashboard__filter-grid,
   .inspection-dashboard__search-grid,
-  .inspection-dashboard__date-grid,
   .inspection-dashboard__sort-grid {
     grid-template-columns: 1fr;
     gap: 0;
   }
 
   .inspection-dashboard__search-grid,
-  .inspection-dashboard__date-grid,
   .inspection-dashboard__sort-grid {
     row-gap: 16px;
   }

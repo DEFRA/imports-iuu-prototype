@@ -79,8 +79,6 @@
               {% endfor %}
             </select>
           </div>
-        </div>
-        <div class="inspection-dashboard__date-grid">
           <div class="govuk-form-group govuk-!-margin-bottom-3">
             <label class="govuk-label" for="{{ tabId }}-filter-arrival-from">
               Arrival date from
@@ -143,7 +141,7 @@
                   <a href="{{ consignment.detailPath }}" class="govuk-link govuk-!-font-weight-bold inspection-dashboard__reference">{{ consignment.reference }}</a>
                   <ul class="inspection-dashboard__tag-list" aria-label="Status and risk indicators for {{ consignment.reference }}">
                     <li><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></li>
-                    <li><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">Arrival in {{ consignment.daysUntilArrival }} day{% if consignment.daysUntilArrival != 1 %}s{% endif %}</strong></li>
+                    <li><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}">{{ consignment.arrivalTimingLabel }}</strong></li>
                     {% if consignment.riskFlags.length > 0 %}
                       {% for riskFlag in consignment.riskFlags %}
                         <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>

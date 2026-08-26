@@ -25,7 +25,9 @@ const buildInspectionNotifications = (today = new Date()) => {
   const startOfToday = toUtcDate(today)
   const notifications = inspectionNotificationSeeds.map((seed) => {
     const submittedOnDate = addDays(startOfToday, -seed.submittedDaysAgo)
-    const arrivalDate = addDays(startOfToday, seed.arrivalOffsetDays)
+    const arrivalDate = seed.arrivalDate
+      ? new Date(seed.arrivalDate + 'T00:00:00Z')
+      : addDays(startOfToday, seed.arrivalOffsetDays)
 
     return {
       ...seed,
@@ -33,6 +35,7 @@ const buildInspectionNotifications = (today = new Date()) => {
       submittedOnDateDisplay: formatShortDate(submittedOnDate),
       arrivalDate,
       arrivalDateDisplay: formatShortDate(arrivalDate),
+      arrivalOffsetDays: getDifferenceInDays(arrivalDate, startOfToday),
       daysUntilExpected: getDifferenceInDays(arrivalDate, submittedOnDate)
     }
   })

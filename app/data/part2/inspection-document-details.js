@@ -15,7 +15,7 @@ module.exports = {
       { title: 'Exporter and importer details', fields: [{ label: 'Exporter details', value: 'Compagnie Francaise du Thon Oceanique, 11 Rue des Sardiniers, 29900 Concarneau, France' }, { label: 'Importer details', value: 'New England Seafood International Ltd, Genesis Way, Healing, Grimsby DN37 9TU, United Kingdom' }] },
       { title: 'Weight data', fields: [{ label: 'Certified weight (Skipjack)', value: '118,000 kg' }, { label: 'Certified weight (Yellowfin)', value: '34,000 kg' }, { label: 'Total certified weight', value: '152,000 kg' }] },
       { title: 'Transport details', fields: [{ label: 'Transport mode', value: 'Vessel' }, { label: 'Transport document reference', value: 'BL-FRA-2026-0205' }, { label: 'Container number', value: 'MSCU2205101' }, { label: 'Country and departure point', value: 'France - Concarneau' }] },
-      { title: 'Landing details', fields: [{ label: 'Port of landing', value: 'Grimsby' }, { label: 'Date of landing', value: '12 September 2026' }, { label: 'Catch dates', value: '1 July 2026 to 18 July 2026' }] }
+      { title: 'Landing details', fields: [{ label: 'Port of landing', value: 'Grimsby' }, { label: 'Date of landing', value: '7 August 2026' }, { label: 'Catch dates', value: '1 July 2026 to 18 July 2026' }] }
     ]
   },
   'CC-SEN-2026-7785': {

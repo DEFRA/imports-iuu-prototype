@@ -4,7 +4,7 @@ module.exports = [
     hasJourneyLink: true,
     importer: 'New England Seafood International Ltd',
     importerEori: 'GB222333444000',
-    arrivalOffsetDays: 2,
+    arrivalDate: '2026-08-07',
     arrivalTime: '9:00am',
     submittedDaysAgo: 7,
     product: 'Skipjack tuna',
@@ -53,7 +53,7 @@ module.exports = [
       { type: 'Catch certificates', count: 1, references: ['FRA 2026 CSP 000205'] },
       { type: 'Processing statements', count: 0, references: [] },
       { type: 'Non-manipulation declarations', count: 0, references: [] },
-      { type: 'Additional documents', count: 4, references: ['BOL-2026-55190', 'INV-2026-88421', 'TRN-2026-10982', 'SUP-2026-00418'] }
+      { type: 'Additional documents', count: 0, references: [] }
     ],
     evidenceSummary: [
       { type: 'Catch certificate', status: 'Received', statusClass: 'govuk-tag--green', details: 'FRA 2026 CSP 000205' },
