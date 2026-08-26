@@ -6,7 +6,7 @@ module.exports = [
     reference: 'GB-IUU-2026-11001',
     importer: 'New England Seafood International Ltd',
     originCountry: 'France',
-    arrivalOffsetDays: 2,
+    arrivalDate: '2026-08-07',
     arrivalTime: '9:00am',
     commodityCodes: ['030343'],
     species: 'Skipjack tuna (Katsuwonus pelamis)',
@@ -14,7 +14,7 @@ module.exports = [
     catchCertificateCount: 1,
     processingStatementCount: 0,
     nmdCount: 0,
-    additionalDocumentCount: 4,
+    additionalDocumentCount: 0,
     status: 'REQUIRES_DOCUMENT_CHECK',
     riskFlags: ['COMMODITY_MISMATCH', 'WEIGHT_MISMATCH', 'MISSING_EVIDENCE', 'IMPORTER_DECLARATION_MISSING'],
     riskNotes: 'Weight Reconciliation (Fail). Catch Certificate contains both Skipjack and Yellowfin tuna, and certified weight exceeds the declaration by 34,000 kg.'

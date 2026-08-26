@@ -96,17 +96,25 @@ const mapDaysUntilArrivalTagClass = (daysUntilArrival) => {
   return 'govuk-tag--green'
 }
 
+const formatArrivalTiming = (daysUntilArrival) => {
+  if (daysUntilArrival === 0) return 'Arrival today'
+  if (daysUntilArrival === 1) return 'Arrival in 1 day'
+  if (daysUntilArrival > 1) return `Arrival in ${daysUntilArrival} days`
+  if (daysUntilArrival === -1) return 'Arrived 1 day ago'
+  return `Arrived ${Math.abs(daysUntilArrival)} days ago`
+}
+
 const buildDocumentsProvidedText = (consignment) => {
   const documentEntries = [
-    { prefix: 'CC', count: consignment.catchCertificateCount },
-    { prefix: 'PS', count: consignment.processingStatementCount },
-    { prefix: 'NMD', count: consignment.nmdCount },
-    { prefix: 'ADD', count: consignment.additionalDocumentCount }
+    { singular: 'Catch certificate', plural: 'Catch certificates', count: consignment.catchCertificateCount },
+    { singular: 'Processing statement', plural: 'Processing statements', count: consignment.processingStatementCount },
+    { singular: 'Non-manipulation declaration', plural: 'Non-manipulation declarations', count: consignment.nmdCount },
+    { singular: 'Additional document', plural: 'Additional documents', count: consignment.additionalDocumentCount }
   ]
 
   return documentEntries
     .filter((entry) => entry.count > 0)
-    .map((entry) => `${entry.prefix}(${entry.count})`)
+    .map((entry) => `${entry.count === 1 ? entry.singular : entry.plural} (${entry.count})`)
 }
 
 const buildStatusOptions = () => ([
@@ -219,6 +227,7 @@ const mapConsignmentForView = (consignment) => ({
   estimatedArrivalTimeDisplay: consignment.arrivalTime,
   estimatedArrivalIsoDate: toIsoDate(consignment.estimatedArrival),
   daysUntilArrival: consignment.daysUntilArrival,
+  arrivalTimingLabel: formatArrivalTiming(consignment.daysUntilArrival),
   daysUntilArrivalTagClass: mapDaysUntilArrivalTagClass(consignment.daysUntilArrival),
   commodityCodes: consignment.commodityCodes,
   species: consignment.species,
