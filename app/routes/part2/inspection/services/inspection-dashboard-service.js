@@ -7,7 +7,7 @@ const {
 const ALL_FILTER_VALUE = '__all__'
 const FOR_REVIEW_TAB = 'for-review'
 const IN_PROGRESS_TAB = 'in-progress'
-const DEFAULT_SORT_BY = 'days-until-arrival'
+const DEFAULT_SORT_BY = 'reference'
 const DEFAULT_SORT_ORDER = 'asc'
 
 const STATUS_LABELS = {
@@ -100,8 +100,8 @@ const formatArrivalTiming = (daysUntilArrival) => {
   if (daysUntilArrival === 0) return 'Arrival today'
   if (daysUntilArrival === 1) return 'Arrival in 1 day'
   if (daysUntilArrival > 1) return `Arrival in ${daysUntilArrival} days`
-  if (daysUntilArrival === -1) return 'Arrived 1 day ago'
-  return `Arrived ${Math.abs(daysUntilArrival)} days ago`
+  if (daysUntilArrival === -1) return 'Overdue by 1 day'
+  return `Overdue by ${Math.abs(daysUntilArrival)} days`
 }
 
 const buildDocumentsProvidedText = (consignment) => {

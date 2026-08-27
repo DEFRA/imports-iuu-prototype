@@ -12,13 +12,13 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">Consignment {{ inspectionNotification.reference or "GB-IUU-2026-11001" }}</h1>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">Consignment {{ inspectionNotification.reference or "GB-IUU-2026-11002" }}</h1>
 
     <div class="inspection-overview__tag-list" aria-label="Consignment status and risk tags">
       <strong class="govuk-tag inspection-overview__status-tag {{ inspectionNotification.statusTagClass or "govuk-tag--blue" }}">
         {{ inspectionNotification.statusTagText or inspectionNotification.regulatoryStatus or "Requires document check" }}
       </strong>
-      <strong class="govuk-tag govuk-tag--grey inspection-overview__status-tag">
+      <strong class="govuk-tag {% if arrivalOffsetDays < 3 %}govuk-tag--red{% elif arrivalOffsetDays <= 8 %}govuk-tag--yellow{% else %}govuk-tag--green{% endif %} inspection-overview__status-tag{% if arrivalOffsetDays < 0 %} inspection-overdue-tag{% endif %}">
         {% if arrivalOffsetDays == 0 %}
           Arrival today
         {% elif arrivalOffsetDays == 1 %}
@@ -26,9 +26,9 @@
         {% elif arrivalOffsetDays > 1 %}
           Arrival in {{ arrivalOffsetDays }} days
         {% elif arrivalOffsetDays == -1 %}
-          Arrived 1 day ago
+          Overdue by 1 day
         {% elif arrivalOffsetDays < -1 %}
-          Arrived {{ arrivalOffsetDays * -1 }} days ago
+          Overdue by {{ arrivalOffsetDays * -1 }} days
         {% else %}
           Arrival date set
         {% endif %}
@@ -41,23 +41,31 @@
           {% endif %}
           <strong class="govuk-tag inspection-overview__risk-tag">{{ riskTagText }}</strong>
         {% endfor %}
-      {% else %}
-        <strong class="govuk-tag inspection-overview__risk-tag">No risk identified</strong>
       {% endif %}
     </div>
 
-    <div class="govuk-warning-text inspection-overview__warning">
-      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      <strong class="govuk-warning-text__text inspection-overview__warning-text">
-        <span class="inspection-overview__warning-label">Warning:</span>
-        The documentary evidence supplied does not fully reconcile with the import notification. The Catch Certificate contains an additional commodity that has not been declared within the notification. As a result, the certified weight exceeds the declared quantity. Additional clarification or amended documentation should be requested before the consignment can be assessed as satisfactory.
-      </strong>
-    </div>
+    {% if inspectionNotification.informationText %}
+      <div class="govuk-warning-text inspection-overview__warning">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text inspection-overview__warning-text">
+          <span class="inspection-overview__warning-label">Information:</span>
+          {{ inspectionNotification.informationText }}
+        </strong>
+      </div>
+    {% else %}
+      <div class="govuk-warning-text inspection-overview__warning">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text inspection-overview__warning-text">
+          <span class="inspection-overview__warning-label">Warning:</span>
+          The documentary evidence supplied does not fully reconcile with the import notification. The Catch Certificate contains an additional commodity that has not been declared within the notification. As a result, the certified weight exceeds the declared quantity. Additional clarification or amended documentation should be requested before the consignment can be assessed as satisfactory.
+        </strong>
+      </div>
+    {% endif %}
 
     <div class="inspection-overview__summary-grid">
       <div class="inspection-overview__summary-card">
         <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Estimated arrival</p>
-        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.arrivalDateDisplay }}, {{ inspectionNotification.arrivalTime }}</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.arrivalDateDisplay }}{% if inspectionNotification.arrivalTime %}, {{ inspectionNotification.arrivalTime }}{% endif %}</p>
         <p class="govuk-body govuk-!-margin-bottom-0">{{ inspectionNotification.port }}</p>
       </div>
       <div class="inspection-overview__summary-card">
@@ -109,9 +117,9 @@
       </tbody>
     </table>
 
-    <div class="inspection-case__risk-panel">
+    {% if riskFlags.length > 0 %}
+      <div class="inspection-case__risk-panel">
       <h3 class="govuk-heading-m">Potential risk flags</h3>
-      {% if riskFlags.length > 0 %}
         <ul class="govuk-list inspection-case__risk-list">
           {% for risk in riskFlags %}
             <li>
@@ -120,10 +128,8 @@
             </li>
           {% endfor %}
         </ul>
-      {% else %}
-        <p class="govuk-body govuk-!-margin-bottom-0">No risk flags recorded.</p>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
 
     <h2 class="govuk-heading-m">Commodity weight comparison</h2>
     <div class="govuk-table__container" tabindex="0">
@@ -182,8 +188,12 @@
       {% endfor %}
     </div>
 
+    <h2 class="govuk-heading-l">Document check decision</h2>
+    <p class="govuk-body">Based on the available evidence, either complete the document check or refer the case for further assessment.</p>
+
     <div class="govuk-button-group">
       <a href="/inspection/{{ inspectionNotification.reference }}/check-documents" role="button" draggable="false" class="govuk-button" data-module="govuk-button">Record document check outcome</a>
+      <a href="#" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" onclick="return false;">Refer for further assessment</a>
     </div>
   </div>
 </div>

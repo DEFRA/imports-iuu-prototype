@@ -1,4 +1,4 @@
-const consignmentReference = 'GB-IUU-2026-11001'
+const consignmentReference = 'GB-IUU-2026-11002'
 
 module.exports = {
   'FRA-2026-CSP-000205': {
@@ -16,6 +16,20 @@ module.exports = {
       { title: 'Weight data', fields: [{ label: 'Certified weight (Skipjack)', value: '118,000 kg' }, { label: 'Certified weight (Yellowfin)', value: '34,000 kg' }, { label: 'Total certified weight', value: '152,000 kg' }] },
       { title: 'Transport details', fields: [{ label: 'Transport mode', value: 'Vessel' }, { label: 'Transport document reference', value: 'BL-FRA-2026-0205' }, { label: 'Container number', value: 'MSCU2205101' }, { label: 'Country and departure point', value: 'France - Concarneau' }] },
       { title: 'Landing details', fields: [{ label: 'Port of landing', value: 'Grimsby' }, { label: 'Date of landing', value: '7 August 2026' }, { label: 'Catch dates', value: '1 July 2026 to 18 July 2026' }] }
+    ]
+  },
+  'FRA-2026-CSP-100124': {
+    consignmentReference: 'GB-IUU-2026-11001',
+    validationStatus: 'Validated',
+    validationStatusClass: 'govuk-tag--green',
+    species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '030343', weight: '175,564 kg' }],
+    sections: [
+      { title: 'Document details', fields: [{ label: 'Document number', value: 'FRA 2026 CSP 100124' }, { label: 'Validating authority', value: 'Centre National de Surveillance des Pêches, 40 Avenue Louis Bougo, BP 48, 56410 Étel, France' }, { label: 'Product code', value: '030343' }, { label: 'Catch area', value: 'FAO 51 - Indian Ocean Western' }, { label: 'Fishing licence', value: 'CTOI-1302/000201' }, { label: 'Fishing gear', value: 'PS (01.1 Purse Seine)' }] },
+      { title: 'Vessel details', fields: [{ label: 'Vessel name', value: 'BERNICA' }, { label: 'IMO number', value: '9600853' }, { label: 'Flag, home port and registration', value: 'FRA - DZAOUDZI - DI 929727' }, { label: 'Call sign', value: 'FLTZ' }] },
+      { title: 'Exporter and importer details', fields: [{ label: 'Exporter details', value: 'SAPMER S.A., Darse de Pêche, 97420 Le Port, Réunion, France' }, { label: 'Importer details', value: 'New England Seafood International Ltd, Genesis Way, Healing, Grimsby DN37 9TU, United Kingdom' }, { label: 'Importer EORI number', value: 'GB987654321000' }, { label: 'Importer contact details', value: '+44 1472 555 1002' }] },
+      { title: 'Weight data', fields: [{ label: 'Estimated weight to be landed', value: '175,564 kg' }, { label: 'Net catch weight', value: '174,564 kg' }, { label: 'Verified weight landed', value: '173,564 kg' }, { label: 'Net fishery product weight', value: '173,564 kg' }] },
+      { title: 'Transport details', fields: [{ label: 'Transport mode', value: 'Vessel' }, { label: 'Transport document reference', value: 'BL-FRA-2026-1457' }, { label: 'Container number', value: 'MSCU1000333' }, { label: 'Country and departure point', value: 'France (Réunion) - Le Port' }, { label: 'Point of destination', value: 'United Kingdom' }] },
+      { title: 'Landing details', fields: [{ label: 'Port of landing', value: 'Grimsby' }, { label: 'Date of landing', value: '31 August 2026' }, { label: 'Catch dates', value: '14 June 2026 to 21 June 2026' }] }
     ]
   },
   'CC-SEN-2026-7785': {
@@ -88,7 +102,7 @@ module.exports = {
     sections: [{ title: 'Document details', fields: [{ label: 'Document type', value: 'Bill of lading' }, { label: 'Container number', value: 'MSCU 7391842' }, { label: 'Date issued', value: '16 July 2026' }] }]
   },
   'ESP/SGCI/AI/2026/101': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Valid',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '118,000 kg' }],
@@ -102,7 +116,7 @@ module.exports = {
     ]
   },
   'FRA 2026 CSP 000101': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Valid',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '78,000 kg' }],
@@ -116,7 +130,7 @@ module.exports = {
     ]
   },
   'SYC/SFA/10/2026-SW0454': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Missing from processing statement',
     validationStatusClass: 'govuk-tag--red',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '64,000 kg' }],
@@ -130,7 +144,7 @@ module.exports = {
     ]
   },
   'CL-2026-44-000079-N': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Valid',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '100,000 kg' }],
@@ -144,7 +158,7 @@ module.exports = {
     ]
   },
   'CATCH.PS.PT.2026.0001149': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Missing evidence',
     validationStatusClass: 'govuk-tag--red',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '257,400 kg' }],

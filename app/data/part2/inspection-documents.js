@@ -23,8 +23,23 @@ const inspectionDocuments = [
     ]
   },
   {
+    id: 'FRA-2026-CSP-100124',
+    consignmentReference: 'GB-IUU-2026-11001',
+    type: 'catch-certificate',
+    typeLabel: 'Catch certificate',
+    reference: 'FRA 2026 CSP 100124',
+    issuer: 'Centre National de Surveillance des Pêches',
+    details: [
+      { label: 'Vessel', value: 'BERNICA (IMO 9600853)' },
+      { label: 'Species', value: 'Skipjack Tuna (Katsuwonus pelamis)' },
+      { label: 'Net weight', value: '175,564 kg' },
+      { label: 'Catch area', value: 'FAO 51 - Indian Ocean Western' },
+      { label: 'Catch dates', value: '14 June 2026 to 21 June 2026' }
+    ]
+  },
+  {
     id: 'ESP/SGCI/AI/2026/101',
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     type: 'catch-certificate',
     typeLabel: 'Catch certificate',
     reference: 'ESP/SGCI/AI/2026/101',
@@ -39,7 +54,7 @@ const inspectionDocuments = [
   },
   {
     id: 'FRA 2026 CSP 000101',
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     type: 'catch-certificate',
     typeLabel: 'Catch certificate',
     reference: 'FRA 2026 CSP 000101',
@@ -54,7 +69,7 @@ const inspectionDocuments = [
   },
   {
     id: 'SYC/SFA/10/2026-SW0454',
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     type: 'catch-certificate',
     typeLabel: 'Catch certificate',
     reference: 'SYC/SFA/10/2026-SW0454',
@@ -69,7 +84,7 @@ const inspectionDocuments = [
   },
   {
     id: 'CL-2026-44-000079-N',
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     type: 'catch-certificate',
     typeLabel: 'Catch certificate',
     reference: 'CL-2026-44-000079-N',
@@ -85,7 +100,7 @@ const inspectionDocuments = [
   },
   {
     id: 'CATCH.PS.PT.2026.0001149',
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     type: 'processing-statement',
     typeLabel: 'Processing statement',
     reference: 'CATCH.PS.PT.2026.0001149',

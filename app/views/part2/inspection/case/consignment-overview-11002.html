@@ -17,19 +17,23 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">Consignment {{ inspectionNotification.reference or "GB-IUU-2026-11002" }}</h1>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">Consignment {{ inspectionNotification.reference or "GB-IUU-2026-11003" }}</h1>
 
     <div class="inspection-overview__tag-list" aria-label="Consignment status and risk tags">
       <strong class="govuk-tag inspection-overview__status-tag {{ inspectionNotification.statusTagClass or "govuk-tag--red" }}">
         {{ inspectionNotification.statusTagText or inspectionNotification.regulatoryStatus or "Requires document check" }}
       </strong>
-      <strong class="govuk-tag govuk-tag--grey inspection-overview__status-tag">
+      <strong class="govuk-tag {% if arrivalOffsetDays < 3 %}govuk-tag--red{% elif arrivalOffsetDays <= 8 %}govuk-tag--yellow{% else %}govuk-tag--green{% endif %} inspection-overview__status-tag{% if arrivalOffsetDays < 0 %} inspection-overdue-tag{% endif %}">
         {% if arrivalOffsetDays == 0 %}
           Arrival today
         {% elif arrivalOffsetDays == 1 %}
           Arrival in 1 day
         {% elif arrivalOffsetDays > 1 %}
           Arrival in {{ arrivalOffsetDays }} days
+        {% elif arrivalOffsetDays == -1 %}
+          Overdue by 1 day
+        {% elif arrivalOffsetDays < -1 %}
+          Overdue by {{ arrivalOffsetDays * -1 }} days
         {% else %}
           Arrival date set
         {% endif %}
@@ -184,8 +188,12 @@
       {% endfor %}
     </div>
 
+    <h2 class="govuk-heading-l">Document check decision</h2>
+    <p class="govuk-body">Based on the available evidence, either complete the document check or refer the case for further assessment.</p>
+
     <div class="govuk-button-group">
       <a href="/inspection/{{ inspectionNotification.reference }}/check-documents" role="button" draggable="false" class="govuk-button" data-module="govuk-button">Record document check outcome</a>
+      <a href="#" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" onclick="return false;">Refer for further assessment</a>
     </div>
   </div>
 </div>

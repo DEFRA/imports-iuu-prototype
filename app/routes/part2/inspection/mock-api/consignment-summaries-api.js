@@ -77,8 +77,8 @@ const assertSeedValid = (seed) => {
     throw new Error(`Missing required consignment data for ${seed.reference || seed.id || 'unknown reference'}`)
   }
 
-  if (!seed.arrivalDate && (!Number.isInteger(seed.arrivalOffsetDays) || seed.arrivalOffsetDays < 2 || seed.arrivalOffsetDays > 45)) {
-    throw new Error(`arrivalOffsetDays must be between 2 and 45 for ${seed.reference}`)
+  if (!seed.arrivalDate && !Number.isInteger(seed.arrivalOffsetDays)) {
+    throw new Error(`arrivalOffsetDays must be an integer for ${seed.reference}`)
   }
 
   if (seed.arrivalDate && Number.isNaN(Date.parse(seed.arrivalDate + 'T00:00:00Z'))) {

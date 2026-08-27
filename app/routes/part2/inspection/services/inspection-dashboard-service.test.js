@@ -29,14 +29,14 @@ test('filters consignments by importer, status, origin, arrival range and risk i
     'filter-importer': 'New England Seafood International Ltd',
     'filter-status': 'REQUIRES_DOCUMENT_CHECK',
     'filter-origin': 'France',
-    'filter-arrival-from': '2026-08-07',
-    'filter-arrival-to': '2026-08-07',
+    'filter-arrival-from': '2025-12-31',
+    'filter-arrival-to': '2025-12-31',
     'filter-risk-indicator': 'WEIGHT_MISMATCH'
   })
 
   const filtered = filterConsignments(consignments, filters)
   assert.equal(filtered.length, 1)
-  assert.equal(filtered[0].reference, 'GB-IUU-2026-11001')
+  assert.equal(filtered[0].reference, 'GB-IUU-2026-11002')
 })
 
 test('sorts consignments by estimated arrival', () => {
@@ -50,8 +50,8 @@ test('sorts consignments by estimated arrival', () => {
     'sort-order': 'desc'
   }))
 
-  assert.equal(ascending[0].reference, 'GB-IUU-2026-11003')
-  assert.equal(descending[0].reference, 'GB-IUU-2026-11002')
+  assert.equal(ascending[0].reference, 'GB-IUU-2026-11002')
+  assert.equal(descending[0].reference, 'GB-IUU-2026-11003')
 })
 
 test('sorts consignments by importer, status and consignment reference', () => {
@@ -63,7 +63,7 @@ test('sorts consignments by importer, status and consignment reference', () => {
   const byReference = sortConsignments(consignments, buildDashboardFilters({ 'sort-by': 'reference' }))
 
   assert.equal(byImporter[0].importer, 'Atlantic Seafoods Ltd')
-  assert.equal(byDaysUntilArrival[0].daysUntilArrival, 4)
+  assert.equal(byDaysUntilArrival[0].daysUntilArrival, -1)
   assert.equal(byStatus[0].status, 'COMPLETED')
   assert.equal(byReference[0].reference, 'GB-IUU-2026-10482')
 })
@@ -76,6 +76,16 @@ test('builds tab view model so in-progress records are excluded from For Review'
   assert.equal(viewModel.filterOptions.referenceOptions.length, 20)
   assert.ok(viewModel.filterOptions.referenceOptions.includes('GB-IUU-2026-11001'))
   assert.ok(viewModel.filterOptions.importerNameOptions.includes('Frinsa UK'))
+})
+
+test('sorts both dashboard tabs by consignment reference on initial load', () => {
+  const viewModel = buildInspectionDashboardViewModel({}, fixedToday)
+
+  for (const tab of [viewModel.forReview, viewModel.inProgress]) {
+    const references = tab.rows.map((row) => row.reference)
+    const sortedReferences = [...references].sort((first, second) => first.localeCompare(second, 'en-GB'))
+    assert.deepEqual(references, sortedReferences)
+  }
 })
 
 test('lists every matching reference in each dashboard tab', () => {
@@ -92,10 +102,36 @@ test('lists every matching reference in each dashboard tab', () => {
 
 test('maps document counts as separate display lines', () => {
   const viewModel = buildInspectionDashboardViewModel({}, fixedToday)
-  const consignment = viewModel.forReview.rows.find((row) => row.reference === 'GB-IUU-2026-11001')
+  const consignment = viewModel.forReview.rows.find((row) => row.reference === 'GB-IUU-2026-11002')
   assert.deepEqual(consignment.documentsProvidedLines, ['Catch certificate (1)'])
 
   const documentLabels = viewModel.forReview.rows.flatMap((row) => row.documentsProvidedLines)
   assert.ok(documentLabels.some((label) => label.startsWith('Processing statement')))
   assert.ok(documentLabels.some((label) => label.startsWith('Non-manipulation declaration')))
+})
+
+test('labels past arrival dates as overdue', () => {
+  const viewModel = buildInspectionDashboardViewModel({}, new Date(Date.UTC(2026, 7, 26)))
+  const overdueRows = [...viewModel.forReview.rows, ...viewModel.inProgress.rows]
+    .filter((row) => row.daysUntilArrival < 0)
+
+  assert.ok(overdueRows.length > 0)
+  assert.ok(overdueRows.every((row) => row.arrivalTimingLabel.startsWith('Overdue by ')))
+})
+
+test('keeps seeded arrival offsets static as the current date changes', () => {
+  const firstDate = new Date(Date.UTC(2026, 0, 1))
+  const secondDate = new Date(Date.UTC(2026, 1, 1))
+  const firstSummaries = mockConsignmentSummariesApi.listConsignmentSummaries(firstDate)
+  const secondSummaries = mockConsignmentSummariesApi.listConsignmentSummaries(secondDate)
+
+  for (const firstSummary of firstSummaries) {
+    const secondSummary = secondSummaries.find((summary) => summary.reference === firstSummary.reference)
+    assert.equal(secondSummary.daysUntilArrival, firstSummary.daysUntilArrival)
+    assert.equal(secondSummary.estimatedArrival.getTime() - firstSummary.estimatedArrival.getTime(), 31 * 24 * 60 * 60 * 1000)
+  }
+
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11002').daysUntilArrival, -1)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11003').daysUntilArrival, 105)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11001').daysUntilArrival, 4)
 })
