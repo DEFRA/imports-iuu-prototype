@@ -4,7 +4,7 @@ const {
 } = require('./notifications')
 const { buildInspectionDashboardViewModel } = require('./services/inspection-dashboard-service')
 const { mockConsignmentSummariesApi } = require('./mock-api/consignment-summaries-api')
-const inspectionOverviewFallbackReference = 'GB-IUU-2026-11002'
+const inspectionOverviewFallbackReference = 'GB-IUU-2026-11003'
 const path = require('path')
 const documentNavigationService = require('./document-navigation-service')
 const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', '..', 'sample-documents')

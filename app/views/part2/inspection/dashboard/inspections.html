@@ -142,7 +142,7 @@
                   <ul class="inspection-dashboard__tag-list" aria-label="Status and risk indicators for {{ consignment.reference }}">
                     <li><strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong></li>
                     <li><strong class="govuk-tag {{ consignment.daysUntilArrivalTagClass }}{% if consignment.daysUntilArrival < 0 %} inspection-overdue-tag{% endif %}">{{ consignment.arrivalTimingLabel }}</strong></li>
-                    {% if consignment.reference == "GB-IUU-2026-11001" or consignment.reference == "GB-IUU-2026-11002" %}
+                    {% if consignment.reference == "GB-IUU-2026-11002" or consignment.reference == "GB-IUU-2026-11003" %}
                       {% for riskFlag in consignment.riskFlags %}
                         <li><strong class="govuk-tag inspection-dashboard__risk-tag">{{ riskFlag.text }}</strong></li>
                       {% endfor %}

@@ -80,18 +80,18 @@ The prototype also includes a separate inspection journey for Port Health Author
   - `/` Prototype selector
   - `/inspections` Inspection work queue
 - Functional inspection case:
-  - `GB-IUU-2026-11001` at `/inspection/GB-IUU-2026-11001`
+  - `GB-IUU-2026-11002` at `/inspection/GB-IUU-2026-11002`
 - Inspection journey routes:
-  - `/inspection/GB-IUU-2026-11001/confirm-details`
-  - `/inspection/GB-IUU-2026-11001/check-documents`
-  - `/inspection/GB-IUU-2026-11001/identity-checks`
-  - `/inspection/GB-IUU-2026-11001/physical-checks`
-  - `/inspection/GB-IUU-2026-11001/findings`
-  - `/inspection/GB-IUU-2026-11001/outcome`
-  - `/inspection/GB-IUU-2026-11001/check-record`
-  - `/inspection/GB-IUU-2026-11001/confirmation`
+  - `/inspection/GB-IUU-2026-11002/confirm-details`
+  - `/inspection/GB-IUU-2026-11002/check-documents`
+  - `/inspection/GB-IUU-2026-11002/identity-checks`
+  - `/inspection/GB-IUU-2026-11002/physical-checks`
+  - `/inspection/GB-IUU-2026-11002/findings`
+  - `/inspection/GB-IUU-2026-11002/outcome`
+  - `/inspection/GB-IUU-2026-11002/check-record`
+  - `/inspection/GB-IUU-2026-11002/confirmation`
 - Supporting research pages:
-  - `/inspection/GB-IUU-2026-11001/documents`
+  - `/inspection/GB-IUU-2026-11002/documents`
   - `/inspection-assumptions`
 
 ### Design notes

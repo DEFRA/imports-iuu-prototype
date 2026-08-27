@@ -1,4 +1,4 @@
-const consignmentReference = 'GB-IUU-2026-11001'
+const consignmentReference = 'GB-IUU-2026-11002'
 
 module.exports = {
   'FRA-2026-CSP-000205': {
@@ -19,7 +19,7 @@ module.exports = {
     ]
   },
   'FRA-2026-CSP-100124': {
-    consignmentReference: 'GB-IUU-2026-11003',
+    consignmentReference: 'GB-IUU-2026-11001',
     validationStatus: 'Validated',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '030343', weight: '175,564 kg' }],
@@ -102,7 +102,7 @@ module.exports = {
     sections: [{ title: 'Document details', fields: [{ label: 'Document type', value: 'Bill of lading' }, { label: 'Container number', value: 'MSCU 7391842' }, { label: 'Date issued', value: '16 July 2026' }] }]
   },
   'ESP/SGCI/AI/2026/101': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Valid',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '118,000 kg' }],
@@ -116,7 +116,7 @@ module.exports = {
     ]
   },
   'FRA 2026 CSP 000101': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Valid',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '78,000 kg' }],
@@ -130,7 +130,7 @@ module.exports = {
     ]
   },
   'SYC/SFA/10/2026-SW0454': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Missing from processing statement',
     validationStatusClass: 'govuk-tag--red',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '64,000 kg' }],
@@ -144,7 +144,7 @@ module.exports = {
     ]
   },
   'CL-2026-44-000079-N': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Valid',
     validationStatusClass: 'govuk-tag--green',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '100,000 kg' }],
@@ -158,7 +158,7 @@ module.exports = {
     ]
   },
   'CATCH.PS.PT.2026.0001149': {
-    consignmentReference: 'GB-IUU-2026-11002',
+    consignmentReference: 'GB-IUU-2026-11003',
     validationStatus: 'Missing evidence',
     validationStatusClass: 'govuk-tag--red',
     species: [{ species: 'Skipjack Tuna', scientificName: 'Katsuwonus pelamis', productCode: '0303 43', weight: '257,400 kg' }],

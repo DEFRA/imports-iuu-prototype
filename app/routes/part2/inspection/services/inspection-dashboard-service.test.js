@@ -36,7 +36,7 @@ test('filters consignments by importer, status, origin, arrival range and risk i
 
   const filtered = filterConsignments(consignments, filters)
   assert.equal(filtered.length, 1)
-  assert.equal(filtered[0].reference, 'GB-IUU-2026-11001')
+  assert.equal(filtered[0].reference, 'GB-IUU-2026-11002')
 })
 
 test('sorts consignments by estimated arrival', () => {
@@ -50,8 +50,8 @@ test('sorts consignments by estimated arrival', () => {
     'sort-order': 'desc'
   }))
 
-  assert.equal(ascending[0].reference, 'GB-IUU-2026-11001')
-  assert.equal(descending[0].reference, 'GB-IUU-2026-11002')
+  assert.equal(ascending[0].reference, 'GB-IUU-2026-11002')
+  assert.equal(descending[0].reference, 'GB-IUU-2026-11003')
 })
 
 test('sorts consignments by importer, status and consignment reference', () => {
@@ -102,7 +102,7 @@ test('lists every matching reference in each dashboard tab', () => {
 
 test('maps document counts as separate display lines', () => {
   const viewModel = buildInspectionDashboardViewModel({}, fixedToday)
-  const consignment = viewModel.forReview.rows.find((row) => row.reference === 'GB-IUU-2026-11001')
+  const consignment = viewModel.forReview.rows.find((row) => row.reference === 'GB-IUU-2026-11002')
   assert.deepEqual(consignment.documentsProvidedLines, ['Catch certificate (1)'])
 
   const documentLabels = viewModel.forReview.rows.flatMap((row) => row.documentsProvidedLines)
@@ -131,7 +131,7 @@ test('keeps seeded arrival offsets static as the current date changes', () => {
     assert.equal(secondSummary.estimatedArrival.getTime() - firstSummary.estimatedArrival.getTime(), 31 * 24 * 60 * 60 * 1000)
   }
 
-  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11001').daysUntilArrival, -1)
-  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11002').daysUntilArrival, 105)
-  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11003').daysUntilArrival, 4)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11002').daysUntilArrival, -1)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11003').daysUntilArrival, 105)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11001').daysUntilArrival, 4)
 })

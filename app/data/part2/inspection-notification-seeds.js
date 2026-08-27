@@ -1,6 +1,6 @@
 module.exports = [
   {
-    reference: 'GB-IUU-2026-11001',
+    reference: 'GB-IUU-2026-11002',
     hasJourneyLink: true,
     importer: 'New England Seafood International Ltd',
     importerEori: 'GB222333444000',
@@ -68,7 +68,7 @@ module.exports = [
     ]
   },
   {
-    reference: 'GB-IUU-2026-11003',
+    reference: 'GB-IUU-2026-11001',
     hasJourneyLink: true,
     importer: 'New England Seafood International Ltd',
     importerEori: 'GB987654321000',

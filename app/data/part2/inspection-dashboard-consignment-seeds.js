@@ -3,7 +3,7 @@
 module.exports = [
   {
     id: 'consignment-11001',
-    reference: 'GB-IUU-2026-11001',
+    reference: 'GB-IUU-2026-11002',
     importer: 'New England Seafood International Ltd',
     originCountry: 'France',
     arrivalOffsetDays: -1,
@@ -21,7 +21,7 @@ module.exports = [
   },
   {
     id: 'consignment-11002',
-    reference: 'GB-IUU-2026-11002',
+    reference: 'GB-IUU-2026-11003',
     importer: 'New England Seafood International Ltd',
     originCountry: 'Spain, France, Seychelles and Chile',
     arrivalOffsetDays: 105,
@@ -44,7 +44,7 @@ module.exports = [
   },
   {
     id: 'consignment-11003',
-    reference: 'GB-IUU-2026-11003',
+    reference: 'GB-IUU-2026-11001',
     importer: 'New England Seafood International Ltd',
     originCountry: 'France',
     arrivalOffsetDays: 4,
