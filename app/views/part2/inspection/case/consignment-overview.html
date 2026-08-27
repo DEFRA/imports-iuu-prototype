@@ -65,7 +65,7 @@
     <div class="inspection-overview__summary-grid">
       <div class="inspection-overview__summary-card">
         <p class="govuk-body govuk-!-margin-bottom-1 inspection-overview__summary-label">Estimated arrival</p>
-        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.arrivalDateDisplay }}, {{ inspectionNotification.arrivalTime }}</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-1">{{ inspectionNotification.arrivalDateDisplay }}{% if inspectionNotification.arrivalTime %}, {{ inspectionNotification.arrivalTime }}{% endif %}</p>
         <p class="govuk-body govuk-!-margin-bottom-0">{{ inspectionNotification.port }}</p>
       </div>
       <div class="inspection-overview__summary-card">

@@ -29,8 +29,8 @@ test('filters consignments by importer, status, origin, arrival range and risk i
     'filter-importer': 'New England Seafood International Ltd',
     'filter-status': 'REQUIRES_DOCUMENT_CHECK',
     'filter-origin': 'France',
-    'filter-arrival-from': '2026-08-07',
-    'filter-arrival-to': '2026-08-07',
+    'filter-arrival-from': '2025-12-31',
+    'filter-arrival-to': '2025-12-31',
     'filter-risk-indicator': 'WEIGHT_MISMATCH'
   })
 
@@ -50,7 +50,7 @@ test('sorts consignments by estimated arrival', () => {
     'sort-order': 'desc'
   }))
 
-  assert.equal(ascending[0].reference, 'GB-IUU-2026-11004')
+  assert.equal(ascending[0].reference, 'GB-IUU-2026-11001')
   assert.equal(descending[0].reference, 'GB-IUU-2026-11002')
 })
 
@@ -63,7 +63,7 @@ test('sorts consignments by importer, status and consignment reference', () => {
   const byReference = sortConsignments(consignments, buildDashboardFilters({ 'sort-by': 'reference' }))
 
   assert.equal(byImporter[0].importer, 'Atlantic Seafoods Ltd')
-  assert.equal(byDaysUntilArrival[0].daysUntilArrival, 5)
+  assert.equal(byDaysUntilArrival[0].daysUntilArrival, -1)
   assert.equal(byStatus[0].status, 'COMPLETED')
   assert.equal(byReference[0].reference, 'GB-IUU-2026-10482')
 })
@@ -117,4 +117,21 @@ test('labels past arrival dates as overdue', () => {
 
   assert.ok(overdueRows.length > 0)
   assert.ok(overdueRows.every((row) => row.arrivalTimingLabel.startsWith('Overdue by ')))
+})
+
+test('keeps seeded arrival offsets static as the current date changes', () => {
+  const firstDate = new Date(Date.UTC(2026, 0, 1))
+  const secondDate = new Date(Date.UTC(2026, 1, 1))
+  const firstSummaries = mockConsignmentSummariesApi.listConsignmentSummaries(firstDate)
+  const secondSummaries = mockConsignmentSummariesApi.listConsignmentSummaries(secondDate)
+
+  for (const firstSummary of firstSummaries) {
+    const secondSummary = secondSummaries.find((summary) => summary.reference === firstSummary.reference)
+    assert.equal(secondSummary.daysUntilArrival, firstSummary.daysUntilArrival)
+    assert.equal(secondSummary.estimatedArrival.getTime() - firstSummary.estimatedArrival.getTime(), 31 * 24 * 60 * 60 * 1000)
+  }
+
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11001').daysUntilArrival, -1)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11002').daysUntilArrival, 105)
+  assert.equal(firstSummaries.find((summary) => summary.reference === 'GB-IUU-2026-11003').daysUntilArrival, 4)
 })
