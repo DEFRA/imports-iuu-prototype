@@ -100,8 +100,8 @@ const formatArrivalTiming = (daysUntilArrival) => {
   if (daysUntilArrival === 0) return 'Arrival today'
   if (daysUntilArrival === 1) return 'Arrival in 1 day'
   if (daysUntilArrival > 1) return `Arrival in ${daysUntilArrival} days`
-  if (daysUntilArrival === -1) return 'Arrived 1 day ago'
-  return `Arrived ${Math.abs(daysUntilArrival)} days ago`
+  if (daysUntilArrival === -1) return 'Overdue 1 day ago'
+  return `Overdue ${Math.abs(daysUntilArrival)} days ago`
 }
 
 const buildDocumentsProvidedText = (consignment) => {

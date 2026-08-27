@@ -1,5 +1,6 @@
 const inspectionDocuments = require('../../../data/part2/inspection-documents')
 const additionalDocuments = require('../../../data/part2/additional-documents')
+const { mockConsignmentSummariesApi } = require('./mock-api/consignment-summaries-api')
 
 const supportedDocumentTypes = new Set([
   'catch-certificate',
@@ -7,6 +8,37 @@ const supportedDocumentTypes = new Set([
   'nmd',
   'additional'
 ])
+
+const formatArrivalDate = (date) => new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC'
+}).format(date)
+
+const addConsignmentArrivalDate = (document, today) => {
+  if (document.type !== 'catch-certificate') return document
+
+  const consignment = mockConsignmentSummariesApi
+    .listConsignmentSummaries(today)
+    .find((item) => item.reference === document.consignmentReference)
+
+  if (!consignment) {
+    throw new Error(`Missing consignment ${document.consignmentReference} for document ${document.id}`)
+  }
+
+  return {
+    ...document,
+    sections: document.sections.map((section) => ({
+      ...section,
+      fields: section.fields.map((field) => (
+        field.label === 'Landing date' || field.label === 'Date of landing'
+          ? { ...field, value: formatArrivalDate(consignment.estimatedArrival) }
+          : field
+      ))
+    }))
+  }
+}
 
 const documentNavigationService = {
   getDocumentUrl (document) {
@@ -47,9 +79,10 @@ const documentNavigationService = {
     ])
   },
 
-  getDocument (type, id) {
+  getDocument (type, id, today = new Date()) {
     if (!supportedDocumentTypes.has(type)) return undefined
-    return inspectionDocuments.find((document) => document.type === type && document.id === id)
+    const document = inspectionDocuments.find((document) => document.type === type && document.id === id)
+    return document ? addConsignmentArrivalDate(document, today) : undefined
   },
 
   getDocumentById (id) {

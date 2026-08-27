@@ -4,7 +4,7 @@ module.exports = [
     hasJourneyLink: true,
     importer: 'New England Seafood International Ltd',
     importerEori: 'GB222333444000',
-    arrivalDate: '2026-08-07',
+    arrivalOffsetDays: -1,
     arrivalTime: '9:00am',
     submittedDaysAgo: 7,
     product: 'Skipjack tuna',

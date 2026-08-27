@@ -26,9 +26,9 @@
         {% elif arrivalOffsetDays > 1 %}
           Arrival in {{ arrivalOffsetDays }} days
         {% elif arrivalOffsetDays == -1 %}
-          Arrived 1 day ago
+          Overdue 1 day ago
         {% elif arrivalOffsetDays < -1 %}
-          Arrived {{ arrivalOffsetDays * -1 }} days ago
+          Overdue {{ arrivalOffsetDays * -1 }} days ago
         {% else %}
           Arrival date set
         {% endif %}
