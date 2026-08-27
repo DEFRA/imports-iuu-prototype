@@ -23,6 +23,21 @@ const inspectionDocuments = [
     ]
   },
   {
+    id: 'FRA-2026-CSP-100124',
+    consignmentReference: 'GB-IUU-2026-11003',
+    type: 'catch-certificate',
+    typeLabel: 'Catch certificate',
+    reference: 'FRA 2026 CSP 100124',
+    issuer: 'Centre National de Surveillance des Pêches',
+    details: [
+      { label: 'Vessel', value: 'BERNICA (IMO 9600853)' },
+      { label: 'Species', value: 'Skipjack Tuna (Katsuwonus pelamis)' },
+      { label: 'Net weight', value: '175,564 kg' },
+      { label: 'Catch area', value: 'FAO 51 - Indian Ocean Western' },
+      { label: 'Catch dates', value: '14 June 2026 to 21 June 2026' }
+    ]
+  },
+  {
     id: 'ESP/SGCI/AI/2026/101',
     consignmentReference: 'GB-IUU-2026-11002',
     type: 'catch-certificate',
