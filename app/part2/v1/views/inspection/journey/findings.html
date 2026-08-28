@@ -1,0 +1,58 @@
+{% extends "app/part2/v1/views/layouts/main.html" %}
+{% set pageName = "Record the inspection findings" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <form method="post">
+      <h1 class="govuk-heading-l">Record the inspection findings</h1>
+      <h2 class="govuk-heading-m">Summary so far</h2>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>Documentary check: {{ data['documents-check-result'] or "Not recorded" }}</li>
+        <li>Identity check: {{ data['identity-check-result'] or "Not recorded" }}</li>
+        <li>Physical check: {{ data['physical-check-result'] or "Not recorded" }}</li>
+      </ul>
+
+      <div class="govuk-form-group{% if errorMap['inspection-finding'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">What did the inspection find?</legend>
+          {% if errorMap['inspection-finding'] %}<p class="govuk-error-message">{{ errorMap['inspection-finding'] }}</p>{% endif %}
+          <div class="govuk-radios">
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-finding" name="inspection-finding" type="radio" value="no-non-compliance" {{ checked("inspection-finding", "no-non-compliance") }}><label class="govuk-label govuk-radios__label" for="inspection-finding">No non-compliance found</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-finding-2" name="inspection-finding" type="radio" value="resolved-discrepancy" {{ checked("inspection-finding", "resolved-discrepancy") }}><label class="govuk-label govuk-radios__label" for="inspection-finding-2">A discrepancy was found and resolved</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-finding-3" name="inspection-finding" type="radio" value="non-compliance-found" {{ checked("inspection-finding", "non-compliance-found") }}><label class="govuk-label govuk-radios__label" for="inspection-finding-3">Non-compliance found</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="inspection-finding-4" name="inspection-finding" type="radio" value="more-evidence-needed" {{ checked("inspection-finding", "more-evidence-needed") }}><label class="govuk-label govuk-radios__label" for="inspection-finding-4">More evidence or specialist advice is needed</label></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group{% if errorMap['inspection-evidence-considered'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="inspection-evidence-considered">Evidence considered</label>
+        {% if errorMap['inspection-evidence-considered'] %}<p class="govuk-error-message">{{ errorMap['inspection-evidence-considered'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="inspection-evidence-considered" name="inspection-evidence-considered">{{ data['inspection-evidence-considered'] }}</textarea>
+      </div>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Action already taken (structured record)</legend>
+          <div class="govuk-checkboxes">
+            <div class="govuk-checkboxes__item"><input class="govuk-checkboxes__input" id="action-taken-1" name="inspection-action-taken" type="checkbox" value="requested-documents" {{ checked("inspection-action-taken", "requested-documents") }}><label class="govuk-label govuk-checkboxes__label" for="action-taken-1">Requested additional documents</label></div>
+            <div class="govuk-checkboxes__item"><input class="govuk-checkboxes__input" id="action-taken-2" name="inspection-action-taken" type="checkbox" value="authority-contacted" {{ checked("inspection-action-taken", "authority-contacted") }}><label class="govuk-label govuk-checkboxes__label" for="action-taken-2">Contacted another authority</label></div>
+            <div class="govuk-checkboxes__item"><input class="govuk-checkboxes__input" id="action-taken-3" name="inspection-action-taken" type="checkbox" value="physical-samples-taken" {{ checked("inspection-action-taken", "physical-samples-taken") }}><label class="govuk-label govuk-checkboxes__label" for="action-taken-3">Took physical samples</label></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group{% if errorMap['inspection-finding-notes'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="inspection-finding-notes">Inspection notes</label>
+        <div class="govuk-hint">Explain discrepancies, how issues were resolved and whether another authority may need to be involved.</div>
+        {% if errorMap['inspection-finding-notes'] %}<p class="govuk-error-message">{{ errorMap['inspection-finding-notes'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="inspection-finding-notes" name="inspection-finding-notes">{{ data['inspection-finding-notes'] }}</textarea>
+      </div>
+      <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% from "app/part2/v2/views/inspection/components/pdf-preview-component.njk" import pdfPreviewComponent %}
+{% from "app/part2/v2/views/inspection/components/document-metadata-panel.njk" import documentMetadataPanel %}
+
+{% macro additionalDocumentViewer(documents, selectedDocument, consignmentReference) %}
+  <span class="govuk-caption-l">Consignment {{ consignmentReference }}</span>
+  <h1 class="govuk-heading-xl">Additional documents</h1>
+  <div class="govuk-inset-text">Additional documents are not extracted. Review each original file manually.</div>
+
+  <div class="additional-document-viewer">
+    <nav class="additional-document-viewer__list" aria-label="Additional documents">
+      <h2 class="govuk-heading-m">Document list</h2>
+      <ul class="govuk-list additional-document-viewer__items">
+        {% for document in documents %}
+          <li class="additional-document-viewer__item{% if document.id == selectedDocument.id %} additional-document-viewer__item--selected{% endif %}">
+            <a class="govuk-link govuk-link--no-visited-state" href="{{ document.href }}"{% if document.id == selectedDocument.id %} aria-current="page"{% endif %}>
+              <strong>{{ document.category }}</strong><br><span class="govuk-body-s">{{ document.name }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <section class="additional-document-viewer__document" aria-labelledby="document-preview-heading">
+      <h2 class="govuk-heading-m" id="document-preview-heading">Document preview</h2>
+      {% if selectedDocument.previewType == 'pdf' %}
+        {{ pdfPreviewComponent(selectedDocument) }}
+      {% else %}
+        <div class="additional-document-viewer__image-frame">
+          <img class="additional-document-viewer__image" src="{{ selectedDocument.previewUrl }}" alt="Preview of {{ selectedDocument.name }}">
+        </div>
+      {% endif %}
+      {{ documentMetadataPanel(selectedDocument) }}
+    </section>
+  </div>
+
+  <p class="govuk-body govuk-!-margin-top-6"><a class="govuk-link" href="{{ basePath }}/inspection/{{ consignmentReference }}">Return to consignment overview</a></p>
+{% endmacro %}

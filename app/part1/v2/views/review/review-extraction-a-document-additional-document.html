@@ -1,0 +1,35 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Extracted document details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Additional document | Document {{ documentIndex }} of {{ totalDocuments }}</span>
+    <h1 class="govuk-heading-l">{{ document.reference }} - {{ document.documentNumber }}</h1>
+
+    {% if document.statusKey == 'incomplete' or document.statusKey == 'manual-check' %}
+      <div class="govuk-inset-text">
+        Some values are missing or low confidence. Check this document before submission.
+      </div>
+    {% endif %}
+
+    <form action="{{ basePath }}/review-extraction-a/document/{{ document.id }}/change/additional-document-placeholder{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="additionalDocumentPlaceholder">Placeholder input</label>
+        <input class="govuk-input" id="additionalDocumentPlaceholder" name="additionalDocumentPlaceholder" type="text" value="{{ document.additionalDocumentPlaceholder }}">
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and return
+        </button>
+        <a class="govuk-link" href="{{ reviewPageUrl }}">Cancel</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

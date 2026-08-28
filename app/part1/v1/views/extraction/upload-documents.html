@@ -1,0 +1,118 @@
+{% extends "app/part1/v1/views/layouts/main.html" %}
+
+{% set pageName="Upload your documents" %}
+
+{% block content %}
+
+<style>
+  .prototype-upload-drop-zone {
+    border: 2px dashed #505a5f;
+    padding: 20px;
+    background: #f3f2f1;
+  }
+</style>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: errorList
+      }) }}
+    {% endif %}
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Supporting documents</h1>
+
+    <p class="govuk-body">Upload the documents that support your seafood import notification.</p>
+
+    <p class="govuk-body">We'll use your documents to help complete parts of your notification automatically.</p>
+
+    <p class="govuk-body">You can upload one or more documents at the same time.</p>
+
+    <h2 class="govuk-heading-m">Documents to upload</h2>
+
+    <p class="govuk-body">You should upload any documents that support this import, including:</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Catch Certificates</li>
+      <li>Processing Statements</li>
+      <li>Non-Manipulation Declarations</li>
+      <li>any other relevant supporting documentation</li>
+    </ul>
+
+    <p class="govuk-body">The Port Health Authority may ask for additional information if further evidence is needed.</p>
+
+    <form action="{{ basePath }}/upload-documents" method="post">
+      <input type="hidden" name="documents-selected" id="documents-selected" value="false">
+      <input type="hidden" name="documents-file-names" id="documents-file-names" value="">
+
+      <div class="govuk-form-group{% if errorMap['file-upload-1'] %} govuk-form-group--error{% endif %}">
+        {% if errorMap['file-upload-1'] %}
+          {{ govukFileUpload({
+            id: "file-upload-1",
+            name: "fileUpload1",
+            label: {
+              text: "Upload your documents",
+              classes: "govuk-label--m"
+            },
+            hint: {
+              html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
+            },
+            chooseFilesButtonText: "Choose files",
+            multiple: true,
+            attributes: {
+              accept: ".pdf,.jpg,.jpeg,.png",
+              onchange: "var files=Array.from(this.files||[]);document.getElementById('documents-selected').value=files.length>0?'true':'false';document.getElementById('documents-file-names').value=files.map(function(file){return file.name}).join('|');if(files.length===0)return;var summary=document.querySelector('.govuk-error-summary');if(summary){summary.remove();}var formGroup=this.closest('.govuk-form-group');if(!formGroup)return;formGroup.classList.remove('govuk-form-group--error');var errorMessage=formGroup.querySelector('.govuk-error-message');if(errorMessage){errorMessage.remove();}"
+            },
+            errorMessage: {
+              text: errorMap['file-upload-1']
+            },
+            javascript: true
+          }) }}
+        {% else %}
+          {{ govukFileUpload({
+            id: "file-upload-1",
+            name: "fileUpload1",
+            label: {
+              text: "Upload your documents",
+              classes: "govuk-label--m"
+            },
+            hint: {
+              html: "Upload files in PDF, JPEG or PNG format.<br><br>Maximum file size: 10MB per file."
+            },
+            chooseFilesButtonText: "Choose files",
+            multiple: true,
+            attributes: {
+              accept: ".pdf,.jpg,.jpeg,.png",
+              onchange: "var files=Array.from(this.files||[]);document.getElementById('documents-selected').value=files.length>0?'true':'false';document.getElementById('documents-file-names').value=files.map(function(file){return file.name}).join('|');if(files.length===0)return;var summary=document.querySelector('.govuk-error-summary');if(summary){summary.remove();}var formGroup=this.closest('.govuk-form-group');if(!formGroup)return;formGroup.classList.remove('govuk-form-group--error');var errorMessage=formGroup.querySelector('.govuk-error-message');if(errorMessage){errorMessage.remove();}"
+            },
+            javascript: true
+          }) }}
+        {% endif %}
+      </div>
+
+      {% if data['uploaded-documents'] and (data['uploaded-documents'] | length) %}
+        <h2 class="govuk-heading-m">Previously uploaded files</h2>
+        <ul class="govuk-list govuk-list--bullet">
+          {% for file in data['uploaded-documents'] %}
+            <li>{{ file.filename }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <h2 class="govuk-heading-m">After you upload</h2>
+
+      <p class="govuk-body">We'll analyse your documents and extract information where possible.</p>
+
+      <p class="govuk-body">You'll be able to check and confirm the information used is correct before submitting your import notification.</p>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

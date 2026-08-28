@@ -1,0 +1,59 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Catch certificate" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Review extracted information</span>
+    <h1 class="govuk-heading-l">Catch certificate</h1>
+
+    {% set cancelPath = '/review-extraction-a' %}
+
+    <form action="{{ basePath }}/change-catch-certificate-details" method="post">
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="catch-certificate-reference">
+          Catch Certificate reference
+        </label>
+        <input class="govuk-input" id="catch-certificate-reference" name="catch-certificate-reference" type="text"
+          value="{{ data['scenario-a-catch-certificate-reference'] }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="catch-certificate-number">
+          Catch certificate number
+        </label>
+        <input class="govuk-input" id="catch-certificate-number" name="catch-certificate-number" type="text"
+          value="{{ data['catch-certificate-number'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][0] and data['scenario-a-catch-fields'][0].value) or '') }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="vessel-validation-summary">
+          Vessel name(s), flag(s), validation date(s)
+        </label>
+        <textarea class="govuk-textarea" id="vessel-validation-summary" name="vessel-validation-summary" rows="4">{{ data['vessel-validation-summary'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][1] and data['scenario-a-catch-fields'][1].value) or '') }}</textarea>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="catch-description">
+          Catch description
+        </label>
+        <textarea class="govuk-textarea" id="catch-description" name="catch-description" rows="6">{{ data['catch-description'] or ((data['scenario-a-catch-fields'] and data['scenario-a-catch-fields'][2] and data['scenario-a-catch-fields'][2].value) or '') }}</textarea>
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and return
+        </button>
+        <a class="govuk-link" href="{{ cancelPath }}">Cancel</a>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

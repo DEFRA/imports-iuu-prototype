@@ -1,0 +1,64 @@
+{% extends "app/part1/v1/views/layouts/main.html" %}
+
+{% set pageName="Upload Non-Manipulation Declarations" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Supporting documents</span>
+    <h1 class="govuk-heading-l">Upload a Non-Manipulation Declaration</h1>
+
+    <p class="govuk-body">A Non-Manipulation Declaration (NMD) is required when fish products have been transported through or stored in a third country before being imported into Great Britain. It confirms the goods were not altered during transit or storage.</p>
+
+    <form action="{{ basePath }}/non-manipulation-declaration" method="post">
+      <input type="hidden" id="nmd-selected" name="nmd-selected" value="false">
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="nmd-file">
+          {% if data['non-manipulation-documents'] and data['non-manipulation-documents'].length > 0 %}
+            Upload another Non-Manipulation Declaration
+          {% else %}
+            Upload Non-Manipulation Declaration
+          {% endif %}
+        </label>
+        <div id="nmd-file-hint" class="govuk-hint">PDF, JPEG or PNG. Maximum file size 10MB.</div>
+        <input class="govuk-file-upload" id="nmd-file" name="nmd-file" type="file"
+          aria-describedby="nmd-file-hint" accept=".pdf,.jpg,.jpeg,.png">
+      </div>
+
+      <div id="nmd-documents-uploaded-section" {% if not (data['non-manipulation-documents'] and data['non-manipulation-documents'].length > 0) %}style="display:none;"{% endif %}>
+        <h2 class="govuk-heading-m">Documents uploaded</h2>
+        <ul id="nmd-documents-uploaded-list" class="govuk-list govuk-!-margin-bottom-3" style="margin-top:0">
+          {% if data['non-manipulation-documents'] and data['non-manipulation-documents'].length > 0 %}
+            {% for doc in data['non-manipulation-documents'] %}
+              <li data-uploaded-source="server" style="display:flex; align-items:center; gap:1rem; padding:0.5rem 0; border-bottom:1px solid #b1b4b6;">
+                <span class="govuk-body" style="flex:1; margin-bottom:0;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" style="vertical-align:middle; margin-right:0.25rem">
+                    <circle cx="10" cy="10" r="10" fill="#00703c"/>
+                    <path d="M5 10l3.5 3.5L15 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <strong>{{ doc.reference + '.pdf' }}</strong>
+                </span>
+                <a href="{{ basePath }}/remove-nmd?index={{ loop.index0 }}" class="govuk-link govuk-link--no-visited-state">Remove</a>
+              </li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-button--secondary" name="upload-another" value="true">
+          Upload and add another
+        </button>
+        <button class="govuk-button" name="action" value="continue">
+          Save and continue
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "app/part1/v1/views/layouts/main.html" %}
+
+{% set pageName="Notification submitted" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">Import notification submitted</h1>
+      <div class="govuk-panel__body">
+        Your reference number<br>
+        <strong>IMP-2025-GY-0419</strong>
+      </div>
+    </div>
+
+    <p class="govuk-body">We have received your seafood import notification.</p>
+    <p class="govuk-body">Keep a record of your reference number. You'll need it if you contact the Port Health Authority about this import notification.</p>
+
+    <h2 class="govuk-heading-m">What happens next</h2>
+    <p class="govuk-body">We have sent your notification to the Port Health Authority at Grimsby.</p>
+    <p class="govuk-body">The Port Health Authority will review your notification and supporting documents. They may contact you if they need more information.</p>
+    <p class="govuk-body">You should make sure the driver or vessel master has a copy of this reference number when arriving at the border.</p>
+    <p class="govuk-body">A confirmation email has been sent to <a href="mailto:importer@nordicsea.co.uk" class="govuk-link">importer@nordicsea.co.uk</a>.</p>
+
+    <h2 class="govuk-heading-m">Notification details</h2>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reference number</dt>
+        <dd class="govuk-summary-list__value">IMP-2025-GY-0419</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Importer</dt>
+        <dd class="govuk-summary-list__value">Nordic Sea Imports Ltd</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Species</dt>
+        <dd class="govuk-summary-list__value">Atlantic Cod (Gadus morhua)</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Port of entry</dt>
+        <dd class="govuk-summary-list__value">Grimsby (Associated British Ports)</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Estimated arrival</dt>
+        <dd class="govuk-summary-list__value">28 July 2025 at 08:30</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Net weight</dt>
+        <dd class="govuk-summary-list__value">2450 kg</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Origin</dt>
+        <dd class="govuk-summary-list__value">Iceland</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Catch Certificate</dt>
+        <dd class="govuk-summary-list__value">CC-IS-2025-0847</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Processing Statement</dt>
+        <dd class="govuk-summary-list__value">PS-IS-2025-00847</dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m">Keep a record</h2>
+    <p class="govuk-body"><a href="javascript:window.print()" class="govuk-link">Save</a> or <a href="javascript:window.print()" class="govuk-link">print this page</a> for your records.</p>
+
+    <h2 class="govuk-heading-m">What you can do next</h2>
+    <p class="govuk-body">
+      <a href="{{ basePath }}/upload-guidance" class="govuk-button">Submit another import notification</a>
+    </p>
+  </div>
+</div>
+
+{% endblock %}

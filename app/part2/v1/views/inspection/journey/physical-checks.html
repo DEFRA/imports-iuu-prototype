@@ -1,0 +1,50 @@
+{% extends "app/part2/v1/views/layouts/main.html" %}
+{% set pageName = "Record the physical checks" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <form method="post">
+      <h1 class="govuk-heading-l">Record the physical checks</h1>
+      <p class="govuk-body">Consider species, product presentation, quantity, labelling, packaging and condition.</p>
+
+      <div class="govuk-form-group{% if errorMap['physical-check-result'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">What was the result of the physical checks?</legend>
+          {% if errorMap['physical-check-result'] %}<p class="govuk-error-message">{{ errorMap['physical-check-result'] }}</p>{% endif %}
+          <div class="govuk-radios">
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="physical-check-result" name="physical-check-result" type="radio" value="satisfactory" {{ checked("physical-check-result", "satisfactory") }}><label class="govuk-label govuk-radios__label" for="physical-check-result">Satisfactory</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="physical-check-result-2" name="physical-check-result" type="radio" value="issues-found" {{ checked("physical-check-result", "issues-found") }}><label class="govuk-label govuk-radios__label" for="physical-check-result-2">Issues found</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="physical-check-result-3" name="physical-check-result" type="radio" value="not-completed" {{ checked("physical-check-result", "not-completed") }}><label class="govuk-label govuk-radios__label" for="physical-check-result-3">Physical checks were not completed</label></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="physical-temperature">Product temperature (optional)</label>
+        <input class="govuk-input govuk-input--width-10" id="physical-temperature" name="physical-temperature" value="{{ data['physical-temperature'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="physical-samples">Packages or samples inspected (optional)</label>
+        <input class="govuk-input govuk-input--width-10" id="physical-samples" name="physical-samples" value="{{ data['physical-samples'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="physical-evidence-file">Upload photographs or evidence (prototype)</label>
+        <input class="govuk-file-upload" id="physical-evidence-file" name="physical-evidence-file" type="file">
+      </div>
+      <div class="govuk-form-group{% if errorMap['physical-not-completed-reason'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="physical-not-completed-reason">If checks were not completed, explain why</label>
+        {% if errorMap['physical-not-completed-reason'] %}<p class="govuk-error-message">{{ errorMap['physical-not-completed-reason'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="physical-not-completed-reason" name="physical-not-completed-reason">{{ data['physical-not-completed-reason'] }}</textarea>
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="physical-check-notes">Physical check notes (optional)</label>
+        <textarea class="govuk-textarea" id="physical-check-notes" name="physical-check-notes">{{ data['physical-check-notes'] }}</textarea>
+      </div>
+      <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

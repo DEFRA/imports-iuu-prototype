@@ -1,0 +1,46 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Processing Statement required?" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Supporting documents</span>
+    <h1 class="govuk-heading-l">Do you need to provide a Processing Statement?</h1>
+
+    <p class="govuk-body">A Processing Statement is required if any fish products in this consignment have been processed in a country other than the flag state.</p>
+
+    <form action="{{ basePath }}/processing-statement-required" method="post">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-visually-hidden">
+            Do you need to provide a Processing Statement?
+          </legend>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has-processing-statement-yes" name="has-processing-statement" type="radio" value="yes"
+                {% if data['has-processing-statement'] == 'yes' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has-processing-statement-yes">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has-processing-statement-no" name="has-processing-statement" type="radio" value="no"
+                {% if data['has-processing-statement'] == 'no' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has-processing-statement-no">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

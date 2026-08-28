@@ -2,60 +2,86 @@
 
 {% set pageName="DEFRA fish imports prototype selector" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-xl">DEFRA fish imports prototype selector</h1>
-    <p class="govuk-body-l">Choose which prototype journey you want to test.</p>
+    <p class="govuk-body-l">Choose which prototype journey and version you want to test.</p>
     <div class="govuk-inset-text">All scenarios and records in this prototype are fictional and for user research only.</div>
   </div>
 </div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Importer journeys</h2>
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Part 1 Importer journeys</h2>
     <p class="govuk-body govuk-!-margin-bottom-6">Use these journeys to test importer or agent submission flows.</p>
   </div>
-</div>
 
-<div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <section class="prototype-selector-card">
-      <p class="govuk-body-s govuk-!-margin-bottom-3"><strong class="govuk-tag govuk-tag--blue">Primary flow</strong></p>
-      <h3 class="govuk-heading-m">Multiple document extraction</h3>
-      <p class="govuk-body">Upload multiple documents, review extracted data and submit the notification.</p>
-      {{ govukButton({
-        text: "Start Scenario A journey",
-        href: "/upload-guidance?variant=a",
-        isStartButton: true,
-        classes: "govuk-!-margin-bottom-0"
-      }) }}
-      {{ govukDetails({
-        classes: "govuk-!-margin-top-3 govuk-!-margin-bottom-0",
-        summaryText: "Start a different extraction scenario",
-        html: '
-        <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
-          <li><a class="govuk-link" href="/upload-guidance?variant=b">Scenario B — extraction failed</a></li>
-        </ul>
-        '
-      }) }}
+      <strong class="govuk-tag govuk-tag--blue govuk-!-margin-bottom-3">Primary flow</strong>
+      <h3 class="govuk-heading-m">Document extraction</h3>
+      <p class="govuk-body">Upload documents, review extracted data and submit the notification.</p>
+
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Scenario A</h4>
+      <p class="govuk-body-s">Multiple document extraction.</p>
+      <div class="prototype-selector-actions">
+        {{ govukButton({
+          text: "Start V1",
+          href: "/part1/v1/upload-guidance?variant=a",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+        {{ govukButton({
+          text: "Start V2",
+          href: "/part1/v2/upload-guidance?variant=a",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      <h4 class="govuk-heading-s govuk-!-margin-bottom-2">Scenario B</h4>
+      <p class="govuk-body-s">Document extraction failed.</p>
+      <div class="prototype-selector-actions">
+        {{ govukButton({
+          text: "Start V1",
+          href: "/part1/v1/upload-guidance?variant=b",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+        {{ govukButton({
+          text: "Start V2",
+          href: "/part1/v2/upload-guidance?variant=b",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+      </div>
     </section>
   </div>
 
   <div class="govuk-grid-column-one-half">
     <section class="prototype-selector-card">
-      <p class="govuk-body-s govuk-!-margin-bottom-3"><strong class="govuk-tag govuk-tag--grey">Alternative flow</strong></p>
+      <strong class="govuk-tag govuk-tag--grey govuk-!-margin-bottom-3">Alternative flow</strong>
       <h3 class="govuk-heading-m">Manual data entry</h3>
-      <p class="govuk-body">End-to-end import notification flow without document extraction.</p>
-      {{ govukButton({
-        text: "Start manual entry journey",
-        href: "/importer-details",
-        isStartButton: true,
-        classes: "govuk-!-margin-bottom-0"
-      }) }}
+      <p class="govuk-body">Complete the end-to-end import notification flow without document extraction.</p>
+      <div class="prototype-selector-actions">
+        {{ govukButton({
+          text: "Start V1",
+          href: "/part1/v1/importer-details",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+        {{ govukButton({
+          text: "Start V2",
+          href: "/part1/v2/importer-details",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+      </div>
     </section>
   </div>
 </div>
@@ -64,26 +90,29 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Inspection journeys</h2>
+    <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Part 2 Inspection journeys</h2>
     <p class="govuk-body govuk-!-margin-bottom-6">Use these journeys to test Port Health Authority inspection workflows.</p>
   </div>
-</div>
 
-<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <section class="prototype-selector-card">
-      <p class="govuk-body-s govuk-!-margin-bottom-3"><strong class="govuk-tag govuk-tag--turquoise">PHA officer flow</strong></p>
+      <strong class="govuk-tag govuk-tag--turquoise govuk-!-margin-bottom-3">PHA officer flow</strong>
       <h3 class="govuk-heading-m">Inspection recording journey</h3>
       <p class="govuk-body">Review queue cases, complete checks and record outcomes.</p>
-      <p class="govuk-body">
-        <a href="/inspection-assumptions" class="govuk-link">View inspection prototype assumptions</a>
-      </p>
-      {{ govukButton({
-        text: "Start inspection journey",
-        href: "/inspections",
-        isStartButton: true,
-        classes: "govuk-!-margin-bottom-0"
-      }) }}
+      <div class="prototype-selector-actions">
+        {{ govukButton({
+          text: "Start V1",
+          href: "/part2/v1/inspections",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+        {{ govukButton({
+          text: "Start V2",
+          href: "/part2/v2/inspections",
+          isStartButton: true,
+          classes: "govuk-!-margin-bottom-0"
+        }) }}
+      </div>
     </section>
   </div>
 </div>

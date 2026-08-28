@@ -1,0 +1,13 @@
+{% extends "app/part2/v1/views/layouts/main.html" %}
+{% from "app/part2/v1/views/inspection/components/document-detail-view.njk" import documentDetailView %}
+
+{% set pageName = document.typeLabel %}
+{% set showBackLink = true %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    {{ documentDetailView(document, documentLinksByReference) }}
+  </div>
+</div>
+{% endblock %}

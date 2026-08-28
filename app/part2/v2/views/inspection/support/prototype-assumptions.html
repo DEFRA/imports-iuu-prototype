@@ -1,0 +1,28 @@
+{% extends "app/part2/v2/views/layouts/main.html" %}
+{% set pageName = "Prototype assumptions" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Prototype assumptions</h1>
+    <p class="govuk-body">These are research questions for this Alpha prototype, not confirmed requirements.</p>
+    <ol class="govuk-list govuk-list--number">
+      <li>Who decides that an inspection is required?</li>
+      <li>Which organisation owns the inspection task?</li>
+      <li>Can documentary, identity and physical checks be performed by different officers or authorities?</li>
+      <li>Does an officer need to see original documents beside extracted data?</li>
+      <li>What evidence must be recorded for each type of check?</li>
+      <li>Can an officer release a consignment directly?</li>
+      <li>Who can place or remove a hold?</li>
+      <li>Who has authority to refuse a consignment?</li>
+      <li>When must MMO or another competent authority be consulted?</li>
+      <li>What outcomes and information must be communicated to TRACES NT?</li>
+      <li>What is the MMO's role at the point of inspection, and when must they be consulted?</li>
+      <li>What information do port systems need?</li>
+      <li>How are corrections and disagreements between source systems handled?</li>
+      <li>Is a digital inspection record sufficient, or is a printable record required?</li>
+      <li>What audit information must be retained?</li>
+    </ol>
+    <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/inspections">Return to inspections</a></p>
+  </div>
+</div>
+{% endblock %}

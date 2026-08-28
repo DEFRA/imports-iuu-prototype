@@ -1,0 +1,55 @@
+{% from "app/part2/v2/views/inspection/components/document-reference-list.njk" import documentLink %}
+
+{% macro documentDetailView(document, documentLinksByReference) %}
+  <span class="govuk-caption-l">{{ document.typeLabel }}</span>
+  <h1 class="govuk-heading-xl">{{ document.reference }}</h1>
+  <div class="govuk-inset-text">This evidence document is fictional and for user research only.</div>
+
+  {% if document.originalFileUrl %}
+    <p class="govuk-body"><a class="govuk-button govuk-button--secondary" href="{{ document.originalFileUrl }}">View original file</a></p>
+  {% endif %}
+
+  <dl class="govuk-summary-list govuk-!-margin-bottom-7">
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document type</dt><dd class="govuk-summary-list__value">{{ document.typeLabel }}</dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document reference</dt><dd class="govuk-summary-list__value">{{ document.reference }}</dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Consignment reference</dt><dd class="govuk-summary-list__value">{{ document.consignmentReference }}</dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Validation status</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag {{ document.validationStatusClass }}">{{ document.validationStatus }}</strong></dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Issued by</dt><dd class="govuk-summary-list__value">{{ document.issuer }}</dd></div>
+  </dl>
+
+  {% if document.species.length %}
+    <h2 class="govuk-heading-l">Species</h2>
+    <div class="govuk-table__container" tabindex="0">
+      <table class="govuk-table">
+        <thead class="govuk-table__head"><tr class="govuk-table__row"><th scope="col" class="govuk-table__header">Species</th><th scope="col" class="govuk-table__header">Scientific name</th><th scope="col" class="govuk-table__header">Product code</th><th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight</th></tr></thead>
+        <tbody class="govuk-table__body">
+          {% for item in document.species %}
+            <tr class="govuk-table__row"><th scope="row" class="govuk-table__header">{{ item.species }}</th><td class="govuk-table__cell"><em>{{ item.scientificName }}</em></td><td class="govuk-table__cell">{{ item.productCode }}</td><td class="govuk-table__cell govuk-table__cell--numeric">{{ item.weight }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+  {% for section in document.sections %}
+    <div class="govuk-summary-card govuk-!-margin-bottom-6">
+      <div class="govuk-summary-card__title-wrapper"><h2 class="govuk-summary-card__title">{{ section.title }}</h2></div>
+      <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+          {% for field in section.fields %}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">{{ field.label }}</dt>
+              <dd class="govuk-summary-list__value">
+                {% if field.references %}
+                  {% for reference in field.references %}{{ documentLink(documentLinksByReference[reference]) }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+                {% else %}{{ field.value }}{% endif %}
+              </dd>
+            </div>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+  {% endfor %}
+
+  <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/inspection/{{ document.consignmentReference }}">Return to consignment overview</a></p>
+{% endmacro %}
