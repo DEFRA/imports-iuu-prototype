@@ -69,4 +69,4 @@ router.use((req, res, next) => {
 
 router.get('/', (req, res) => res.redirect('/inspections'))
 
-registerInspectionRoutes(router)
+registerInspectionRoutes(router, basePath)

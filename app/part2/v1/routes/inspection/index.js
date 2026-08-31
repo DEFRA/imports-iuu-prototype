@@ -6,7 +6,7 @@ const { buildInspectionDashboardViewModel } = require('./services/inspection-das
 const { mockConsignmentSummariesApi } = require('./mock-api/consignment-summaries-api')
 const inspectionOverviewFallbackReference = 'GB-IUU-2026-11003'
 const path = require('path')
-const documentNavigationService = require('./document-navigation-service')
+const createDocumentNavigationService = require('./document-navigation-service')
 const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'sample-documents')
 
 const inspectionViewPathLookup = {
@@ -181,7 +181,9 @@ const buildOverviewEvidenceSections = (inspectionNotification, documentReference
   })
 }
 
-const registerInspectionRoutes = (router) => {
+const registerInspectionRoutes = (router, basePath) => {
+  const documentNavigationService = createDocumentNavigationService(basePath)
+
   router.get('/prototype-selector', (req, res) => {
     res.redirect('/')
   })
@@ -266,7 +268,7 @@ const registerInspectionRoutes = (router) => {
       document: {
         ...document,
         originalFileUrl: document.sourceFile
-          ? `/documents/file/${encodeURIComponent(document.id)}`
+          ? `${basePath}/documents/file/${encodeURIComponent(document.id)}`
           : undefined
       },
       documentLinksByReference: documentNavigationService.getDocumentLinksByReference()

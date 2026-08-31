@@ -8,9 +8,9 @@ const supportedDocumentTypes = new Set([
   'additional'
 ])
 
-const documentNavigationService = {
+const createDocumentNavigationService = (basePath) => ({
   getDocumentUrl (document) {
-    return `/documents/${document.type}/${encodeURIComponent(document.id)}`
+    return `${basePath}/documents/${document.type}/${encodeURIComponent(document.id)}`
   },
 
   getDocumentLink (id) {
@@ -27,7 +27,7 @@ const documentNavigationService = {
     if (!additionalDocument) return undefined
     return {
       text: additionalDocument.id,
-      href: `/documents/additional/${encodeURIComponent(additionalDocument.id)}`,
+      href: `${basePath}/documents/additional/${encodeURIComponent(additionalDocument.id)}`,
       visuallyHiddenText: `View ${additionalDocument.category.toLowerCase()}`,
       issuer: additionalDocument.name
     }
@@ -59,12 +59,12 @@ const documentNavigationService = {
   getAdditionalDocuments () {
     return additionalDocuments.map((document) => ({
       ...document,
-      href: `/documents/additional/${encodeURIComponent(document.id)}`,
+      href: `${basePath}/documents/additional/${encodeURIComponent(document.id)}`,
       previewUrl: document.previewType === 'pdf'
-        ? `/documents/additional/file/${encodeURIComponent(document.id)}`
+        ? `${basePath}/documents/additional/file/${encodeURIComponent(document.id)}`
         : document.previewUrl,
       downloadUrl: document.previewType === 'pdf'
-        ? `/documents/additional/file/${encodeURIComponent(document.id)}?download=1`
+        ? `${basePath}/documents/additional/file/${encodeURIComponent(document.id)}?download=1`
         : document.previewUrl
     }))
   },
@@ -94,6 +94,6 @@ const documentNavigationService = {
         .map((document) => this.getDocumentLink(document.id))
     })
   }
-}
+})
 
-module.exports = documentNavigationService
+module.exports = createDocumentNavigationService
