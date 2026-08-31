@@ -334,6 +334,9 @@ const registerInspectionRoutes = (router, basePath) => {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['documentary-check-outcome'] = req.body['documentary-check-outcome'] || ''
+    data['documentary-intervention'] = req.body['documentary-intervention'] || ''
+    data['documentary-check-comments'] = req.body['documentary-check-comments'] || ''
     const outcome = data['documentary-check-outcome']
     const intervention = data['documentary-intervention']
     const errors = []
