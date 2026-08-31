@@ -1,7 +1,7 @@
 {% from "app/part2/v1/views/inspection/components/pdf-preview-component.njk" import pdfPreviewComponent %}
 {% from "app/part2/v1/views/inspection/components/document-metadata-panel.njk" import documentMetadataPanel %}
 
-{% macro additionalDocumentViewer(documents, selectedDocument, consignmentReference) %}
+{% macro additionalDocumentViewer(documents, selectedDocument, consignmentReference, basePath) %}
   <span class="govuk-caption-l">Consignment {{ consignmentReference }}</span>
   <h1 class="govuk-heading-xl">Additional documents</h1>
   <div class="govuk-inset-text">Additional documents are not extracted. Review each original file manually.</div>

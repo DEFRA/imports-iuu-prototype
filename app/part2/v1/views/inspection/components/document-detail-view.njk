@@ -1,6 +1,6 @@
 {% from "app/part2/v1/views/inspection/components/document-reference-list.njk" import documentLink %}
 
-{% macro documentDetailView(document, documentLinksByReference) %}
+{% macro documentDetailView(document, documentLinksByReference, basePath) %}
   <span class="govuk-caption-l">{{ document.typeLabel }}</span>
   <h1 class="govuk-heading-xl">{{ document.reference }}</h1>
   <div class="govuk-inset-text">This evidence document is fictional and for user research only.</div>
