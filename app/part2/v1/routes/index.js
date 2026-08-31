@@ -9,6 +9,16 @@ govukPrototypeKit.requests.serveDirectory(basePath + '/assets', path.join(__dirn
 
 router.use((req, res, next) => {
   const sessionKey = 'part2-v1'
+  const sharedData = req.session.data && typeof req.session.data === 'object' ? req.session.data : {}
+  if (!sharedData['__versioned-session-initialized']) {
+    for (const key of Object.keys(req.session)) {
+      if (/^part\d+-v\d+$/.test(key)) {
+        delete req.session[key]
+      }
+    }
+  }
+  sharedData['__versioned-session-initialized'] = true
+
   if (!req.session[sessionKey]) {
     req.session[sessionKey] = {}
   }
@@ -17,6 +27,18 @@ router.use((req, res, next) => {
     get: () => req.session[sessionKey],
     set: (value) => { req.session[sessionKey] = value }
   })
+  res.locals.data = req.session[sessionKey]
+
+  const end = res.end
+  res.end = function (...args) {
+    Object.defineProperty(req.session, 'data', {
+      configurable: true,
+      enumerable: true,
+      writable: true,
+      value: sharedData
+    })
+    return end.apply(this, args)
+  }
 
   res.locals.basePath = basePath
   res.locals.showBackLink = true
