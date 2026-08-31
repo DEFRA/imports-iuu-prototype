@@ -1279,7 +1279,6 @@ router.get('/', (req, res, next) => {
 })
 
 const part1StaticViews = {
-  '/importer-details': 'part1/manual/importer-details',
   '/transport-details': 'part1/manual/transport-details',
   '/species-details': 'part1/manual/species-details',
   '/species-list': 'part1/manual/species-list',
@@ -1305,7 +1304,31 @@ for (const [routePath, viewPath] of Object.entries(part1StaticViews)) {
 // -------------------------------------------------------
 // Importer details
 // -------------------------------------------------------
+router.get('/importer-details', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = ''
+  data['destination-port'] = ''
+  data['arrival-date-day'] = ''
+  data['arrival-date-month'] = ''
+  data['arrival-date-year'] = ''
+  res.render('part1/manual/importer-details')
+})
+
 router.post('/importer-details', (req, res) => {
+  const data = req.session.data
+  const importerFields = [
+    'importer-name',
+    'importer-eori',
+    'importer-address-line-1',
+    'importer-address-line-2',
+    'importer-town',
+    'importer-postcode',
+    'importer-email',
+    'importer-phone'
+  ]
+  for (const field of importerFields) {
+    data[field] = req.body[field] || ''
+  }
   res.redirect('/transport-details')
 })
 
@@ -1313,6 +1336,19 @@ router.post('/importer-details', (req, res) => {
 // Transport details
 // -------------------------------------------------------
 router.post('/transport-details', (req, res) => {
+  const data = req.session.data
+  const transportFields = [
+    'transport-type',
+    'vessel-name',
+    'vessel-flag',
+    'bill-of-lading',
+    'flight-number',
+    'truck-registration',
+    'container-number'
+  ]
+  for (const field of transportFields) {
+    data[field] = req.body[field] || ''
+  }
   res.redirect('/arrival-details')
 })
 
@@ -1409,21 +1445,22 @@ router.get('/remove-commodity', (req, res) => {
 // -------------------------------------------------------
 router.post('/species-details', (req, res) => {
   const data = req.session.data
+  const body = req.body || {}
 
   // Build species entry
-  let speciesName = data['species-name']
-  if (speciesName === 'other' && data['species-name-other']) {
-    speciesName = data['species-name-other']
+  let speciesName = body['species-name']
+  if (speciesName === 'other' && body['species-name-other']) {
+    speciesName = body['species-name-other']
   }
 
   const newSpecies = {
     name: speciesName,
-    productForm: data['product-form'],
-    commodityCode: data['commodity-code'],
-    netWeight: data['net-weight'],
-    grossWeight: data['gross-weight'],
-    numberOfPackages: data['number-of-packages'],
-    packagingType: data['packaging-type']
+    productForm: body['product-form'],
+    commodityCode: body['commodity-code'],
+    netWeight: body['net-weight'],
+    grossWeight: body['gross-weight'],
+    numberOfPackages: body['number-of-packages'],
+    packagingType: body['packaging-type']
   }
 
   // Initialise list if needed
@@ -1450,7 +1487,7 @@ router.post('/species-details', (req, res) => {
 // Species list — add another or continue
 // -------------------------------------------------------
 router.post('/species-list', (req, res) => {
-  const addAnother = req.session.data['add-another-species']
+  const addAnother = req.body['add-another-species']
   if (addAnother === 'yes') {
     res.redirect('/species-details')
   } else {
