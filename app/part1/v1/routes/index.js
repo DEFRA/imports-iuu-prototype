@@ -1326,8 +1326,24 @@ for (const [routePath, viewPath] of Object.entries(part1StaticViews)) {
 // -------------------------------------------------------
 // Importer details
 // -------------------------------------------------------
+const importerFields = [
+  'importer-name',
+  'importer-eori',
+  'importer-address-line-1',
+  'importer-address-line-2',
+  'importer-town',
+  'importer-postcode',
+  'importer-email',
+  'importer-phone'
+]
+
 router.get('/importer-details', (req, res) => {
   const data = req.session.data
+  if (data['extraction-variant']) {
+    for (const field of importerFields) {
+      data[field] = ''
+    }
+  }
   data['extraction-variant'] = ''
   data['destination-port'] = ''
   data['arrival-date-day'] = ''
@@ -1338,16 +1354,6 @@ router.get('/importer-details', (req, res) => {
 
 router.post('/importer-details', (req, res) => {
   const data = req.session.data
-  const importerFields = [
-    'importer-name',
-    'importer-eori',
-    'importer-address-line-1',
-    'importer-address-line-2',
-    'importer-town',
-    'importer-postcode',
-    'importer-email',
-    'importer-phone'
-  ]
   for (const field of importerFields) {
     data[field] = req.body[field] || ''
   }
