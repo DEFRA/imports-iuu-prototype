@@ -7,7 +7,7 @@ const { mockConsignmentSummariesApi } = require('./mock-api/consignment-summarie
 const inspectionOverviewFallbackReference = 'GB-IUU-2026-11003'
 const path = require('path')
 const createDocumentNavigationService = require('./document-navigation-service')
-const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', '..', '..', 'sample-documents')
+const sampleDocumentsPath = path.join(__dirname, '..', '..', 'data', 'sample-documents')
 
 const inspectionViewPathLookup = {
   inspections: 'dashboard/inspections',

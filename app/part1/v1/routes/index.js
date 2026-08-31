@@ -73,7 +73,7 @@ const getMissingValues = (requiredValues, actualValues) => {
   return requiredValues.filter((value) => !actualSet.has(value))
 }
 
-const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', '..', 'sample-documents')
+const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
 const supportedExtractionVariants = new Set(['a', 'b'])
 const reviewExtractionReturnPaths = new Set(['/review-extraction-a'])
