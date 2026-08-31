@@ -1673,7 +1673,12 @@ router.get('/upload-guidance', (req, res) => {
     return res.redirect('/')
   }
 
-  req.session.data['extraction-variant'] = variant
+  const data = req.session.data
+  data['extraction-variant'] = variant
+  data['destination-port'] = ''
+  data['arrival-date-day'] = ''
+  data['arrival-date-month'] = ''
+  data['arrival-date-year'] = ''
   res.render('part1/extraction/upload-guidance')
 })
 
