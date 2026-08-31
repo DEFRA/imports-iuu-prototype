@@ -1822,7 +1822,7 @@ router.get('/review-extraction-a', (req, res) => {
   const buildReviewExtractionAUrl = (summaryPage) => {
     const query = []
     if (summaryPage > 1) query.push('tablePage=' + summaryPage)
-    return '/review-extraction-a' + (query.length ? '?' + query.join('&') : '')
+    return basePath + '/review-extraction-a' + (query.length ? '?' + query.join('&') : '')
   }
 
   const tablePaginationItems = []
