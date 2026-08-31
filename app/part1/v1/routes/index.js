@@ -1679,6 +1679,10 @@ router.get('/upload-guidance', (req, res) => {
   data['arrival-date-day'] = ''
   data['arrival-date-month'] = ''
   data['arrival-date-year'] = ''
+  data['commodity-details-list'] = []
+  data['commodity-entry-code'] = ''
+  data['commodity-entry-species'] = ''
+  data['commodity-entry-weight'] = ''
   res.render('part1/extraction/upload-guidance')
 })
 
