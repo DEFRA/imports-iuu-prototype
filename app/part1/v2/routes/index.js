@@ -1327,6 +1327,10 @@ router.get('/arrival-details', (req, res) => {
 
 router.post('/arrival-details', (req, res) => {
   const data = req.session.data
+  data['destination-port'] = req.body['destination-port'] || ''
+  data['arrival-date-day'] = req.body['arrival-date-day'] || ''
+  data['arrival-date-month'] = req.body['arrival-date-month'] || ''
+  data['arrival-date-year'] = req.body['arrival-date-year'] || ''
   const returnTo = normalizeReviewExtractionReturnPath(data['arrival-details-return-to'])
 
   if (returnTo) {
