@@ -1874,7 +1874,7 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const documentIndex = documents.findIndex((item) => item.id === document.id) + 1
   const requestedTablePage = parseInt(req.query.tablePage, 10)
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
-  const reviewPageUrl = '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
+  const reviewPageUrl = basePath + '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
   const documentTemplate = getScenarioADocumentTemplate(document.documentType)
 
