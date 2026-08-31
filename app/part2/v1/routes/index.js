@@ -42,7 +42,7 @@ router.use((req, res, next) => {
 
   res.locals.basePath = basePath
   res.locals.showBackLink = true
-  res.locals.backLinkHref = req.path === '/' || req.path === '/inspections'
+  res.locals.backLinkHref = req.path === '/'
     ? '/'
     : undefined
 
