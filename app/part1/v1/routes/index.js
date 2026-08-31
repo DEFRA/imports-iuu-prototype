@@ -1683,6 +1683,8 @@ router.get('/upload-guidance', (req, res) => {
   data['commodity-entry-code'] = ''
   data['commodity-entry-species'] = ''
   data['commodity-entry-weight'] = ''
+  data['uploaded-documents'] = []
+  data['catch-cert-uploaded-files'] = []
   res.render('part1/extraction/upload-guidance')
 })
 
