@@ -75,6 +75,12 @@ const getMissingValues = (requiredValues, actualValues) => {
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
+const importerDashboardConsignments = require('../data/importer-dashboard-consignments')
+const {
+  filterAndSortConsignments,
+  getDashboardFilters,
+  getFilterOptions
+} = require('./importer-dashboard-service')
 const supportedExtractionVariants = new Set(['a', 'b'])
 const reviewExtractionReturnPaths = new Set(['/review-extraction-a'])
 
@@ -1288,16 +1294,75 @@ const fesDataDictionaryFields = {
 }
 
 router.use((req, res, next) => {
-  const noBackLink = ['/', '/confirmation', '/upload-confirmation']
+  const noBackLink = ['/', '/dashboard', '/confirmation', '/upload-confirmation']
   res.locals.showBackLink = !noBackLink.includes(req.path)
   res.locals.fesDataDictionaryFields = fesDataDictionaryFields
   next()
 })
 
 // Clear all entered data when returning to the start page
-router.get('/', (req, res, next) => {
-  req.session.data = {}
-  res.redirect('/upload-guidance?variant=a')
+router.get('/', (req, res) => {
+  res.redirect('/dashboard?variant=a')
+})
+
+const getDashboardVariant = (value) => {
+  const variant = String(value || 'a').toLowerCase()
+  return supportedExtractionVariants.has(variant) ? variant : ''
+}
+
+router.get('/dashboard', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant)
+  if (!variant) {
+    return res.redirect('/dashboard?variant=a')
+  }
+
+  const activeTab = ['submitted', 'historical'].includes(req.query.tab) ? req.query.tab : 'drafts'
+  const filters = getDashboardFilters(req.query)
+  const draftConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'drafts')
+  const submittedConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'submitted')
+  const historicalConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'historical')
+
+  req.session.data = structuredClone(sessionDataDefaults)
+  res.locals.data = req.session.data
+  res.render('part1/entry/dashboard', {
+    variant,
+    activeTab,
+    filters,
+    filterOptions: getFilterOptions(importerDashboardConsignments),
+    draftConsignments,
+    submittedConsignments,
+    historicalConsignments,
+    draftCount: importerDashboardConsignments.filter((consignment) => consignment.status === 'draft').length,
+    submittedCount: importerDashboardConsignments.filter((consignment) => ['submitted', 'under-review', 'action-required'].includes(consignment.status)).length,
+    acceptedCount: importerDashboardConsignments.filter((consignment) => consignment.status === 'accepted').length,
+    actionRequiredCount: importerDashboardConsignments.filter((consignment) => consignment.status === 'action-required').length
+  })
+})
+
+router.get('/dashboard/notifications/:reference', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const consignment = importerDashboardConsignments.find((item) => item.reference === req.params.reference)
+  if (!consignment) {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  res.render('part1/dashboard/notification', { variant, consignment })
+})
+
+router.get('/dashboard/notifications/:reference/documents/:documentId', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const consignment = importerDashboardConsignments.find((item) => item.reference === req.params.reference)
+  const document = consignment && consignment.documents.find((item) => item.id === req.params.documentId)
+  if (!consignment || !document) {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  res.render('part1/dashboard/document', { variant, consignment, document })
+})
+
+router.get('/dashboard/assumptions', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  res.render('part1/dashboard/assumptions', { variant })
 })
 
 const part1StaticViews = {

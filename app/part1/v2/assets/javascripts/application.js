@@ -4,6 +4,14 @@
 //
 
 window.GOVUKPrototypeKit.documentReady(() => {
+  const sortControls = Array.from(document.querySelectorAll('[data-importer-sort-control]'))
+  for (const control of sortControls) {
+    control.addEventListener('change', () => {
+      const form = control.closest('form')
+      if (form) form.requestSubmit()
+    })
+  }
+
   const buildGeneratedDocumentReference = (prefix, count) => {
     const year = new Date().getFullYear()
     const paddedCount = String(count).padStart(4, '0')
