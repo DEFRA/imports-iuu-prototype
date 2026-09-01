@@ -1,0 +1,53 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Change extracted details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Review extracted information</span>
+    <h1 class="govuk-heading-l">Change extracted details</h1>
+
+    <form action="{{ basePath }}/change-extracted-details" method="post">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-catch-certificate-number">Catch certificate number</label>
+        <input class="govuk-input" id="review-catch-certificate-number" name="review-catch-certificate-number" type="text" value="{{ data['review-catch-certificate-number'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-species">Species</label>
+        <input class="govuk-input" id="review-species" name="review-species" type="text" value="{{ data['review-species'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-catch-area">Catch area</label>
+        <input class="govuk-input" id="review-catch-area" name="review-catch-area" type="text" value="{{ data['review-catch-area'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-vessel-id-flag-state">Vessel ID and flag State</label>
+        <input class="govuk-input" id="review-vessel-id-flag-state" name="review-vessel-id-flag-state" type="text" value="{{ data['review-vessel-id-flag-state'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-weight-quantity">Weight/quantity</label>
+        <input class="govuk-input" id="review-weight-quantity" name="review-weight-quantity" type="text" value="{{ data['review-weight-quantity'] }}">
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-importer-exporter-agent-details">Importer/exporter/agent details</label>
+        <textarea class="govuk-textarea" id="review-importer-exporter-agent-details" name="review-importer-exporter-agent-details" rows="3">{{ data['review-importer-exporter-agent-details'] }}</textarea>
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-processing-storage-reference-numbers">Processing/storage statement reference numbers</label>
+        <textarea class="govuk-textarea" id="review-processing-storage-reference-numbers" name="review-processing-storage-reference-numbers" rows="3">{{ data['review-processing-storage-reference-numbers'] }}</textarea>
+      </div>
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="review-transport-details">Transport details</label>
+        <textarea class="govuk-textarea" id="review-transport-details" name="review-transport-details" rows="3">{{ data['review-transport-details'] }}</textarea>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

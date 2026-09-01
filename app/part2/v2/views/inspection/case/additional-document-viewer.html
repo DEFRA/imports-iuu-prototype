@@ -1,0 +1,9 @@
+{% extends "app/part2/v2/views/layouts/main.html" %}
+{% from "app/part2/v2/views/inspection/components/additional-document-viewer.njk" import additionalDocumentViewer %}
+
+{% set pageName = "Additional documents" %}
+{% set showBackLink = true %}
+
+{% block content %}
+  {{ additionalDocumentViewer(additionalDocuments, selectedDocument, inspectionReference, basePath) }}
+{% endblock %}

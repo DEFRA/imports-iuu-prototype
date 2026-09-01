@@ -1,0 +1,45 @@
+{% extends "app/part2/v1/views/layouts/main.html" %}
+{% set pageName = "Check the identity of the consignment" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <form method="post">
+      <h1 class="govuk-heading-l">Check the identity of the consignment</h1>
+      <dl class="govuk-summary-list govuk-!-margin-bottom-6">
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Expected container number</dt><dd class="govuk-summary-list__value">MSCU 7391842</dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Expected seal number</dt><dd class="govuk-summary-list__value">SN448901</dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Expected product</dt><dd class="govuk-summary-list__value">Frozen yellowfin tuna</dd></div>
+        <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Expected packages</dt><dd class="govuk-summary-list__value">1,240 cartons</dd></div>
+      </dl>
+
+      <div class="govuk-form-group{% if errorMap['identity-check-result'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Does the consignment match the declared identity?</legend>
+          {% if errorMap['identity-check-result'] %}<p class="govuk-error-message">{{ errorMap['identity-check-result'] }}</p>{% endif %}
+          <div class="govuk-radios">
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="identity-check-result" name="identity-check-result" type="radio" value="matches" {{ checked("identity-check-result", "matches") }}><label class="govuk-label govuk-radios__label" for="identity-check-result">Yes, it matches</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="identity-check-result-2" name="identity-check-result" type="radio" value="partly-matches" {{ checked("identity-check-result", "partly-matches") }}><label class="govuk-label govuk-radios__label" for="identity-check-result-2">It partly matches</label></div>
+            <div class="govuk-radios__item"><input class="govuk-radios__input" id="identity-check-result-3" name="identity-check-result" type="radio" value="no-match" {{ checked("identity-check-result", "no-match") }}><label class="govuk-label govuk-radios__label" for="identity-check-result-3">No, it does not match</label></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group{% if errorMap['seal-number-found'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="seal-number-found">Seal number found</label>
+        {% if errorMap['seal-number-found'] %}<p class="govuk-error-message">{{ errorMap['seal-number-found'] }}</p>{% endif %}
+        <input class="govuk-input govuk-input--width-20" id="seal-number-found" name="seal-number-found" value="{{ data['seal-number-found'] }}">
+      </div>
+
+      <div class="govuk-form-group{% if errorMap['identity-discrepancy-details'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="identity-discrepancy-details">Identity discrepancy details (if applicable)</label>
+        {% if errorMap['identity-discrepancy-details'] %}<p class="govuk-error-message">{{ errorMap['identity-discrepancy-details'] }}</p>{% endif %}
+        <textarea class="govuk-textarea" id="identity-discrepancy-details" name="identity-discrepancy-details" rows="4">{{ data['identity-discrepancy-details'] }}</textarea>
+      </div>
+      <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

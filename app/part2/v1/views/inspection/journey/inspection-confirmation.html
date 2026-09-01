@@ -1,0 +1,29 @@
+{% extends "app/part2/v1/views/layouts/main.html" %}
+{% set pageName = "Inspection outcome submitted" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukPanel({
+      titleText: "Inspection outcome submitted",
+      html: "Notification reference<br><strong>" ~ inspectionReference ~ "</strong>"
+    }) }}
+
+    {% if data['inspection-outcome'] == "release" %}
+      <p class="govuk-body">The release outcome has been recorded. The importer or agent will be notified. Relevant authorities may need to be informed depending on the operating model agreed for this service.</p>
+    {% elif data['inspection-outcome'] == "hold" %}
+      <p class="govuk-body">The consignment remains under regulatory control while the required IUU evidence or decision is obtained.</p>
+    {% elif data['inspection-outcome'] == "refuse" %}
+      <p class="govuk-body">The consignment must not be released. The relevant organisations will be notified of the recorded outcome.</p>
+    {% else %}
+      <p class="govuk-body">The inspection outcome has been recorded for research purposes.</p>
+    {% endif %}
+
+    <p class="govuk-body">Where relevant, outcome information may need to be exchanged with TRACES NT, the MMO, the importer or agent, and other competent authorities. This prototype does not include live integrations.</p>
+
+    <ul class="govuk-list">
+      <li><a class="govuk-link" href="{{ basePath }}/inspection/{{ inspectionReference }}/check-record">View or print the inspection record</a></li>
+      <li><a class="govuk-link" href="{{ basePath }}/inspections">Return to inspections</a></li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

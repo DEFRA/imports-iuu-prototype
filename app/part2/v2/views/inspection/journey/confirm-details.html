@@ -1,0 +1,39 @@
+{% extends "app/part2/v2/views/layouts/main.html" %}
+{% set pageName = "Confirm inspection details" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% if hasErrors %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
+    <form method="post">
+      <h1 class="govuk-heading-l">Confirm inspection details</h1>
+      <div class="govuk-form-group{% if errorMap['inspection-location'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="inspection-location">Inspection location</label>
+        {% if errorMap['inspection-location'] %}<p class="govuk-error-message">{{ errorMap['inspection-location'] }}</p>{% endif %}
+        <input class="govuk-input" id="inspection-location" name="inspection-location" value="{{ data['inspection-location'] }}">
+      </div>
+
+      <div class="govuk-form-group{% if errorMap['inspection-date-day'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="inspection-date-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date of inspection</legend>
+          {% if errorMap['inspection-date-day'] %}<p class="govuk-error-message">{{ errorMap['inspection-date-day'] }}</p>{% endif %}
+          <div class="govuk-date-input" id="inspection-date">
+            <div class="govuk-date-input__item"><div class="govuk-form-group"><label class="govuk-label govuk-date-input__label" for="inspection-date-day">Day</label><input class="govuk-input govuk-date-input__input govuk-input--width-2" id="inspection-date-day" name="inspection-date-day" value="{{ data['inspection-date-day'] }}"></div></div>
+            <div class="govuk-date-input__item"><div class="govuk-form-group"><label class="govuk-label govuk-date-input__label" for="inspection-date-month">Month</label><input class="govuk-input govuk-date-input__input govuk-input--width-2" id="inspection-date-month" name="inspection-date-month" value="{{ data['inspection-date-month'] }}"></div></div>
+            <div class="govuk-date-input__item"><div class="govuk-form-group"><label class="govuk-label govuk-date-input__label" for="inspection-date-year">Year</label><input class="govuk-input govuk-date-input__input govuk-input--width-4" id="inspection-date-year" name="inspection-date-year" value="{{ data['inspection-date-year'] }}"></div></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group{% if errorMap['inspection-lead-officer'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label" for="inspection-lead-officer">Lead inspecting officer</label>
+        {% if errorMap['inspection-lead-officer'] %}<p class="govuk-error-message">{{ errorMap['inspection-lead-officer'] }}</p>{% endif %}
+        <input class="govuk-input" id="inspection-lead-officer" name="inspection-lead-officer" value="{{ data['inspection-lead-officer'] }}">
+      </div>
+      <button class="govuk-button" data-module="govuk-button">Continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

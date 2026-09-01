@@ -1,0 +1,89 @@
+{% extends "app/part1/v1/views/layouts/main.html" %}
+
+{% set pageName="Change document details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Review extracted information</span>
+    <h1 class="govuk-heading-l">Change document details</h1>
+    <p class="govuk-body">Document {{ document.reference }} — {{ document.documentNumber }}</p>
+
+    <form action="{{ basePath }}/review-extraction-a/document/{{ document.id }}/change{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="documentNumber">Document number</label>
+        <input class="govuk-input" id="documentNumber" name="documentNumber" type="text" value="{{ document.documentNumber }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="vessel">Vessel name</label>
+        <input class="govuk-input" id="vessel" name="vessel" type="text" value="{{ document.vessel }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="flagState">Flag state</label>
+        <input class="govuk-input" id="flagState" name="flagState" type="text" value="{{ document.flagState }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="species">Species</label>
+        <input class="govuk-input" id="species" name="species" type="text" value="{{ document.species }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="scientificName">Scientific name</label>
+        <input class="govuk-input" id="scientificName" name="scientificName" type="text" value="{{ document.scientificName }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="productCode">Product code / CN code</label>
+        <input class="govuk-input" id="productCode" name="productCode" type="text" value="{{ document.productCode }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="catchArea">FAO catch area</label>
+        <input class="govuk-input" id="catchArea" name="catchArea" type="text" value="{{ document.catchArea }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="catchDates">Catch dates</label>
+        <input class="govuk-input" id="catchDates" name="catchDates" type="text" value="{{ document.catchDates }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="catchNetWeight">Catch weight / net weight</label>
+        <input class="govuk-input" id="catchNetWeight" name="catchNetWeight" type="text" value="{{ document.catchNetWeight }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="importerDetails">Importer details</label>
+        <textarea class="govuk-textarea" id="importerDetails" name="importerDetails" rows="3">{{ document.importerDetails }}</textarea>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="exporterDetails">Exporter details</label>
+        <textarea class="govuk-textarea" id="exporterDetails" name="exporterDetails" rows="3">{{ document.exporterDetails }}</textarea>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="processingStatementReference">Processing statement reference</label>
+        <input class="govuk-input" id="processingStatementReference" name="processingStatementReference" type="text" value="{{ document.processingStatementReference }}">
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="shipmentTransportReference">Shipment / transport reference</label>
+        <input class="govuk-input" id="shipmentTransportReference" name="shipmentTransportReference" type="text" value="{{ document.shipmentTransportReference }}">
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and continue
+        </button>
+        <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

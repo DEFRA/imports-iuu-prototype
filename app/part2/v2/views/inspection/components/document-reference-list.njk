@@ -1,0 +1,24 @@
+{% macro documentLink(link) %}
+  <a class="govuk-link" href="{{ link.href }}">
+    <span class="govuk-visually-hidden">{{ link.visuallyHiddenText }}: </span>{{ link.text }}
+  </a>
+{% endmacro %}
+
+{% macro documentReferenceList(groups, showIssuer=false) %}
+  <dl class="govuk-summary-list">
+    {% for group in groups %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ group.typeLabel }}{% if group.links.length != 1 %}s{% endif %}</dt>
+        <dd class="govuk-summary-list__value">
+          {% if group.links.length %}
+            {% for link in group.links %}
+              {{ documentLink(link) }}{% if showIssuer %} - {{ link.issuer }}{% endif %}{% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+          {% else %}
+            None supplied
+          {% endif %}
+        </dd>
+      </div>
+    {% endfor %}
+  </dl>
+{% endmacro %}

@@ -1,0 +1,47 @@
+{% extends "app/part2/v1/views/layouts/main.html" %}
+{% from "app/part2/v1/views/inspection/components/document-reference-list.njk" import documentLink, documentReferenceList %}
+{% set pageName = "View IUU documents" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">{{ inspectionReference }}</span>
+    <h1 class="govuk-heading-l">View IUU documents</h1>
+    <div class="govuk-inset-text">All evidence documents are fictional and for user research only.</div>
+
+    {{ documentReferenceList(documentReferenceGroups, true) }}
+
+    <h2 class="govuk-heading-m">Commodity weight comparison</h2>
+    <div class="govuk-table__container" tabindex="0">
+      <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Commodity</th>
+          <th scope="col" class="govuk-table__header">Product</th>
+          <th scope="col" class="govuk-table__header">Weight on declaration</th>
+          <th scope="col" class="govuk-table__header">Weight on CC</th>
+          <th scope="col" class="govuk-table__header">Weight on PS</th>
+          <th scope="col" class="govuk-table__header">Weight on NMD</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for commodity in commodityWeightComparisons %}
+          <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">{{ commodity.commodityCode }}</th>
+            <td class="govuk-table__cell">{{ commodity.description }}</td>
+            <td class="govuk-table__cell">{{ commodity.notificationWeight }}</td>
+            <td class="govuk-table__cell">{{ commodity.catchCertificateWeight }}</td>
+            <td class="govuk-table__cell">{{ commodity.processingStatementWeight }}</td>
+            <td class="govuk-table__cell">{{ commodity.nonManipulationDeclarationWeight }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      </table>
+    </div>
+
+    <h2 class="govuk-heading-m">Documentary assessment summary</h2>
+    <p class="govuk-body">{{ assessmentSummary or "The documentary evidence supplied does not fully reconcile with the import notification. The Catch Certificate contains an additional commodity that has not been declared within the notification. As a result, the certified weight exceeds the declared quantity. Additional clarification or amended documentation should be requested before the consignment can be assessed as satisfactory." }}</p>
+
+    <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/inspection/{{ inspectionReference }}">Return to consignment overview</a></p>
+  </div>
+</div>
+{% endblock %}

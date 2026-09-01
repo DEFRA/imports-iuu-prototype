@@ -1,0 +1,47 @@
+{% extends "app/part1/v1/views/layouts/main.html" %}
+
+{% set pageName="Declaration" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Confirm your notification</h1>
+
+    <p class="govuk-body">Review the statements below before we continue.</p>
+
+    <form action="{{ basePath }}/declaration" method="post">
+      <div class="govuk-form-group">
+        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="catch-certificates-confirmed" name="catch-certificates-confirmed" type="checkbox" value="confirmed" {% if data['catch-certificates-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="catch-certificates-confirmed">
+              I confirm that I have uploaded all Catch Certificates for this import.
+            </label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="processing-statements-confirmed" name="processing-statements-confirmed" type="checkbox" value="confirmed" {% if data['processing-statements-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="processing-statements-confirmed">
+              I confirm that I have uploaded all Processing Statements for this import.
+            </label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="non-manipulation-declarations-confirmed" name="non-manipulation-declarations-confirmed" type="checkbox" value="confirmed" {% if data['non-manipulation-declarations-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="non-manipulation-declarations-confirmed">
+              I confirm that I have uploaded all Non-Manipulation Declarations for this import.
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <p class="govuk-body">You are responsible for ensuring all required documents have been provided.</p>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
