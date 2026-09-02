@@ -4,7 +4,7 @@
 {% set serviceName="DEFRA Fish Imports prototypes" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
-{% macro importerVersionCard(version, basePath) %}
+{% macro importerVersionCard(version, basePath, startPage) %}
   <section class="prototype-selector-card">
     <h3 class="govuk-heading-m">
       <span class="govuk-caption-m">{{ version }}</span>
@@ -15,7 +15,7 @@
       <p class="govuk-body">Upload multiple documents, review extracted data and submit the notification.</p>
       {{ govukButton({
         text: "View prototype: scenario A",
-        href: basePath + "/upload-guidance?variant=a",
+        href: basePath + (startPage or "/upload-guidance") + "?variant=a",
         isStartButton: true,
         classes: "govuk-!-margin-bottom-0"
       }) }}
@@ -25,7 +25,7 @@
           <span class="govuk-details__summary-text">Other scenarios</span>
         </summary>
         <div class="govuk-details__text">
-          <a class="govuk-link" href="{{ basePath }}/upload-guidance?variant=b">View prototype: scenario B (Extraction failed)</a>
+          <a class="govuk-link" href="{{ basePath }}{{ startPage or '/upload-guidance' }}?variant=b">View prototype: scenario B (Extraction failed)</a>
         </div>
       </details>
     </div>
@@ -77,7 +77,7 @@
   </div>
 
   <div class="govuk-grid-column-one-half">
-    {{ importerVersionCard("Version 2 (work-in-progress)", "/part1/v2") }}
+    {{ importerVersionCard("Version 2 (work-in-progress)", "/part1/v2", "/dashboard") }}
   </div>
 
   <div class="govuk-grid-column-one-half">
