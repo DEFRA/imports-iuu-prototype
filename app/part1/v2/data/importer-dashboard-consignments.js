@@ -1,123 +1,101 @@
-const confidence = {
-  high: { label: 'High confidence', tagClass: 'govuk-tag--green' },
-  medium: { label: 'Check information', tagClass: 'govuk-tag--yellow' },
-  missing: { label: 'Missing', tagClass: 'govuk-tag--red' }
-}
-
-const row = (label, value, level = 'high') => ({
-  label,
-  value,
-  isMissing: level === 'missing',
-  confidenceLabel: confidence[level].label,
-  confidenceTagClass: confidence[level].tagClass
-})
-
 const createDocuments = (consignment, options = {}) => {
-  const documentStatus = options.hasIssue ? {
-    label: 'Check information',
-    tagClass: 'govuk-tag--yellow'
-  } : {
-    label: 'Extracted',
-    tagClass: 'govuk-tag--green'
-  }
-
-  const documents = [
+  const species = consignment.importedSpecies.map((item) => ({
+    species: item.species,
+    scientificName: item.scientificName,
+    productCode: item.commodityCode,
+    weight: item.weight
+  }))
+  const processingSections = [
     {
-      id: 'catch-certificate',
-      type: 'Catch certificate',
-      shortType: 'CC',
-      reference: consignment.catchCertificate,
-      fileName: consignment.catchCertificate + '.pdf',
-      statusLabel: 'Extracted',
-      statusTagClass: 'govuk-tag--green',
-      confidence: 98,
-      summary: 'Vessel, catch area, species and landed weight',
-      sections: [
-        {
-          title: 'Certificate details',
-          rows: [
-            row('Catch certificate number', consignment.catchCertificate),
-            row('Flag state', consignment.origin),
-            row('Validation date', consignment.validationDate),
-            row('Validating authority', consignment.validatingAuthority)
-          ]
-        },
-        {
-          title: 'Catch and product details',
-          rows: [
-            row('Species', consignment.species),
-            row('Vessel', consignment.vessel),
-            row('Catch area', consignment.catchArea),
-            row('Product weight', consignment.weight)
-          ]
-        }
+      title: 'Processing details',
+      fields: [
+        { label: 'Document number', value: consignment.processingStatement },
+        { label: 'Processing country', value: consignment.processingCountry },
+        { label: 'Approved establishment', value: consignment.processingPlant },
+        ...(options.hasIssue
+          ? []
+          : [{ label: 'Catch certificate references', references: [consignment.catchCertificate] }])
       ]
     },
     {
-      id: 'processing-statement',
-      type: 'Processing statement',
-      shortType: 'PS',
-      reference: consignment.processingStatement,
-      fileName: consignment.processingStatement + '.pdf',
-      statusLabel: documentStatus.label,
-      statusTagClass: documentStatus.tagClass,
-      confidence: options.hasIssue ? 76 : 96,
-      summary: 'Processing plant, country and processed product',
-      sections: [
-        {
-          title: 'Statement details',
-          rows: [
-            row('Processing statement number', consignment.processingStatement),
-            row('Processing country', consignment.processingCountry),
-            row('Processing plant', consignment.processingPlant, options.hasIssue ? 'medium' : 'high'),
-            row('Plant approval number', consignment.plantApproval)
-          ]
-        },
-        {
-          title: 'Processed product',
-          rows: [
-            row('Catch certificate reference', consignment.catchCertificate),
-            row('Species', consignment.species),
-            row('Commodity code', consignment.commodityCode),
-            row('Processed weight', consignment.weight)
-          ]
-        }
+      title: 'Weight data',
+      fields: [
+        { label: 'Total landed weight', value: consignment.weight },
+        { label: 'Catch processed weight', value: consignment.weight },
+        { label: 'Processed fishery product weight', value: consignment.weight }
       ]
     }
   ]
 
-  if (consignment.nonManipulationDeclaration) {
-    documents.push({
-      id: 'non-manipulation-declaration',
-      type: 'Non-manipulation declaration',
-      shortType: 'NMD',
-      reference: consignment.nonManipulationDeclaration,
-      fileName: consignment.nonManipulationDeclaration + '.pdf',
-      statusLabel: options.hasIssue ? 'Information missing' : 'Extracted',
-      statusTagClass: options.hasIssue ? 'govuk-tag--red' : 'govuk-tag--green',
-      confidence: options.hasIssue ? 61 : 94,
-      summary: 'Transit, storage and authority validation',
-      sections: [
-        {
-          title: 'Declaration details',
-          rows: [
-            row('Declaration number', consignment.nonManipulationDeclaration),
-            row('Country of storage', consignment.transitCountry),
-            row('Storage facility', consignment.storageFacility, options.hasIssue ? 'medium' : 'high'),
-            row('Date goods entered storage', consignment.storageArrival)
-          ]
-        },
-        {
-          title: 'Authority validation',
-          rows: [
-            row('Declaring authority', options.hasIssue ? '' : consignment.transitAuthority, options.hasIssue ? 'missing' : 'high'),
-            row('Validation date', options.hasIssue ? '' : consignment.transitValidationDate, options.hasIssue ? 'missing' : 'high'),
-            row('Goods remained under customs control', options.hasIssue ? 'Unclear from document' : 'Yes', options.hasIssue ? 'medium' : 'high')
-          ]
-        }
+  if (options.hasIssue) {
+    processingSections.push({
+      title: 'Missing evidence',
+      fields: [
+        { label: 'Catch certificate not referenced', references: [consignment.catchCertificate] },
+        { label: 'Unrepresented certified weight', value: consignment.weight }
       ]
     })
   }
+
+  const documents = [
+    {
+      typeSlug: 'catch-certificate',
+      type: 'Catch certificate',
+      shortType: 'CC',
+      reference: consignment.catchCertificate,
+      sourceFile: 'CATCH.CC.FR.2026.0000148 for FRA.2025.CSP.000518.pdf',
+      issuer: consignment.validatingAuthority,
+      validationStatus: consignment.status === 'rejected' ? 'Could not be validated' : 'Valid',
+      validationStatusClass: consignment.status === 'rejected' ? 'govuk-tag--red' : 'govuk-tag--green',
+      statusLabel: 'Extracted',
+      statusTagClass: 'govuk-tag--green',
+      confidence: 98,
+      summary: 'Vessel, catch area, species and landed weight',
+      species,
+      sections: [
+        {
+          title: 'Document details',
+          fields: [
+            { label: 'Document number', value: consignment.catchCertificate },
+            { label: 'Validating authority', value: consignment.validatingAuthority },
+            { label: 'Validation date', value: consignment.validationDate },
+            { label: 'Catch area', value: consignment.catchArea }
+          ]
+        },
+        {
+          title: 'Vessel details',
+          fields: [
+            { label: 'Vessel name', value: consignment.vessel },
+            { label: 'Flag state', value: consignment.origin }
+          ]
+        },
+        {
+          title: 'Exporter details',
+          fields: [{ label: 'Exporter', value: consignment.exporter }]
+        },
+        {
+          title: 'Weight data',
+          fields: [{ label: 'Net fishery product weight', value: consignment.weight }]
+        }
+      ]
+    },
+    {
+      typeSlug: 'processing-statement',
+      type: 'Processing statement',
+      shortType: 'PS',
+      reference: consignment.processingStatement,
+      sourceFile: 'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf',
+      issuer: consignment.processingPlant,
+      validationStatus: options.hasIssue ? 'Missing evidence' : 'Valid',
+      validationStatusClass: options.hasIssue ? 'govuk-tag--red' : 'govuk-tag--green',
+      statusLabel: options.hasIssue ? 'Missing evidence' : 'Extracted',
+      statusTagClass: options.hasIssue ? 'govuk-tag--red' : 'govuk-tag--green',
+      confidence: options.hasIssue ? 76 : 96,
+      summary: 'Processing plant, country and processed product',
+      species,
+      sections: processingSections
+    }
+  ]
 
   return documents
 }
@@ -176,17 +154,11 @@ const records = [
     catchArea: 'FAO 27 - North East Atlantic',
     catchCertificate: 'IS-2026-CC-0847',
     processingStatement: 'IS-2026-PS-0847',
-    nonManipulationDeclaration: 'NL-2026-NMD-4412',
     validationDate: '26 August 2026',
     validatingAuthority: 'Directorate of Fisheries, Iceland',
     processingCountry: 'Iceland',
     processingPlant: 'Nordic Seafood Processing hf.',
     plantApproval: 'A123',
-    transitCountry: 'Netherlands',
-    storageFacility: 'Rotterdam Cold Store 4',
-    storageArrival: '28 August 2026',
-    transitAuthority: 'Netherlands Food and Consumer Product Safety Authority',
-    transitValidationDate: '30 August 2026',
     timeline: [
       { date: '31 August 2026 at 11:24', text: 'Notification submitted' },
       { date: '31 August 2026 at 11:25', text: 'Sent to Grimsby Port Health Authority' }
@@ -197,7 +169,7 @@ const records = [
     status: 'action-required',
     statusLabel: 'Action required',
     statusTagClass: 'govuk-tag--red',
-    statusMessage: 'The Port Health Authority needs clearer evidence of customs control during transit.',
+    statusMessage: 'The Port Health Authority needs the processing statement to reference the supplied catch certificate.',
     submittedAt: '2026-08-30T14:10:00Z',
     submittedDisplay: '30 August 2026 at 15:10',
     arrivalAt: '2026-09-03T08:15:00Z',
@@ -208,23 +180,34 @@ const records = [
     species: 'European hake',
     scientificName: 'Merluccius merluccius',
     commodityCode: '03047419',
-    weight: '1,180 kg',
+    speciesSummary: '2 species',
+    importedSpecies: [
+      {
+        species: 'European hake',
+        scientificName: 'Merluccius merluccius',
+        productDescription: 'Frozen European hake fillets',
+        commodityCode: '03047419',
+        weight: '1,180 kg'
+      },
+      {
+        species: 'Atlantic mackerel',
+        scientificName: 'Scomber scombrus',
+        productDescription: 'Frozen Atlantic mackerel',
+        commodityCode: '03035410',
+        weight: '620 kg'
+      }
+    ],
+    weight: '1,800 kg',
     transport: 'Road - FR 852 QL',
     vessel: 'FV Belle Ile',
     catchArea: 'FAO 27 - Bay of Biscay',
     catchCertificate: 'FR-2026-CC-3198',
     processingStatement: 'FR-2026-PS-7721',
-    nonManipulationDeclaration: 'BE-2026-NMD-1182',
     validationDate: '24 August 2026',
     validatingAuthority: 'French Directorate of Sea Fisheries and Aquaculture',
     processingCountry: 'France',
     processingPlant: 'Maree Atlantique - Boulogne',
     plantApproval: 'FR 62.160.020 CE',
-    transitCountry: 'Belgium',
-    storageFacility: 'Zeebrugge Cold Chain',
-    storageArrival: '27 August 2026',
-    transitAuthority: '',
-    transitValidationDate: '',
     timeline: [
       { date: '30 August 2026 at 15:10', text: 'Notification submitted' },
       { date: '1 September 2026 at 09:42', text: 'Further information requested by Dover Port Health Authority' }
@@ -327,9 +310,40 @@ const records = [
   }
 ]
 
-module.exports = records.map((consignment) => ({
-  ...consignment,
-  documents: consignment.status === 'draft'
+const evidenceTypes = [
+  { heading: 'Catch certificate', documentType: 'Catch certificate' },
+  { heading: 'Processing statement', documentType: 'Processing statement' },
+  { heading: 'Non manipulation document', documentType: 'Non-manipulation declaration' },
+  { heading: 'Additional documents', documentType: 'Additional document' }
+]
+
+module.exports = records.map((consignment) => {
+  const importedSpecies = consignment.importedSpecies || [{
+    species: consignment.species,
+    scientificName: consignment.scientificName,
+    productDescription: consignment.species,
+    commodityCode: consignment.commodityCode,
+    weight: consignment.weight
+  }]
+  const normalizedConsignment = {
+    ...consignment,
+    importedSpecies,
+    speciesSummary: consignment.speciesSummary || consignment.species
+  }
+  const documents = normalizedConsignment.status === 'draft'
     ? []
-    : createDocuments(consignment, { hasIssue: consignment.hasIssue })
-}))
+    : createDocuments(normalizedConsignment, { hasIssue: normalizedConsignment.hasIssue })
+  const evidenceSections = evidenceTypes.map((evidenceType) => {
+    const references = documents
+      .filter((document) => document.type === evidenceType.documentType)
+      .map((document) => document.reference)
+
+    return {
+      heading: evidenceType.heading,
+      count: references.length,
+      references
+    }
+  })
+
+  return { ...normalizedConsignment, documents, evidenceSections }
+})

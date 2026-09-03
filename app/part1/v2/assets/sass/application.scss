@@ -5,21 +5,6 @@
 
 // Add extra styles here
 
-.importer-dashboard__heading-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 32px;
-}
-
-.importer-dashboard__heading-actions .govuk-body-l {
-  max-width: 36em;
-}
-
-.importer-dashboard__heading-actions .govuk-button {
-  flex: 0 0 auto;
-}
-
 .importer-dashboard__summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -133,8 +118,7 @@
   margin-bottom: 40px;
 }
 
-.importer-notification__summary-card,
-.importer-notification__document-card {
+.importer-notification__summary-card {
   border: 1px solid #b1b4b6;
   padding: 16px;
 }
@@ -143,20 +127,54 @@
   width: 32%;
 }
 
-.importer-notification__documents-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 40px;
+.importer-notification__evidence-groups {
+  margin-bottom: 24px;
 }
 
-.importer-notification__document-header,
-.importer-document__status-row {
+.importer-notification__evidence-group {
+  margin-bottom: 22px;
+}
+
+.importer-notification__evidence-group:last-child {
+  margin-bottom: 0;
+}
+
+.importer-notification__evidence-group-heading {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
+}
+
+.importer-notification__provided-tag {
+  letter-spacing: 0;
+  margin-bottom: 0;
+  text-transform: none;
+}
+
+.importer-notification__provided-tag--provided {
+  background-color: #d2e2f1;
+  color: #003078;
+}
+
+.importer-notification__provided-tag--missing {
+  background-color: #f3f2f1;
+  color: #505a5f;
+}
+
+.importer-notification__evidence-reference-list {
+  border-left: 2px solid #b1b4b6;
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0 0 0 14px;
+}
+
+.importer-notification__evidence-reference-item {
+  margin-bottom: 8px;
+}
+
+.importer-notification__evidence-reference-item:last-child {
+  margin-bottom: 0;
 }
 
 .importer-notification__timeline {
@@ -182,10 +200,6 @@
 }
 
 @media (max-width: 48.0525em) {
-  .importer-dashboard__heading-actions {
-    display: block;
-  }
-
   .importer-dashboard__summary-grid {
     grid-template-columns: 1fr;
   }
@@ -199,10 +213,10 @@
     margin-top: 24px;
   }
 
-  .importer-notification__summary-grid,
-  .importer-notification__documents-grid {
+  .importer-notification__summary-grid {
     grid-template-columns: 1fr;
   }
+
 }
 
 @media (max-width: 40.0525em) {

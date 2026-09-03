@@ -39,7 +39,7 @@
       </div>
       <div class="importer-notification__summary-card">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Consignment</p>
-        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.species }}, {{ consignment.weight }}</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.speciesSummary }}, {{ consignment.weight }}</p>
       </div>
     </div>
 
@@ -54,18 +54,6 @@
         <dd class="govuk-summary-list__value">{{ consignment.origin }}</dd>
       </div>
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Species</dt>
-        <dd class="govuk-summary-list__value">{{ consignment.species }} (<em>{{ consignment.scientificName }}</em>)</dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Commodity code</dt>
-        <dd class="govuk-summary-list__value">{{ consignment.commodityCode }}</dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Net weight</dt>
-        <dd class="govuk-summary-list__value">{{ consignment.weight }}</dd>
-      </div>
-      <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">Transport</dt>
         <dd class="govuk-summary-list__value">{{ consignment.transport }}</dd>
       </div>
@@ -75,22 +63,64 @@
       </div>
     </dl>
 
-    <h2 class="govuk-heading-l">Supporting documents and AI-extracted information</h2>
-    <p class="govuk-body">The following information was extracted automatically from the documents supplied with this notification. Open a document to review the extracted values and confidence indicators.</p>
+    <h2 class="govuk-heading-l">Species in this consignment</h2>
+    <div class="govuk-table__container" tabindex="0">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Species</th>
+            <th scope="col" class="govuk-table__header">Product</th>
+            <th scope="col" class="govuk-table__header">Commodity code</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Net weight</th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          {% for item in consignment.importedSpecies %}
+            <tr class="govuk-table__row">
+              <th scope="row" class="govuk-table__header">
+                {{ item.species }}
+                {% if item.scientificName %}<span class="govuk-body-s govuk-!-display-block govuk-!-margin-bottom-0"><em>{{ item.scientificName }}</em></span>{% endif %}
+              </th>
+              <td class="govuk-table__cell">{{ item.productDescription }}</td>
+              <td class="govuk-table__cell">{{ item.commodityCode }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.weight }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="govuk-table__head">
+          <tr class="govuk-table__row">
+            <th scope="row" colspan="3" class="govuk-table__header govuk-table__header--numeric">Total net weight</th>
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">{{ consignment.weight }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-    <div class="importer-notification__documents-grid">
-      {% for document in consignment.documents %}
-        <section class="importer-notification__document-card">
-          <div class="importer-notification__document-header">
-            <h3 class="govuk-heading-m govuk-!-margin-bottom-1">{{ document.type }}</h3>
-            <strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong>
-          </div>
-          <p class="govuk-body-s govuk-!-margin-bottom-2">{{ document.reference }}</p>
-          <p class="govuk-body">{{ document.summary }}</p>
-          <p class="govuk-body"><strong>Overall extraction confidence:</strong> {{ document.confidence }}%</p>
-          <p class="govuk-body govuk-!-margin-bottom-0">
-            <a class="govuk-link" href="{{ basePath }}/dashboard/notifications/{{ consignment.reference }}/documents/{{ document.id }}?variant={{ variant }}">Review AI-extracted information<span class="govuk-visually-hidden"> from {{ document.type }}</span></a>
-          </p>
+    <h2 class="govuk-heading-l">Uploaded documents</h2>
+    <div class="importer-notification__evidence-groups">
+      {% for evidenceSection in consignment.evidenceSections %}
+        <section class="importer-notification__evidence-group" aria-label="{{ evidenceSection.heading }}">
+          <h3 class="govuk-heading-m importer-notification__evidence-group-heading">
+            {{ evidenceSection.heading }}
+            <strong class="govuk-tag importer-notification__provided-tag {% if evidenceSection.count > 0 %}importer-notification__provided-tag--provided{% else %}importer-notification__provided-tag--missing{% endif %}">
+              {% if evidenceSection.count > 0 %}Provided{% else %}Not provided{% endif %}
+            </strong>
+          </h3>
+          {% if evidenceSection.references.length > 0 %}
+            <ul class="govuk-list importer-notification__evidence-reference-list" aria-label="{{ evidenceSection.heading }} references">
+              {% for reference in evidenceSection.references %}
+                <li class="importer-notification__evidence-reference-item">
+                  {% if reference.href %}
+                    <a class="govuk-link" href="{{ reference.href }}"><span class="govuk-visually-hidden">{{ reference.visuallyHiddenText }}: </span>{{ reference.text }}</a>
+                  {% else %}
+                    {{ reference.text }}
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="govuk-body govuk-!-margin-bottom-0">No documents provided.</p>
+          {% endif %}
         </section>
       {% endfor %}
     </div>

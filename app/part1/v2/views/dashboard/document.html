@@ -3,60 +3,71 @@
 {% set pageName=document.type %}
 {% set backLinkHref=basePath + "/dashboard/notifications/" + consignment.reference + "?variant=" + variant %}
 
+{% macro documentLink(link) %}
+  {% if link %}
+    <a class="govuk-link" href="{{ link.href }}"><span class="govuk-visually-hidden">{{ link.visuallyHiddenText }}: </span>{{ link.text }}</a>
+  {% endif %}
+{% endmacro %}
+
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l">{{ consignment.reference }}</span>
-    <h1 class="govuk-heading-xl">{{ document.type }}</h1>
+  <div class="govuk-grid-column-full">
+    <span class="govuk-caption-l">{{ document.type }}</span>
+    <h1 class="govuk-heading-xl">{{ document.reference }}</h1>
+    <div class="govuk-inset-text">This evidence document is fictional and for user research only.</div>
 
-    <div class="importer-document__status-row">
-      <strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong>
-      <span class="govuk-body govuk-!-margin-bottom-0">Overall extraction confidence: <strong>{{ document.confidence }}%</strong></span>
-    </div>
-
-    {% if document.statusLabel != 'Extracted' %}
-      <div class="govuk-warning-text govuk-!-margin-top-5">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-          <span class="govuk-visually-hidden">Warning</span>
-          Some information is missing or unclear. The Port Health Authority may ask you for clearer evidence.
-        </strong>
-      </div>
-    {% else %}
-      <div class="govuk-inset-text">This information was extracted using AI. It shows the information submitted with your notification and cannot be changed here.</div>
+    {% if document.originalFileUrl %}
+      <p class="govuk-body"><a class="govuk-button govuk-button--secondary" href="{{ document.originalFileUrl }}">View original file</a></p>
     {% endif %}
 
     <dl class="govuk-summary-list govuk-!-margin-bottom-7">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">Document reference</dt>
-        <dd class="govuk-summary-list__value">{{ document.reference }}</dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">File name</dt>
-        <dd class="govuk-summary-list__value">{{ document.fileName }}</dd>
-      </div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document type</dt><dd class="govuk-summary-list__value">{{ document.type }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document reference</dt><dd class="govuk-summary-list__value">{{ document.reference }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Consignment reference</dt><dd class="govuk-summary-list__value">{{ consignment.reference }}</dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Validation status</dt><dd class="govuk-summary-list__value"><strong class="govuk-tag {{ document.validationStatusClass }}">{{ document.validationStatus }}</strong></dd></div>
+      <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Issued by</dt><dd class="govuk-summary-list__value">{{ document.issuer }}</dd></div>
     </dl>
 
-    <h2 class="govuk-heading-l">AI-extracted information</h2>
+    {% if document.species.length %}
+      <h2 class="govuk-heading-l">Species</h2>
+      <div class="govuk-table__container" tabindex="0">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Species</th>
+              <th scope="col" class="govuk-table__header">Scientific name</th>
+              <th scope="col" class="govuk-table__header">Product code</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            {% for item in document.species %}
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{{ item.species }}</th>
+                <td class="govuk-table__cell"><em>{{ item.scientificName }}</em></td>
+                <td class="govuk-table__cell">{{ item.productCode }}</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.weight }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
     {% for section in document.sections %}
       <div class="govuk-summary-card govuk-!-margin-bottom-6">
-        <div class="govuk-summary-card__title-wrapper">
-          <h3 class="govuk-summary-card__title">{{ section.title }}</h3>
-        </div>
+        <div class="govuk-summary-card__title-wrapper"><h2 class="govuk-summary-card__title">{{ section.title }}</h2></div>
         <div class="govuk-summary-card__content">
           <dl class="govuk-summary-list govuk-!-margin-bottom-0">
-            {% for item in section.rows %}
+            {% for field in section.fields %}
               <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">{{ item.label }}</dt>
+                <dt class="govuk-summary-list__key">{{ field.label }}</dt>
                 <dd class="govuk-summary-list__value">
-                  {% if item.isMissing %}
-                    <span class="govuk-error-message govuk-!-margin-bottom-0">Not found in document</span>
+                  {% if field.references %}
+                    {% for reference in field.references %}{{ documentLink(documentLinksByReference[reference]) }}{% if not loop.last %}<br>{% endif %}{% endfor %}
                   {% else %}
-                    {{ item.value }}
+                    {{ field.value }}
                   {% endif %}
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                  <strong class="govuk-tag {{ item.confidenceTagClass }}">{{ item.confidenceLabel }}</strong>
                 </dd>
               </div>
             {% endfor %}
@@ -65,18 +76,7 @@
       </div>
     {% endfor %}
 
-    <details class="govuk-details" data-module="govuk-details">
-      <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">How confidence indicators work</span>
-      </summary>
-      <div class="govuk-details__text">
-        High confidence means the information was clearly identified. Check information means the value may be unclear or needs confirmation. Missing means no value could be identified in the document.
-      </div>
-    </details>
-
-    <p class="govuk-body">
-      <a class="govuk-link" href="{{ basePath }}/dashboard/notifications/{{ consignment.reference }}?variant={{ variant }}">Return to notification</a>
-    </p>
+    <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/dashboard/notifications/{{ consignment.reference }}?variant={{ variant }}">Return to consignment overview</a></p>
   </div>
 </div>
 {% endblock %}
