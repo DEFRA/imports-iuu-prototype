@@ -43,10 +43,7 @@
 
     <p class="govuk-body">The Port Health Authority may ask for additional information if further evidence is needed.</p>
 
-    <form action="{{ basePath }}/upload-documents" method="post">
-      <input type="hidden" name="documents-selected" id="documents-selected" value="false">
-      <input type="hidden" name="documents-file-names" id="documents-file-names" value="">
-
+    <form action="{{ basePath }}/upload-documents" method="post" data-document-upload-form>
       <div class="govuk-form-group{% if errorMap['file-upload-1'] %} govuk-form-group--error{% endif %}">
         {% if errorMap['file-upload-1'] %}
           {{ govukFileUpload({
@@ -63,7 +60,7 @@
             multiple: true,
             attributes: {
               accept: ".pdf,.jpg,.jpeg,.png",
-              onchange: "var files=Array.from(this.files||[]);document.getElementById('documents-selected').value=files.length>0?'true':'false';document.getElementById('documents-file-names').value=files.map(function(file){return file.name}).join('|');if(files.length===0)return;var summary=document.querySelector('.govuk-error-summary');if(summary){summary.remove();}var formGroup=this.closest('.govuk-form-group');if(!formGroup)return;formGroup.classList.remove('govuk-form-group--error');var errorMessage=formGroup.querySelector('.govuk-error-message');if(errorMessage){errorMessage.remove();}"
+              "data-document-upload-input": ""
             },
             errorMessage: {
               text: errorMap['file-upload-1']
@@ -85,21 +82,31 @@
             multiple: true,
             attributes: {
               accept: ".pdf,.jpg,.jpeg,.png",
-              onchange: "var files=Array.from(this.files||[]);document.getElementById('documents-selected').value=files.length>0?'true':'false';document.getElementById('documents-file-names').value=files.map(function(file){return file.name}).join('|');if(files.length===0)return;var summary=document.querySelector('.govuk-error-summary');if(summary){summary.remove();}var formGroup=this.closest('.govuk-form-group');if(!formGroup)return;formGroup.classList.remove('govuk-form-group--error');var errorMessage=formGroup.querySelector('.govuk-error-message');if(errorMessage){errorMessage.remove();}"
+              "data-document-upload-input": ""
             },
             javascript: true
           }) }}
         {% endif %}
       </div>
 
-      {% if data['uploaded-documents'] and (data['uploaded-documents'] | length) %}
-        <h2 class="govuk-heading-m">Previously uploaded files</h2>
-        <ul class="govuk-list govuk-list--bullet">
+      <section data-uploaded-documents-section{% if not (data['uploaded-documents'] and (data['uploaded-documents'] | length)) %} hidden{% endif %}>
+        <h2 class="govuk-heading-m">Uploaded documents</h2>
+        <dl class="govuk-summary-list" data-uploaded-documents-list>
+          {% if data['uploaded-documents'] and (data['uploaded-documents'] | length) %}
           {% for file in data['uploaded-documents'] %}
-            <li>{{ file.filename }}</li>
+            <div class="govuk-summary-list__row" data-uploaded-document>
+              <dt class="govuk-summary-list__key">{{ file.filename }}</dt>
+              <dd class="govuk-summary-list__actions">
+                <button class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0" type="button" data-remove-uploaded-document>
+                  Remove<span class="govuk-visually-hidden"> {{ file.filename }}</span>
+                </button>
+                <input type="hidden" name="uploaded-document-name" value="{{ file.filename }}">
+              </dd>
+            </div>
           {% endfor %}
-        </ul>
-      {% endif %}
+          {% endif %}
+        </dl>
+      </section>
 
       <h2 class="govuk-heading-m">After you upload</h2>
 
@@ -114,5 +121,85 @@
 
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('[data-document-upload-form]')
+    if (!form) return
+
+    var fileInput = form.querySelector('[data-document-upload-input]')
+    var section = form.querySelector('[data-uploaded-documents-section]')
+    var list = form.querySelector('[data-uploaded-documents-list]')
+
+    function updateSectionVisibility () {
+      section.hidden = !list.querySelector('[data-uploaded-document]')
+    }
+
+    function removeDocument (event) {
+      var row = event.currentTarget.closest('[data-uploaded-document]')
+      if (row) row.remove()
+      updateSectionVisibility()
+    }
+
+    function addDocument (filename) {
+      var row = document.createElement('div')
+      row.className = 'govuk-summary-list__row'
+      row.setAttribute('data-uploaded-document', '')
+
+      var name = document.createElement('dt')
+      name.className = 'govuk-summary-list__key'
+      name.textContent = filename
+
+      var actions = document.createElement('dd')
+      actions.className = 'govuk-summary-list__actions'
+
+      var removeButton = document.createElement('button')
+      removeButton.className = 'govuk-button govuk-button--secondary govuk-!-margin-bottom-0'
+      removeButton.type = 'button'
+      removeButton.setAttribute('data-remove-uploaded-document', '')
+      removeButton.appendChild(document.createTextNode('Remove'))
+
+      var visuallyHiddenName = document.createElement('span')
+      visuallyHiddenName.className = 'govuk-visually-hidden'
+      visuallyHiddenName.textContent = ' ' + filename
+      removeButton.appendChild(visuallyHiddenName)
+      removeButton.addEventListener('click', removeDocument)
+      actions.appendChild(removeButton)
+
+      var hiddenName = document.createElement('input')
+      hiddenName.type = 'hidden'
+      hiddenName.name = 'uploaded-document-name'
+      hiddenName.value = filename
+
+      row.appendChild(name)
+      actions.appendChild(hiddenName)
+      row.appendChild(actions)
+      list.appendChild(row)
+    }
+
+    form.querySelectorAll('[data-remove-uploaded-document]').forEach(function (button) {
+      button.addEventListener('click', removeDocument)
+    })
+
+    fileInput.addEventListener('change', function () {
+      Array.from(fileInput.files || []).forEach(function (file) {
+        addDocument(file.name)
+      })
+
+      if (fileInput.files && fileInput.files.length) {
+        var errorSummary = document.querySelector('.govuk-error-summary')
+        var formGroup = fileInput.closest('.govuk-form-group')
+        var errorMessage = formGroup && formGroup.querySelector('.govuk-error-message')
+
+        if (errorSummary) errorSummary.remove()
+        if (formGroup) formGroup.classList.remove('govuk-form-group--error')
+        if (errorMessage) errorMessage.remove()
+      }
+
+      fileInput.value = ''
+      updateSectionVisibility()
+    })
+  })
+</script>
 
 {% endblock %}
