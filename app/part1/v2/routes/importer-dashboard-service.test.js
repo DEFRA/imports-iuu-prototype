@@ -49,11 +49,12 @@ test('filters current submissions by status and origin', () => {
   assert.deepEqual(results.map((item) => item.reference), ['GB-IUU-2026-10397'])
 })
 
-test('sorts submissions by status priority by default', () => {
+test('sorts submissions by arrival date by default', () => {
   const filters = getDashboardFilters()
   const results = filterAndSortConsignments(consignments, filters, 'submitted')
 
-  assert.equal(filters.sortBy, 'status')
+  assert.equal(filters.sortBy, 'arrival')
+  assert.equal(filters.sortOrder, 'asc')
   assert.deepEqual(results.map((item) => item.reference), [
     'GB-IUU-2026-10411',
     'GB-IUU-2026-10397',
@@ -61,10 +62,10 @@ test('sorts submissions by status priority by default', () => {
   ])
 })
 
-test('keeps the status priority when the sort direction changes', () => {
+test('sorts submissions by status priority when selected', () => {
   const filters = getDashboardFilters({
     'sort-by': 'status',
-    'sort-order': 'asc'
+    'sort-order': 'desc'
   })
   const results = filterAndSortConsignments(consignments, filters, 'submitted')
 

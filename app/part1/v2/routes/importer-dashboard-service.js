@@ -72,14 +72,14 @@ const getDashboardFilters = (query = {}) => {
     : ''
   const sortBy = sortOptions.some((option) => option.value === query['sort-by'])
     ? query['sort-by']
-    : 'status'
+    : 'arrival'
 
   return {
     search: normalizeValue(query.search),
     status,
     origin: normalizeValue(query.origin),
     sortBy,
-    sortOrder: query['sort-order'] === 'asc' ? 'asc' : 'desc'
+    sortOrder: query['sort-order'] === 'desc' ? 'desc' : 'asc'
   }
 }
 
