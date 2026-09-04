@@ -78,7 +78,6 @@ const dashboardSampleDocumentsPath = path.join(__dirname, '..', 'data', 'dashboa
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
 const importerDashboardConsignments = require('../data/importer-dashboard-consignments')
 const {
-  buildDraftSessionData,
   filterAndSortConsignments,
   getDashboardFilters,
   getFilterOptions
@@ -1363,14 +1362,11 @@ router.get('/dashboard/drafts/:reference', (req, res) => {
     return res.redirect('/dashboard?variant=' + variant)
   }
 
-  req.session.data = structuredClone(sessionDataDefaults)
-  req.session.data['extraction-variant'] = 'a'
-  applyExtractionVariantData(req.session.data)
-  Object.assign(req.session.data, buildDraftSessionData(draft))
-  seedReviewSummaryData(req.session.data)
-  applyScenarioAExtractionData(req.session.data)
-
-  return res.redirect('/review-extraction-a')
+  return res.render('part1/dashboard/notification-not-available', {
+    variant,
+    reference: draft.reference,
+    dashboardUrl: `${basePath}/dashboard?variant=${variant}&tab=drafts#drafts`
+  })
 })
 
 router.get('/dashboard/notifications/:reference', (req, res) => {
@@ -1378,6 +1374,12 @@ router.get('/dashboard/notifications/:reference', (req, res) => {
   const consignment = importerDashboardConsignments.find((item) => item.reference === req.params.reference)
   if (!consignment) {
     return res.redirect('/dashboard?variant=' + variant)
+  }
+  if (consignment.isAvailable === false) {
+    return res.render('part1/dashboard/notification-not-available', {
+      variant,
+      reference: consignment.reference
+    })
   }
 
   const evidenceSections = consignment.evidenceSections.map((section) => ({

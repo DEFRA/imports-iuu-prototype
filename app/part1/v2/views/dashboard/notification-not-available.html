@@ -1,0 +1,19 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Consignment not available in this prototype" %}
+{% if dashboardUrl %}
+  {% set backLinkHref=dashboardUrl %}
+{% else %}
+  {% set backLinkHref=basePath + "/dashboard?variant=" + variant %}
+{% endif %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Consignment not available in this prototype</h1>
+    <p class="govuk-body">{{ reference }} does not have an implemented detail page.</p>
+    <p class="govuk-body">Only GB-IUU-2026-11001, GB-IUU-2026-11002 and GB-IUU-2026-11003 are available as functional research journeys.</p>
+    <p class="govuk-body"><a class="govuk-link" href="{{ backLinkHref }}">Return to your notifications</a></p>
+  </div>
+</div>
+{% endblock %}

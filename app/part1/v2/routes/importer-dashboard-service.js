@@ -91,7 +91,7 @@ const matchesSearch = (consignment, search) => {
 const getSortValue = (consignment, sortBy) => {
   if (sortBy === 'arrival') return consignment.arrivalAt
   if (sortBy === 'reference') return consignment.reference
-  return consignment.submittedAt
+  return consignment.submittedAt || ''
 }
 
 const buildDocumentsProvidedText = (consignment) => {
@@ -105,7 +105,8 @@ const buildDocumentsProvidedText = (consignment) => {
   return documentEntries
     .map((entry) => ({
       ...entry,
-      count: consignment.documents.filter((document) => document.typeSlug === entry.typeSlug).length
+      count: consignment.documentCounts?.[entry.typeSlug] ??
+        consignment.documents.filter((document) => document.typeSlug === entry.typeSlug).length
     }))
     .filter((entry) => entry.count > 0)
     .map((entry) => `${entry.count === 1 ? entry.singular : entry.plural} (${entry.count})`)
@@ -127,7 +128,7 @@ const filterAndSortConsignments = (consignments, filters, tab) => {
         const statusComparison = (statusSortOrder[left.status] ?? 3) - (statusSortOrder[right.status] ?? 3)
         if (statusComparison !== 0) return statusComparison
 
-        return left.submittedAt.localeCompare(right.submittedAt) * direction
+        return normalizeValue(left.submittedAt).localeCompare(normalizeValue(right.submittedAt)) * direction
       }
 
       const comparison = getSortValue(left, filters.sortBy).localeCompare(getSortValue(right, filters.sortBy))

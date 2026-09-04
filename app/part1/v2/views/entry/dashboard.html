@@ -89,7 +89,7 @@
             {% if consignment.status == 'draft' %}
               <a href="{{ basePath }}/dashboard/drafts/{{ consignment.encodedReference }}?variant={{ variant }}" class="govuk-link govuk-!-font-weight-bold importer-dashboard__reference">{{ consignment.reference }}</a>
             {% else %}
-              <a href="{{ basePath }}/dashboard/notifications/{{ consignment.reference }}?variant={{ variant }}" class="govuk-link govuk-!-font-weight-bold importer-dashboard__reference">{{ consignment.reference }}</a>
+              <a href="{{ basePath }}/dashboard/notifications/{{ consignment.encodedReference }}?variant={{ variant }}" class="govuk-link govuk-!-font-weight-bold importer-dashboard__reference">{{ consignment.reference }}</a>
             {% endif %}
             <strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong>
           </div>
@@ -114,12 +114,20 @@
               <dd class="govuk-summary-list__value">{{ consignment.port }}</dd>
             </div>
             <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Country of origin</dt>
+              <dd class="govuk-summary-list__value">{{ consignment.origin }}</dd>
+            </div>
+            <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Exporter</dt>
               <dd class="govuk-summary-list__value">{{ consignment.exporter }}</dd>
             </div>
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">Species and declared weight</dt>
               <dd class="govuk-summary-list__value">{{ consignment.speciesSummary }} - {{ consignment.weight }}</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">Commodity code{% if consignment.commodityCodes.length != 1 %}s{% endif %}</dt>
+              <dd class="govuk-summary-list__value">{{ consignment.commodityCodes | join(", ") }}</dd>
             </div>
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">{% if consignment.status == 'draft' %}Last updated{% else %}Submitted{% endif %}</dt>
