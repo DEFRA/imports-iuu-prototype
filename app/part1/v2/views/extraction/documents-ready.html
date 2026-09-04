@@ -1,16 +1,27 @@
 {% extends "app/part1/v2/views/layouts/main.html" %}
 
-{% set pageName="Documents ready" %}
-{% set backLinkHref="/upload-documents" %}
+{% if data['extraction-variant'] == 'a' %}
+  {% set pageName="Documents ready" %}
+{% else %}
+  {% set pageName="Some documents need action" %}
+{% endif %}
+{% set backLinkHref=basePath + "/upload-documents" %}
 
 {% block content %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">Documents ready</h1>
-
-    <p class="govuk-body">We've analysed the documents you uploaded and added any information that can be used to complete your notification.</p>
+    {% if data['extraction-variant'] == 'a' %}
+      <h1 class="govuk-heading-l">Documents ready</h1>
+      <p class="govuk-body">We've analysed the documents you uploaded and added any information that can be used to complete your notification.</p>
+    {% else %}
+      <h1 class="govuk-heading-l">Some documents need action</h1>
+      <div class="govuk-inset-text">
+        <h2 class="govuk-heading-s govuk-!-margin-bottom-1">3 documents could not be processed automatically</h2>
+        <p class="govuk-body govuk-!-margin-bottom-0">You can upload replacement documents or continue and enter the information manually.</p>
+      </div>
+    {% endif %}
 
     <h2 class="govuk-heading-m">Documents received</h2>
 
@@ -24,27 +35,62 @@
         <li>2 Additional documents</li>
       </ul>
     {% else %}
-      <p class="govuk-body">5 documents received:</p>
+      <p class="govuk-body">20 documents received:</p>
 
       <ul class="govuk-list govuk-list--bullet">
-        <li>2 Catch Certificates</li>
-        <li>1 Processing Statement</li>
-        <li>1 Non-Manipulation Declaration</li>
-        <li>1 Additional document</li>
+        <li>12 Catch Certificates processed</li>
+        <li>4 Processing Statements processed</li>
+        <li>1 Non-Manipulation Declaration processed</li>
+        <li>3 additional documents could not be processed</li>
       </ul>
     {% endif %}
 
-    <p class="govuk-body">You can now check the information added and make any changes needed before you submit the notification.</p>
+    {% if data['extraction-variant'] == 'a' %}
+      <p class="govuk-body">You can now check the information added and make any changes needed before you submit the notification.</p>
 
-    <p class="govuk-body">You must check that all information is correct before submitting your import notification. Providing inaccurate information may result in delays to your consignment and could lead to enforcement action.</p>
+      <p class="govuk-body">You must check that all information is correct before submitting your import notification. Providing inaccurate information may result in delays to your consignment and could lead to enforcement action.</p>
 
-    <a href="{{ basePath }}/review-extraction-{{ data['extraction-variant'] or 'a' }}" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-      {% if data['extraction-variant'] == 'a' %}
+      <a href="{{ basePath }}/review-extraction-a" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
         Continue to extraction summary
-      {% else %}
-        Continue to review your information
-      {% endif %}
-    </a>
+      </a>
+    {% else %}
+      <h2 class="govuk-heading-m">Documents that need action</h2>
+      <div class="govuk-table__container">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Document</th>
+              <th scope="col" class="govuk-table__header">Problem</th>
+              <th scope="col" class="govuk-table__header">Action</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">SUPPORT_DOC_01.pdf</td>
+              <td class="govuk-table__cell">Could not be read</td>
+              <td class="govuk-table__cell"><a class="govuk-link" href="{{ basePath }}/upload-documents">Replace<span class="govuk-visually-hidden"> SUPPORT_DOC_01.pdf</span></a></td>
+            </tr>
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">SUPPORT_DOC_02.pdf</td>
+              <td class="govuk-table__cell">Password protected</td>
+              <td class="govuk-table__cell"><a class="govuk-link" href="{{ basePath }}/upload-documents">Replace<span class="govuk-visually-hidden"> SUPPORT_DOC_02.pdf</span></a></td>
+            </tr>
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">SUPPORT_DOC_03.png</td>
+              <td class="govuk-table__cell">Image quality too low</td>
+              <td class="govuk-table__cell"><a class="govuk-link" href="{{ basePath }}/upload-documents">Replace<span class="govuk-visually-hidden"> SUPPORT_DOC_03.png</span></a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="govuk-button-group">
+        <a href="{{ basePath }}/upload-documents" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+          Upload replacement documents
+        </a>
+        <a href="{{ basePath }}/review-extraction-b" class="govuk-link">Continue without replacing documents</a>
+      </div>
+    {% endif %}
   </div>
 </div>
 

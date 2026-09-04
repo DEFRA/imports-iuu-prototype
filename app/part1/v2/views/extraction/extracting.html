@@ -9,12 +9,12 @@
     <span class="govuk-caption-l">Import notification</span>
     <h1 class="govuk-heading-l">Analysing your documents</h1>
     <p class="govuk-body">We're reviewing your documents and identifying information that can be used to complete your notification.</p>
-    <p class="govuk-body">This may take a few moments. Do not close or refresh this page.</p>
-    <div class="govuk-inset-text">
-      <p class="govuk-body govuk-!-margin-bottom-1"><strong id="progress-summary">Progress: 0%</strong></p>
-      <p class="govuk-body-s govuk-!-margin-bottom-0" id="progress-message" role="status" aria-live="polite">Starting document analysis.</p>
-    </div>
     {% if data['extraction-variant'] == 'a' %}
+      <p class="govuk-body">This may take a few moments. Do not close or refresh this page.</p>
+      <div class="govuk-inset-text">
+        <p class="govuk-body govuk-!-margin-bottom-1"><strong id="progress-summary">Progress: 0%</strong></p>
+        <p class="govuk-body-s govuk-!-margin-bottom-0" id="progress-message" role="status" aria-live="polite">Starting document analysis.</p>
+      </div>
       <ul class="govuk-list" id="analysis-steps">
         <li class="govuk-!-margin-bottom-2" data-analysis-step>
           <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
@@ -33,31 +33,60 @@
           <span class="govuk-!-margin-left-2">2 Additional documents being analysed</span>
         </li>
       </ul>
+      <p class="govuk-body">You can review and confirm all extracted information before submitting your notification.</p>
+      <noscript>
+        <p class="govuk-body">
+          <a href="{{ basePath }}/documents-ready" class="govuk-link">Continue</a>
+        </p>
+      </noscript>
     {% else %}
-      <ul class="govuk-list" id="analysis-steps">
-        <li class="govuk-!-margin-bottom-2" data-analysis-step>
-          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
-          <span class="govuk-!-margin-left-2">Catch Certificate analysed</span>
-        </li>
-        <li class="govuk-!-margin-bottom-2" data-analysis-step>
-          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
-          <span class="govuk-!-margin-left-2">Processing Statement analysed</span>
-        </li>
-        <li data-analysis-step>
-          <strong class="govuk-tag govuk-tag--grey" data-analysis-status>Not started</strong>
-          <span class="govuk-!-margin-left-2">Non-Manipulation Declaration being analysed</span>
-        </li>
-      </ul>
+      <div id="analysis-loading" class="govuk-inset-text" hidden>
+        <p class="govuk-body govuk-!-margin-bottom-1"><strong>Analysing your documents</strong></p>
+        <p class="govuk-body-s govuk-!-margin-bottom-0" role="status" aria-live="polite">This may take a few moments. Do not close or refresh this page.</p>
+      </div>
+
+      <div id="analysis-result">
+        <div class="govuk-inset-text">
+          <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Some documents could not be analysed</h2>
+          <p class="govuk-body govuk-!-margin-bottom-0">You can continue with the documents we could process or upload replacement documents.</p>
+        </div>
+
+        <div class="govuk-inset-text">
+          <p class="govuk-body govuk-!-margin-bottom-1"><strong>Progress: 85%</strong></p>
+          <p class="govuk-body-s govuk-!-margin-bottom-0">17 of 20 documents analysed</p>
+        </div>
+
+        <ul class="govuk-list">
+          <li class="govuk-!-margin-bottom-2">
+            <strong class="govuk-tag govuk-tag--green">Complete</strong>
+            <span class="govuk-!-margin-left-2">12 Catch Certificates analysed</span>
+          </li>
+          <li class="govuk-!-margin-bottom-2">
+            <strong class="govuk-tag govuk-tag--green">Complete</strong>
+            <span class="govuk-!-margin-left-2">4 Processing Statements analysed</span>
+          </li>
+          <li class="govuk-!-margin-bottom-2">
+            <strong class="govuk-tag govuk-tag--green">Complete</strong>
+            <span class="govuk-!-margin-left-2">1 Non-Manipulation Declaration analysed</span>
+          </li>
+          <li>
+            <strong class="govuk-tag govuk-tag--red">Problem</strong>
+            <span class="govuk-!-margin-left-2">3 additional documents not processed</span>
+          </li>
+        </ul>
+
+        <div class="govuk-button-group govuk-!-margin-top-6">
+          <a href="{{ basePath }}/documents-ready" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            Continue with processed documents
+          </a>
+          <a href="{{ basePath }}/upload-documents" class="govuk-link">Upload documents again</a>
+        </div>
+      </div>
     {% endif %}
-    <p class="govuk-body">You can review and confirm all extracted information before submitting your notification.</p>
-    <noscript>
-      <p class="govuk-body">
-        <a href="{{ basePath }}/documents-ready" class="govuk-link">Continue</a>
-      </p>
-    </noscript>
   </div>
 </div>
 
+{% if data['extraction-variant'] == 'a' %}
 <script>
   var steps = document.querySelectorAll('[data-analysis-step]')
   var progressSummary = document.getElementById('progress-summary')
@@ -129,5 +158,20 @@
     progressTimer = setInterval(advanceProgress, stepDelayMs)
   }
 </script>
+{% else %}
+<script>
+  var analysisLoading = document.getElementById('analysis-loading')
+  var analysisResult = document.getElementById('analysis-result')
+
+  analysisLoading.hidden = false
+  analysisResult.hidden = true
+
+  setTimeout(function () {
+    analysisLoading.hidden = true
+    analysisResult.hidden = false
+    analysisResult.focus()
+  }, 3000)
+</script>
+{% endif %}
 
 {% endblock %}
