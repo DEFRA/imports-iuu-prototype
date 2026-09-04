@@ -74,7 +74,7 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
-const dashboardSampleDocumentsPath = path.join(__dirname, '..', '..', '..', 'part2', 'v2', 'data', 'sample-documents')
+const dashboardSampleDocumentsPath = path.join(__dirname, '..', 'data', 'dashboard-sample-documents')
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
 const importerDashboardConsignments = require('../data/importer-dashboard-consignments')
 const {
@@ -1330,7 +1330,7 @@ router.get('/dashboard', (req, res) => {
     return res.redirect('/dashboard?variant=a')
   }
 
-  const activeTab = ['submitted', 'historical'].includes(req.query.tab) ? req.query.tab : 'drafts'
+  const activeTab = ['drafts', 'historical'].includes(req.query.tab) ? req.query.tab : 'submitted'
   const filters = getDashboardFilters(req.query)
   const draftConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'drafts')
   const submittedConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'submitted')
@@ -1421,7 +1421,9 @@ router.get('/documents/:type/:reference', (req, res) => {
     consignment,
     document: {
       ...document,
-      originalFileUrl: `${basePath}/documents/file/${document.typeSlug}/${encodeURIComponent(document.reference)}?variant=${variant}`
+      originalFileUrl: document.sourceFile
+        ? `${basePath}/documents/file/${document.typeSlug}/${encodeURIComponent(document.reference)}?variant=${variant}`
+        : ''
     },
     documentLinksByReference
   })

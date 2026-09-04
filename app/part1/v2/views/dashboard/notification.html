@@ -39,7 +39,8 @@
       </div>
       <div class="importer-notification__summary-card">
         <p class="govuk-body-s govuk-!-margin-bottom-1">Consignment</p>
-        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.speciesSummary }}, {{ consignment.weight }}</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.speciesSummary }}</p>
+        <p class="govuk-body govuk-!-margin-bottom-0">Declared weight: {{ consignment.weight }}</p>
       </div>
     </div>
 
@@ -69,9 +70,10 @@
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header">Species</th>
-            <th scope="col" class="govuk-table__header">Product</th>
+            <th scope="col" class="govuk-table__header">Declaration status</th>
             <th scope="col" class="govuk-table__header">Commodity code</th>
-            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Net weight</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight on notification</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight on catch certificate</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -81,16 +83,18 @@
                 {{ item.species }}
                 {% if item.scientificName %}<span class="govuk-body-s govuk-!-display-block govuk-!-margin-bottom-0"><em>{{ item.scientificName }}</em></span>{% endif %}
               </th>
-              <td class="govuk-table__cell">{{ item.productDescription }}</td>
+              <td class="govuk-table__cell">{{ item.declarationStatus }}</td>
               <td class="govuk-table__cell">{{ item.commodityCode }}</td>
-              <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.weight }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.notificationWeight }}</td>
+              <td class="govuk-table__cell govuk-table__cell--numeric">{{ item.catchCertificateWeight }}</td>
             </tr>
           {% endfor %}
         </tbody>
         <tfoot class="govuk-table__head">
           <tr class="govuk-table__row">
-            <th scope="row" colspan="3" class="govuk-table__header govuk-table__header--numeric">Total net weight</th>
+            <th scope="row" colspan="3" class="govuk-table__header govuk-table__header--numeric">Total weight</th>
             <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">{{ consignment.weight }}</td>
+            <td class="govuk-table__cell govuk-table__cell--numeric govuk-!-font-weight-bold">{{ consignment.catchCertificateWeight }}</td>
           </tr>
         </tfoot>
       </table>

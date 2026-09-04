@@ -62,7 +62,7 @@ const buildDraftSessionData = (consignment) => {
     'scenario-a-exporter-name': consignment.exporter,
     'review-species': consignment.species,
     'review-weight-quantity': consignment.weight,
-    'review-importer-exporter-agent-details': `Nordic Sea Imports Ltd; ${consignment.exporter}`
+    'review-importer-exporter-agent-details': `New England Seafood International Ltd; ${consignment.exporter}`
   }
 }
 
