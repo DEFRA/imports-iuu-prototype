@@ -1,0 +1,68 @@
+{% extends "app/part1/v3/views/layouts/main.html" %}
+
+{% set pageName = "Origin of the import" %}
+{% set backLinkHref = basePath + "/dashboard?variant=" + variant %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% include "app/part1/v3/views/notification/_draft-header.html" %}
+
+    <span class="govuk-caption-l">About the consignment</span>
+    <h1 class="govuk-heading-l">Origin of the import</h1>
+
+    <form action="{{ basePath }}/origin-of-import" method="post">
+      <input type="hidden" name="variant" value="{{ variant }}">
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="country-of-origin">
+          Country of origin
+        </label>
+        <div class="notification-flow__search">
+          <input class="govuk-input" id="country-of-origin" name="country-of-origin" type="text" value="{{ data['country-of-origin'] }}" placeholder="Search for a country">
+          <button class="notification-flow__search-button" type="button" aria-label="Search for a country">
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+              <circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"></circle>
+              <path d="M13.5 13.5L20 20" fill="none" stroke="currentColor" stroke-width="2"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset" aria-describedby="region-of-origin-code-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            Does the consignment have a region of origin code?
+          </legend>
+          <div id="region-of-origin-code-hint" class="govuk-hint">
+            If a region of origin code is required it will be shown on your health certificate.<br>
+            You can add the code later if you do not have the certificate now.
+          </div>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has-region-of-origin-code" name="has-region-of-origin-code" type="radio" value="yes" {% if data['has-region-of-origin-code'] == 'yes' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has-region-of-origin-code">Yes</label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="has-region-of-origin-code-no" name="has-region-of-origin-code" type="radio" value="no" {% if data['has-region-of-origin-code'] == 'no' %}checked{% endif %}>
+              <label class="govuk-label govuk-radios__label" for="has-region-of-origin-code-no">No</label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="internal-reference">
+          Your internal reference for this consignment (optional)
+        </label>
+        <div id="internal-reference-hint" class="govuk-hint">
+          Enter any internal reference you want to use to identify this consignment, or leave blank.
+        </div>
+        <input class="govuk-input" id="internal-reference" name="internal-reference" type="text" aria-describedby="internal-reference-hint" value="{{ data['internal-reference'] }}">
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">Save and continue</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

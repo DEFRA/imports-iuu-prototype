@@ -1,0 +1,82 @@
+{% extends "app/part1/v3/views/layouts/main.html" %}
+
+{% set pageName="Prototype assumptions and open questions" %}
+{% set backLinkHref=basePath + "/dashboard?variant=" + variant %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Importer dashboard prototype</span>
+    <h1 class="govuk-heading-xl">Assumptions and open questions</h1>
+
+    <div class="govuk-inset-text">This page supports user research and describes prototype assumptions. It is not intended to be part of the live service.</div>
+
+    <h2 class="govuk-heading-l">Assumptions in this prototype</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>an importer needs one place to track draft, current and previous IUU notifications</li>
+      <li>reference, status, arrival, port, exporter, species, commodity codes and individual species weights are enough to identify a consignment</li>
+      <li>drafts, current submissions and previous submissions should be separated</li>
+      <li>users should be able to resume a draft with their saved notification information prefilled</li>
+      <li>users need to understand whether action is required without opening every notification</li>
+      <li>notifications with an Action required status should appear before notifications that are Under review or Submitted</li>
+      <li>submitted notification data should be read-only</li>
+      <li>users benefit from seeing uploaded document references alongside key information taken from those documents</li>
+      <li>confidence indicators can help users understand why evidence may need further review</li>
+      <li>the original document files are representative prototype fixtures and references inside them may not match the synthetic notification data</li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Scenarios included</h2>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Drafts</dt>
+        <dd class="govuk-summary-list__value">Saved notifications that resume at the review stage with their arrival and commodity information prefilled.</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Submitted</dt>
+        <dd class="govuk-summary-list__value">A recently submitted notification awaiting review.</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Under review</dt>
+        <dd class="govuk-summary-list__value">A notification currently being reviewed by a Port Health Authority.</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Action required</dt>
+        <dd class="govuk-summary-list__value">A two-species consignment where the processing statement does not reference the supplied catch certificate.</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Previous submissions</dt>
+        <dd class="govuk-summary-list__value">Accepted and rejected historical notification examples.</dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-l">Questions for user research</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Do importers understand each notification status and what they need to do next?</li>
+      <li>Which information do importers use to identify the correct consignment?</li>
+      <li>Is the dashboard summary sufficient to find and review a previous submission?</li>
+      <li>Is notification information presented in a logical order?</li>
+      <li>Do users understand which values were extracted using AI?</li>
+      <li>Which document information is most valuable?</li>
+      <li>What information is missing from the dashboard or notification overview?</li>
+      <li>What causes confusion, uncertainty or lack of trust?</li>
+      <li>How do users expect to review documents and supporting evidence?</li>
+      <li>Does this dashboard reflect how importers currently manage IUU notifications?</li>
+    </ul>
+
+    <h2 class="govuk-heading-l">Open design questions</h2>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Should importers be able to amend a submitted notification, or request an amendment?</li>
+      <li>How should messages and requests from a Port Health Authority appear?</li>
+      <li>Should users see technical AI confidence scores, descriptive labels, or both?</li>
+      <li>Is searching by notification reference sufficient, or should users also be able to search by exporter, species or commodity code?</li>
+      <li>How long should previous submissions remain available?</li>
+      <li>Should notifications be grouped by business, agent or importer account?</li>
+      <li>Which document formats should users be able to preview or download?</li>
+    </ul>
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ basePath }}/dashboard?variant={{ variant }}">Return to the importer dashboard</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
