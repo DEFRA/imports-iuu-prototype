@@ -1,0 +1,1024 @@
+{
+  "documentSummary": {
+    "documentType": "IUU Catch Certificate with attached transport details, importer declaration, and import control decision",
+    "overallConfidence": 0.84
+  },
+  "fields": [
+    {
+      "fieldName": "validatingAuthority.name",
+      "value": "Centre National de Surveillance des Pêches (CNSP)",
+      "confidence": 0.99,
+      "evidence": "Authority Centre National de Surveillance des Pêches (CNSP)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "validatingAuthority.code",
+      "value": "FR0001",
+      "confidence": 0.99,
+      "evidence": "(FR0001)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "validatingAuthority.address",
+      "value": "40 Avenue Louis Bougo 56410 Étel",
+      "confidence": 0.98,
+      "evidence": "Address 40 Avenue Louis Bougo 56410 Étel",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "validatingAuthority.country",
+      "value": "France",
+      "confidence": 0.99,
+      "evidence": "Country France ISO Code FR",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "validatingAuthority.isoCode",
+      "value": "FR",
+      "confidence": 0.99,
+      "evidence": "Country France ISO Code FR",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "validatingAuthority.phone",
+      "value": "(+33) 02 97 29 34 27",
+      "confidence": 0.98,
+      "evidence": "Phone (+33) 02 97 29 34 27 Fax",
+      "pageNumber": "1",
+      "comments": "Fax label is present but no fax value is visible."
+    },
+    {
+      "fieldName": "catchCertificate.reference",
+      "value": "CATCH.CC.FR.2026.0000148",
+      "confidence": 0.99,
+      "evidence": "Reference CATCH.CC.FR.2026.0000148",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "catchCertificate.documentNumber",
+      "value": "FRA 2025 CSP 000518",
+      "confidence": 0.99,
+      "evidence": "Document number FRA 2025 CSP 000518",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "fishingVessel.name",
+      "value": "PENDRUC",
+      "confidence": 0.99,
+      "evidence": "PENDRUC France CONCARNEAU CC932207 FIXF 9741102",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "fishingVessel.flagHomePort",
+      "value": "France CONCARNEAU",
+      "confidence": 0.96,
+      "evidence": "PENDRUC France CONCARNEAU CC932207 FIXF 9741102",
+      "pageNumber": "1",
+      "comments": "Presented in one cell as flag and home port."
+    },
+    {
+      "fieldName": "fishingVessel.registrationNumber",
+      "value": "CC932207",
+      "confidence": 0.99,
+      "evidence": "PENDRUC France CONCARNEAU CC932207 FIXF 9741102",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "fishingVessel.callSign",
+      "value": "FIXF",
+      "confidence": 0.99,
+      "evidence": "PENDRUC France CONCARNEAU CC932207 FIXF 9741102",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "fishingVessel.imoNumber",
+      "value": "9741102",
+      "confidence": 0.99,
+      "evidence": "PENDRUC France CONCARNEAU CC932207 FIXF 9741102",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "fishingVessel.fishingLicences",
+      "value": "MUS ECV03412025 valid until 31.12.2025; SYC 171702 valid until 23.02.2026; MDG 25/035 valid until 31.12.2025; TAAF 09/2025-E valid until 31.12.2025; CTOI-1302/000009 valid until 31.12.2025",
+      "confidence": 0.78,
+      "evidence": "MUS ECV03412025 31.12.2025 SYC 171702 23.02.2026 MDG 25/035 31.12.2025 TAAF 09/2025-E 31.12.2025 CTOl1302/000009 31.12.2025",
+      "pageNumber": "1",
+      "comments": "One licence/reference contains an OCR artifact: 'CTOl1302/000009' (likely 'CTOI-1302/000009')."
+    },
+    {
+      "fieldName": "productGroup.1.description",
+      "value": "03 FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES; 0303 Fish, frozen, excluding fish fillets and other fish meat of heading 0304; Tuna (of the genus Thunnus), skipjack or stripe-bellied bonito (Euthynnus (Katsuwonus) pelamis), excluding livers and roes; 030342 Yellowfin tunas (Thunnus albacares)",
+      "confidence": 0.96,
+      "evidence": "1. 03 FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES ... 030342 Yellowfin tunas (Thunnus albacares)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "productGroup.2.description",
+      "value": "03 FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES; 0303 Fish, frozen, excluding fish fillets and other fish meat of heading 0304; Tuna (of the genus Thunnus), skipjack or stripe-bellied bonito (Euthynnus (Katsuwonus) pelamis), excluding livers and roes; 030343 Skipjack or stripe-bellied bonito",
+      "confidence": 0.96,
+      "evidence": "2. 03 FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES ... 030343 Skipjack or stripe-bellied bonito",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "productGroup.3.description",
+      "value": "03 FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES; 0303 Fish, frozen, excluding fish fillets and other fish meat of heading 0304; Tuna (of the genus Thunnus), skipjack or stripe-bellied bonito (Euthynnus (Katsuwonus) pelamis), excluding livers and roes; 030344 Bigeye tunas (Thunnus obesus)",
+      "confidence": 0.96,
+      "evidence": "3. 03 FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES ... 030344 Bigeye tunas (Thunnus obesus)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.productCode",
+      "value": "030342",
+      "confidence": 0.99,
+      "evidence": "#1. Product code 030342",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.species",
+      "value": "YFT Thunnus albacares",
+      "confidence": 0.98,
+      "evidence": "Species YFT Thunnus albacares",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.fishingVessel",
+      "value": "PENDRUC, CC932207",
+      "confidence": 0.99,
+      "evidence": "Fishing vessel PENDRUC, CC932207",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.faoArea",
+      "value": "FAO 51 - Indian Ocean, Western",
+      "confidence": 0.97,
+      "evidence": "Catch area - FAO area(s) FAO 51 - Indian Ocean, Western",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.eezOrHighSeas",
+      "value": "SC - Seychelles",
+      "confidence": 0.99,
+      "evidence": "Catch area - EEZ or high seas SC - Seychelles",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.rfmo",
+      "value": "IOTC - Indian Ocean Tuna Commission (IOTC)",
+      "confidence": 0.98,
+      "evidence": "Catch area - RFMO IOTC - Indian Ocean Tuna Commission (IOTC)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.catchDateFrom",
+      "value": "16 Jul 2025",
+      "confidence": 0.99,
+      "evidence": "Catch date (from) 16 Jul 2025",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.catchDateTo",
+      "value": "17 Aug 2025",
+      "confidence": 0.99,
+      "evidence": "Catch date (to) 17 Aug 2025",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.estimatedWeightKg",
+      "value": "60632 kg",
+      "confidence": 0.99,
+      "evidence": "Estimated weight to be landed in kg 60632 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.netCatchWeightKg",
+      "value": "60632 kg",
+      "confidence": 0.99,
+      "evidence": "Net catch weight in kg 60632 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.1.verifiedWeightLandedKg",
+      "value": "60632 kg",
+      "confidence": 0.99,
+      "evidence": "Verified weight landed (net catch weight in kg) 60632 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.productCode",
+      "value": "030343",
+      "confidence": 0.99,
+      "evidence": "#2. Product code 030343",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.species",
+      "value": "SKJ Katsuwonus pelamis",
+      "confidence": 0.98,
+      "evidence": "Species SKJ Katsuwonus pelamis",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.fishingVessel",
+      "value": "PENDRUC, CC932207",
+      "confidence": 0.99,
+      "evidence": "Fishing vessel PENDRUC, CC932207",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.faoArea",
+      "value": "FAO 51 - Indian Ocean, Western",
+      "confidence": 0.97,
+      "evidence": "Catch area - FAO area(s) FAO 51 - Indian Ocean, Western",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.eezOrHighSeas",
+      "value": "SC - Seychelles",
+      "confidence": 0.99,
+      "evidence": "Catch area - EEZ or high seas SC - Seychelles",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.rfmo",
+      "value": "IOTC - Indian Ocean Tuna Commission (IOTC)",
+      "confidence": 0.98,
+      "evidence": "Catch area - RFMO IOTC - Indian Ocean Tuna Commission (IOTC)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.catchDateFrom",
+      "value": "16 Jul 2025",
+      "confidence": 0.99,
+      "evidence": "Catch date (from) 16 Jul 2025",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.catchDateTo",
+      "value": "17 Aug 2025",
+      "confidence": 0.99,
+      "evidence": "Catch date (to) 17 Aug 2025",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.estimatedWeightKg",
+      "value": "198687 kg",
+      "confidence": 0.99,
+      "evidence": "Estimated weight to be landed in kg 198687 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.netCatchWeightKg",
+      "value": "198687 kg",
+      "confidence": 0.99,
+      "evidence": "Net catch weight in kg 198687 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.2.verifiedWeightLandedKg",
+      "value": "198687 kg",
+      "confidence": 0.99,
+      "evidence": "Verified weight landed (net catch weight in kg) 198687 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.productCode",
+      "value": "030344",
+      "confidence": 0.99,
+      "evidence": "#3. Product code 030344",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.species",
+      "value": "BET Thunnus obesus",
+      "confidence": 0.98,
+      "evidence": "Species BET Thunnus obesus",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.fishingVessel",
+      "value": "PENDRUC, CC932207",
+      "confidence": 0.99,
+      "evidence": "Fishing vessel PENDRUC, CC932207",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.faoArea",
+      "value": "FAO 51 - Indian Ocean, Western",
+      "confidence": 0.97,
+      "evidence": "Catch area - FAO area(s) FAO 51 - Indian Ocean, Western",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.eezOrHighSeas",
+      "value": "SC - Seychelles",
+      "confidence": 0.99,
+      "evidence": "Catch area - EEZ or high seas SC - Seychelles",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.rfmo",
+      "value": "IOTC - Indian Ocean Tuna Commission (IOTC)",
+      "confidence": 0.98,
+      "evidence": "Catch area - RFMO IOTC - Indian Ocean Tuna Commission (IOTC)",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.catchDateFrom",
+      "value": "16 Jul 2025",
+      "confidence": 0.99,
+      "evidence": "Catch date (from) 16 Jul 2025",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.catchDateTo",
+      "value": "17 Aug 2025",
+      "confidence": 0.99,
+      "evidence": "Catch date (to) 17 Aug 2025",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.estimatedWeightKg",
+      "value": "30575 kg",
+      "confidence": 0.99,
+      "evidence": "Estimated weight to be landed in kg 30575 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.netCatchWeightKg",
+      "value": "30575 kg",
+      "confidence": 0.99,
+      "evidence": "Net catch weight in kg 30575 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "product.3.verifiedWeightLandedKg",
+      "value": "30575 kg",
+      "confidence": 0.99,
+      "evidence": "Verified weight landed (net catch weight in kg) 30575 kg",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "conservationManagementMeasures.references",
+      "value": "PENDRUC IOTC + VMS + LOG BOOK",
+      "confidence": 0.96,
+      "evidence": "4 References to applicable conservation and management measures PENDRUC IOTC + VMS + LOG BOOK",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "masterOrLicenceHolder.name",
+      "value": "Nome ilegível",
+      "confidence": 0.35,
+      "evidence": "5 Name of master of fishing vessel or of fishing licence holder - signautre Nome ilegível",
+      "pageNumber": "1",
+      "comments": "Name is explicitly shown as illegible."
+    },
+    {
+      "fieldName": "masterOrLicenceHolder.signatureSeal",
+      "value": "Signature and Seal present",
+      "confidence": 0.9,
+      "evidence": "Signature and Seal present",
+      "pageNumber": "1",
+      "comments": ""
+    },
+    {
+      "fieldName": "transhipmentAtSea.sectionStatus",
+      "value": "",
+      "confidence": 0.97,
+      "evidence": "6 Declaration of transhipment at sea ... [no values visible in the row]",
+      "pageNumber": "1",
+      "comments": "Section appears blank."
+    },
+    {
+      "fieldName": "transhipmentPortArea.sectionStatus",
+      "value": "",
+      "confidence": 0.97,
+      "evidence": "7 Transhipment authorisation within a port area",
+      "pageNumber": "1",
+      "comments": "Section appears blank."
+    },
+    {
+      "fieldName": "exporter.name",
+      "value": "Compagnie Française du Thon Oceanique",
+      "confidence": 0.99,
+      "evidence": "8 Exporter Name Compagnie Française du Thon Oceanique",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "exporter.address",
+      "value": "11, Rue des Sardiniers, 29900 Concarneau",
+      "confidence": 0.98,
+      "evidence": "Address 11, Rue des Sardiniers 29900 Concarneau",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "exporter.country",
+      "value": "France",
+      "confidence": 0.99,
+      "evidence": "Country France ISO Code FR",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "exporter.isoCode",
+      "value": "FR",
+      "confidence": 0.99,
+      "evidence": "Country France ISO Code FR",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "exporter.signatureStatus",
+      "value": "Signed",
+      "confidence": 0.99,
+      "evidence": "Signature ✓ Signed.",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "exporter.signatureDate",
+      "value": "29.10.2025",
+      "confidence": 0.99,
+      "evidence": "Signature date 29.10.2025",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "flagStateValidation.date",
+      "value": "29.08.2025",
+      "confidence": 0.99,
+      "evidence": "9 Flag State authority validation Date 29.08.2025",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "flagStateValidation.nameTitle",
+      "value": "Nome ilegível",
+      "confidence": 0.3,
+      "evidence": "Name/Title Nome ilegível",
+      "pageNumber": "2",
+      "comments": "Name/title is explicitly illegible."
+    },
+    {
+      "fieldName": "flagStateValidation.signatureStatus",
+      "value": "Signed",
+      "confidence": 0.99,
+      "evidence": "Signature ✓ Signed.",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "flagStateValidation.seal",
+      "value": "Centre National de Surveillance des Pêches (CNSP)",
+      "confidence": 0.96,
+      "evidence": "Seal Centre National de Surveillance des Pêches (CNSP)",
+      "pageNumber": "2",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.reference",
+      "value": "CATCH.CC.FR.2026.0000148",
+      "confidence": 0.99,
+      "evidence": "10 TRANSPORT DETAILS Reference CATCH.CC.FR.2026.0000148",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.documentNumber",
+      "value": "FRA 2025 CSP 000518",
+      "confidence": 0.99,
+      "evidence": "Document number FRA 2025 CSP 000518",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.countryOfExportation",
+      "value": "Seychelles",
+      "confidence": 0.99,
+      "evidence": "Country of exportation ISO Code Seychelles SC",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.countryOfExportationIsoCode",
+      "value": "SC",
+      "confidence": 0.99,
+      "evidence": "Country of exportation ISO Code Seychelles SC",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.exporter",
+      "value": "Compagnie Française du Thon Oceanique",
+      "confidence": 0.99,
+      "evidence": "Exporter Compagnie Française du Thon Oceanique",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.signatureStatus",
+      "value": "Signed",
+      "confidence": 0.99,
+      "evidence": "Signature ✓ Signed.",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.signatureDate",
+      "value": "Oct 29, 2025",
+      "confidence": 0.99,
+      "evidence": "Signature date Oct 29, 2025",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.placeOfDeparture",
+      "value": "PORT VICTORIA",
+      "confidence": 0.99,
+      "evidence": "Port/airport/other place of departure PORT VICTORIA",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.meansOfTransport.mode",
+      "value": "Vessel",
+      "confidence": 0.95,
+      "evidence": "Means of transport Mode ... Vessel",
+      "pageNumber": "3",
+      "comments": ""
+    },
+    {
+      "fieldName": "transportDetails.meansOfTransport.identification",
+      "value": "PENDRUC | France",
+      "confidence": 0.78,
+      "evidence": "Vessel PENDRUC | France",
+      "pageNumber": "3",
+      "comments": "Layout suggests identification is 'PENDRUC | France'; transport document reference appears blank."
+    },
+    {
+      "fieldName": "importer.name",
+      "value": "Fishing - EUROPEAN SEAFOOD INVESTMENTS PORTUGAL S.A.",
+      "confidence": 0.97,
+      "evidence": "Importer Name Fishing - EUROPEAN SEAFOOD INVESTMENTS PORTUGAL S.A.",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importer.address",
+      "value": "Avenida Monsenhor Manuel Bastos, 2520-206 Peniche",
+      "confidence": 0.98,
+      "evidence": "Address Avenida Monsenhor Manuel Bastos 2520-206 Peniche",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importer.country",
+      "value": "Portugal",
+      "confidence": 0.99,
+      "evidence": "Country Portugal ISO Code PT",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importer.isoCode",
+      "value": "PT",
+      "confidence": 0.99,
+      "evidence": "Country Portugal ISO Code PT",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importer.eori",
+      "value": "PT507642074",
+      "confidence": 0.99,
+      "evidence": "EORI PT507642074",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importer.phone",
+      "value": "+351262780600",
+      "confidence": 0.99,
+      "evidence": "Phone +351262780600",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importer.declarationDateTime",
+      "value": "04 February 2026 11:43:59 +01 (CET)",
+      "confidence": 0.99,
+      "evidence": "Date 04 February 2026 11:43:59 +01 (CET)",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerDeclaration.reference",
+      "value": "CATCH.IM.PT.PT.2026.0000365",
+      "confidence": 0.99,
+      "evidence": "IMPORTER DECLARATION Reference CATCH.IM.PT.PT.2026.0000365",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.name",
+      "value": "Rui Pereira Pato - Despachantes Oficiais Lda",
+      "confidence": 0.99,
+      "evidence": "Representative of the importer Name Rui Pereira Pato - Despachantes Oficiais Lda",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.address",
+      "value": "Rua Robalo Gouveia, 1, 2ºD, 1900-322 Lisboa, 1900-392 Lisbon",
+      "confidence": 0.91,
+      "evidence": "Address Rua Robalo Gouveia, 1, 2ºD 1900-322 Lisboa 1900-392 Lisbon",
+      "pageNumber": "4",
+      "comments": "Two postcode/city lines are shown."
+    },
+    {
+      "fieldName": "importerRepresentative.country",
+      "value": "Portugal",
+      "confidence": 0.99,
+      "evidence": "Country Portugal ISO Code PT",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.isoCode",
+      "value": "PT",
+      "confidence": 0.99,
+      "evidence": "Country Portugal ISO Code PT",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.eori",
+      "value": "PT501197680",
+      "confidence": 0.99,
+      "evidence": "EORI PT501197680",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.phone1",
+      "value": "+351 218 811 641",
+      "confidence": 0.99,
+      "evidence": "Phone +351 218 811 641",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.phone2",
+      "value": "00351218811615",
+      "confidence": 0.99,
+      "evidence": "Phone 00351218811615",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerRepresentative.email",
+      "value": "importacao1@ruipato.com",
+      "confidence": 0.99,
+      "evidence": "Email importacao1@ruipato.com",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importerProduct.cnDescription",
+      "value": "16 PREPARATIONS OF MEAT, OF FISH, OF CRUSTACEANS, MOLLUSCS OR OTHER AQUATIC INVERTEBRATES, OR OF INSECTS; 1604 Prepared or preserved fish; caviar and caviar substitutes prepared from fish eggs; Fish, whole or in pieces, but not minced; 160414 Tunas, skipjack and bonito (Sarda spp.); Skipjack; 16041426 Fillets known as 'loins'",
+      "confidence": 0.96,
+      "evidence": "CN code - Product description ... 16041426 Fillets known as 'loins'",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "catchCertificateCommodity.1",
+      "value": "Certificate CATCH.CC.SC.2026.0000401; document/reference SYC SFA 2026 IOT0009; date 08 January 2026 00:00:00 +01 (CET); catch description 160414 Tunas, skipjack and bonito (Sarda spp.); species Katsuwonus pelamis; product 16041426 Fillets known as 'loins'; net weight 9929.0 kg; net fishery product weight 9929.0 kg",
+      "confidence": 0.92,
+      "evidence": "CATCH.CC.SC.2026.0000401 ... SYC SFA 2026 IOT0009 ... 08 January 2026 00:00:00 +01 (CET) ... Katsuwonus pelamis ... 9929.0 kg 9929.0 kg",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "catchCertificateCommodity.2",
+      "value": "Certificate CATCH.CC.MU.2026.0000111; document/reference MUS AFL GL 25 82; date 04 September 2025 00:00:00 +02 (CET); catch description 030343 Skipjack or stripe-bellied bonito; species Katsuwonus pelamis; product 16041426 Fillets known as 'loins'; net weight 4945.0 kg; net fishery product weight 4945.0 kg",
+      "confidence": 0.92,
+      "evidence": "CATCH.CC.MU.2026.0000111 ... MUS AFL GL 25 82 ... 4945.0 kg 4945.0 kg",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "catchCertificateCommodity.3",
+      "value": "Certificate CATCH.CC.MU.2026.0000116; document/reference MUS AFL GL 25 79; date 25 August 2025 00:00:00 +02 (CET); catch description 030343 Skipjack or stripe-bellied bonito; species Katsuwonus pelamis; product 16041426 Fillets known as 'loins'; net weight 3964.0 kg; net fishery product weight 3964.0 kg",
+      "confidence": 0.92,
+      "evidence": "CATCH.CC.MU.2026.0000116 ... MUS AFL GL 25 79 ... 3964.0 kg 3964.0 kg",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "catchCertificateCommodity.4",
+      "value": "Certificate CATCH.CC.FR.2026.0000148; document/reference FRA 2025 CSP 000518; date 29 August 2025 00:00:00 +02 (CET); catch description 030343 Skipjack or stripe-bellied bonito; species Katsuwonus pelamis; product 16041426 Fillets known as 'loins'; net weight 12735.0 kg; net fishery product weight 12735.0 kg",
+      "confidence": 0.93,
+      "evidence": "CATCH.CC.FR.2026.0000148 ... FRA 2025 CSP 000518 ... 29 August 2025 00:00:00 +02 (CET) ... 12735.0 kg 12735.0 kg",
+      "pageNumber": "4",
+      "comments": "This is the attached catch certificate referenced in the importer commodity table."
+    },
+    {
+      "fieldName": "catchCertificateCommodity.5",
+      "value": "Certificate CATCH.CC.ES.2026.0000960; document/reference ESP SGCI IA 2025 1744; date 29 September 2025 00:00:00 +02 (CET); catch description 030343 Skipjack or stripe-bellied bonito; species Katsuwonus pelamis; product 16041426 Fillets known as 'loins'; net weight 12469.0 kg; net fishery product weight 12469.0 kg",
+      "confidence": 0.92,
+      "evidence": "CATCH.CC.ES.2026.0000960 ... ESP SGCI IA 2025 1744 ... 12469.0 kg 12469.0 kg",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "catchCertificateCommodity.6",
+      "value": "Certificate CATCH.CC.FR.2026.0000150; document/reference FRA 2025 CSP 000554; date 30 September 2025 00:00:00 +02 (CET); catch description 030343 Skipjack or stripe-bellied bonito; species Katsuwonus pelamis; product 16041426 Fillets known as 'loins'; net weight 2547.0 kg; net fishery product weight 2547.0 kg",
+      "confidence": 0.92,
+      "evidence": "CATCH.CC.FR.2026.0000150 ... FRA 2025 CSP 000554 ... 2547.0 kg 2547.0 kg",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "iuuRegulation.article14_1",
+      "value": "Checked",
+      "confidence": 0.98,
+      "evidence": "Council Regulation No 1005/2008, Article 14 (1) ☑",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "iuuRegulation.article14_2",
+      "value": "Checked",
+      "confidence": 0.98,
+      "evidence": "Council Regulation No 1005/2008, Article 14 (2) ☑ CATCH.PS.SC.2026.0000049",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "processingStatement.reference",
+      "value": "CATCH.PS.SC.2026.0000049",
+      "confidence": 0.98,
+      "evidence": "Council Regulation No 1005/2008, Article 14 (2) ☑ CATCH.PS.SC.2026.0000049",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "memberStateOfficeOfImport",
+      "value": "PORTUGAL - MARITIMA DE LISBOA ( SOTAGUS )",
+      "confidence": 0.98,
+      "evidence": "Member State and office of import PORTUGAL - MARITIMA DE LISBOA ( SOTAGUS )",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "arrivalTransport.mode",
+      "value": "Vessel",
+      "confidence": 0.99,
+      "evidence": "Means of transport upon arrival ... Mode ... Vessel",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "arrivalTransport.transportDocumentReference",
+      "value": "SSN0111432",
+      "confidence": 0.98,
+      "evidence": "Mode Transport document reference Identification Vessel SSN0111432 ECO ZEPHYR | France",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "arrivalTransport.identification",
+      "value": "ECO ZEPHYR | France",
+      "confidence": 0.97,
+      "evidence": "Mode Transport document reference Identification Vessel SSN0111432 ECO ZEPHYR | France",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "arrivalTransport.containerNumbers",
+      "value": "CGMU9381528; CGMU5539699",
+      "confidence": 0.99,
+      "evidence": "Container number CGMU9381528 CGMU5539699",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "arrivalTransport.sealNumbers",
+      "value": "M1147002; M1147042",
+      "confidence": 0.99,
+      "evidence": "Seal number M1147002 M1147042",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "arrivalTransport.estimatedArrivalTime",
+      "value": "05 February 2026 15:15:00 +01 (CET)",
+      "confidence": 0.99,
+      "evidence": "Estimated arrival time 05 February 2026 15:15:00 +01 (CET)",
+      "pageNumber": "4",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.authority",
+      "value": "Direção-Geral de Recursos Naturais, Segurança e Serviços Marítimos; Autoridade Nacional de Pesca (Directorate General for Natural Resources, Safety and Maritime Services; National Fisheries Authority)",
+      "confidence": 0.95,
+      "evidence": "Authority Direção-Geral de Recursos Naturais, Segurança e Serviços Marítimos; Autoridade Nacional de Pesca (Directorate General for Natural Resources, Safety and Maritime Services; National Fisheries Authority) (PT0001)",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.authorityCode",
+      "value": "PT0001",
+      "confidence": 0.99,
+      "evidence": "(PT0001)",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.address",
+      "value": "Avenida de Brasilia 1449-030 Lisbon",
+      "confidence": 0.98,
+      "evidence": "Address Avenida de Brasilia 1449-030 Lisbon",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.country",
+      "value": "Portugal",
+      "confidence": 0.99,
+      "evidence": "Country Portugal ISO Code PT",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.isoCode",
+      "value": "PT",
+      "confidence": 0.99,
+      "evidence": "Country Portugal ISO Code PT",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.phone",
+      "value": "+351213025185; +351213035700",
+      "confidence": 0.98,
+      "evidence": "Phone +351213025185, +351213035700",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.placeOfIssue",
+      "value": "Portugal",
+      "confidence": 0.99,
+      "evidence": "Place of issue Portugal",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.date",
+      "value": "04 February 2026 14:25:07 +01 (CET)",
+      "confidence": 0.99,
+      "evidence": "Date 04 February 2026 14:25:07 +01 (CET)",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.authorisedOfficer",
+      "value": "Pedro Torrão",
+      "confidence": 0.96,
+      "evidence": "Name and signature of authorised officer Pedro Torrão",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.stampOrganisation",
+      "value": "Direção-Geral de Recursos Naturais, Segurança e Serviços Marítimos; Autoridade Nacional de Pesca (Directorate General for Natural Resources, Safety and Maritime Services; National Fisheries Authority)",
+      "confidence": 0.95,
+      "evidence": "Stamp of organisation Direção-Geral de Recursos Naturais, Segurança e Serviços Marítimos; Autoridade Nacional de Pesca (Directorate General for Natural Resources, Safety and Maritime Services; National Fisheries Authority)",
+      "pageNumber": "5",
+      "comments": ""
+    },
+    {
+      "fieldName": "importControl.conclusion",
+      "value": "Importation Authorised",
+      "confidence": 0.99,
+      "evidence": "Conclusion Importation Authorised",
+      "pageNumber": "5",
+      "comments": ""
+    }
+  ],
+  "missingFields": [
+    { "fieldName": "validatingAuthority.fax", "pageNumber": "1", "reason": "Field label is present but no value is visible." },
+    { "fieldName": "fishingVessel.contactDetails", "pageNumber": "1", "reason": "Column is present but no value is visible." },
+    { "fieldName": "fishingVessel.typeOfProcessingAuthorisedOnBoard", "pageNumber": "1", "reason": "Column is present but no value is visible." },
+    { "fieldName": "product.1.catchAreaOther", "pageNumber": "1", "reason": "Field is present but blank." },
+    { "fieldName": "product.2.catchAreaOther", "pageNumber": "1", "reason": "Field is present but blank." },
+    { "fieldName": "product.3.catchAreaOther", "pageNumber": "1", "reason": "Field is present but blank." },
+    { "fieldName": "transhipmentAtSea", "pageNumber": "1", "reason": "Section is present but no values are visible." },
+    { "fieldName": "transhipmentPortAreaAuthorisation", "pageNumber": "1", "reason": "Section is present but no values are visible." },
+    { "fieldName": "transportDetails.transportDocumentReference", "pageNumber": "3", "reason": "Layout suggests the field exists, but no clear value is visible." },
+    { "fieldName": "transportDetails.containerNumber", "pageNumber": "3", "reason": "Field label is present but no value is visible." },
+    { "fieldName": "transportDetails.sealNumber", "pageNumber": "3", "reason": "Field label is present but no value is visible." },
+    { "fieldName": "customsDeclarationNumber", "pageNumber": "4", "reason": "Field label is present but no value is visible." },
+    { "fieldName": "chedNumber", "pageNumber": "4", "reason": "Field label is present but no value is visible." },
+    { "fieldName": "importControl.fax", "pageNumber": "5", "reason": "Field label is present but no value is visible." },
+    { "fieldName": "importControl.verificationRequestedDate", "pageNumber": "5", "reason": "Field label is present but no value is visible." }
+  ],
+  "potentialIssues": [
+    {
+      "issue": "Illegible handwritten or scanned names",
+      "details": "The name of the master/fishing licence holder and the flag state validation name/title are both shown as 'Nome ilegível'.",
+      "pages": ["1", "2"]
+    },
+    {
+      "issue": "OCR artifact in fishing licence/reference",
+      "details": "One vessel licence/reference appears as 'CTOl1302/000009', likely 'CTOI-1302/000009'.",
+      "pages": ["1"]
+    },
+    {
+      "issue": "Chronology may require verification",
+      "details": "Exporter signature date is 29.10.2025 while flag state authority validation date is 29.08.2025. This may be valid, but the sequence should be checked.",
+      "pages": ["2"]
+    },
+    {
+      "issue": "Reference year mismatch may require verification",
+      "details": "Catch certificate reference uses 2026 ('CATCH.CC.FR.2026.0000148') while document number is 'FRA 2025 CSP 000518' and flag state validation date is in 2025.",
+      "pages": ["1", "2"]
+    },
+    {
+      "issue": "Transport details field alignment ambiguity",
+      "details": "On page 3, 'Vessel PENDRUC | France' appears to populate the identification field, but transport document reference is not clearly visible.",
+      "pages": ["3"]
+    },
+    {
+      "issue": "Both Article 14(1) and Article 14(2) are checked",
+      "details": "Both regulatory options are marked as selected on the importer declaration. Applicability should be confirmed.",
+      "pages": ["4"]
+    },
+    {
+      "issue": "Blank mandatory-looking sections",
+      "details": "Transhipment at sea, transhipment authorisation within a port area, customs declaration number, CHED number, and some transport fields are blank. These may be legitimately not applicable, but this is not explicitly stated.",
+      "pages": ["1", "3", "4"]
+    }
+  ],
+  "manualReviewRecommended": [
+    { "fieldName": "masterOrLicenceHolder.name", "reason": "Illegible value." },
+    { "fieldName": "flagStateValidation.nameTitle", "reason": "Illegible value." },
+    { "fieldName": "fishingVessel.fishingLicences", "reason": "Contains OCR corruption in one licence/reference." },
+    { "fieldName": "transportDetails.meansOfTransport.identification", "reason": "Page layout makes field mapping slightly ambiguous." },
+    { "fieldName": "transportDetails.transportDocumentReference", "reason": "Field appears blank/unclear and may need visual confirmation." },
+    { "fieldName": "iuuRegulation.article14_1 and iuuRegulation.article14_2", "reason": "Both are checked; regulatory basis should be confirmed." },
+    { "fieldName": "catchCertificateCommodity.4", "reason": "Importer declaration links this certificate to only one processed commodity line; verify that linkage against the broader catch certificate product coverage." },
+    { "fieldName": "catchCertificate.reference / catchCertificate.documentNumber / flagStateValidation.date", "reason": "Cross-year numbering and date sequence should be confirmed against issuing authority records." }
+  ]
+}

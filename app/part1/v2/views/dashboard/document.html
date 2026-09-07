@@ -1,0 +1,82 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName=document.type %}
+{% set backLinkHref=basePath + "/dashboard/notifications/" + consignment.reference + "?variant=" + variant %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">{{ consignment.reference }}</span>
+    <h1 class="govuk-heading-xl">{{ document.type }}</h1>
+
+    <div class="importer-document__status-row">
+      <strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong>
+      <span class="govuk-body govuk-!-margin-bottom-0">Overall extraction confidence: <strong>{{ document.confidence }}%</strong></span>
+    </div>
+
+    {% if document.statusLabel != 'Extracted' %}
+      <div class="govuk-warning-text govuk-!-margin-top-5">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          Some information is missing or unclear. The Port Health Authority may ask you for clearer evidence.
+        </strong>
+      </div>
+    {% else %}
+      <div class="govuk-inset-text">This information was extracted using AI. It shows the information submitted with your notification and cannot be changed here.</div>
+    {% endif %}
+
+    <dl class="govuk-summary-list govuk-!-margin-bottom-7">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Document reference</dt>
+        <dd class="govuk-summary-list__value">{{ document.reference }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">File name</dt>
+        <dd class="govuk-summary-list__value">{{ document.fileName }}</dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-l">AI-extracted information</h2>
+    {% for section in document.sections %}
+      <div class="govuk-summary-card govuk-!-margin-bottom-6">
+        <div class="govuk-summary-card__title-wrapper">
+          <h3 class="govuk-summary-card__title">{{ section.title }}</h3>
+        </div>
+        <div class="govuk-summary-card__content">
+          <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+            {% for item in section.rows %}
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">{{ item.label }}</dt>
+                <dd class="govuk-summary-list__value">
+                  {% if item.isMissing %}
+                    <span class="govuk-error-message govuk-!-margin-bottom-0">Not found in document</span>
+                  {% else %}
+                    {{ item.value }}
+                  {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  <strong class="govuk-tag {{ item.confidenceTagClass }}">{{ item.confidenceLabel }}</strong>
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+    {% endfor %}
+
+    <details class="govuk-details" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">How confidence indicators work</span>
+      </summary>
+      <div class="govuk-details__text">
+        High confidence means the information was clearly identified. Check information means the value may be unclear or needs confirmation. Missing means no value could be identified in the document.
+      </div>
+    </details>
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ basePath }}/dashboard/notifications/{{ consignment.reference }}?variant={{ variant }}">Return to notification</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName=consignment.reference %}
+{% set backLinkHref=basePath + "/dashboard?variant=" + variant %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="importer-notification__header">
+      <div>
+        <span class="govuk-caption-l">Seafood import notification</span>
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">{{ consignment.reference }}</h1>
+        <strong class="govuk-tag {{ consignment.statusTagClass }}">{{ consignment.statusLabel }}</strong>
+      </div>
+      <div class="importer-notification__status-card">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Submitted</p>
+        <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">{{ consignment.submittedDisplay }}</p>
+      </div>
+    </div>
+
+    {% if consignment.statusMessage %}
+      <div class="govuk-warning-text govuk-!-margin-top-6">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-visually-hidden">Warning</span>
+          {{ consignment.statusMessage }}
+        </strong>
+      </div>
+    {% endif %}
+
+    <div class="importer-notification__summary-grid govuk-!-margin-top-6">
+      <div class="importer-notification__summary-card">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Estimated arrival</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.arrivalDisplay }}</p>
+      </div>
+      <div class="importer-notification__summary-card">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Port of entry</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.port }}</p>
+      </div>
+      <div class="importer-notification__summary-card">
+        <p class="govuk-body-s govuk-!-margin-bottom-1">Consignment</p>
+        <p class="govuk-heading-m govuk-!-margin-bottom-0">{{ consignment.species }}, {{ consignment.weight }}</p>
+      </div>
+    </div>
+
+    <h2 class="govuk-heading-l">Notification information</h2>
+    <dl class="govuk-summary-list importer-notification__details">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Exporter</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.exporter }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country of origin</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.origin }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Species</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.species }} (<em>{{ consignment.scientificName }}</em>)</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Commodity code</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.commodityCode }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Net weight</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.weight }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Transport</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.transport }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Catch area</dt>
+        <dd class="govuk-summary-list__value">{{ consignment.catchArea }}</dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-l">Supporting documents and AI-extracted information</h2>
+    <p class="govuk-body">The following information was extracted automatically from the documents supplied with this notification. Open a document to review the extracted values and confidence indicators.</p>
+
+    <div class="importer-notification__documents-grid">
+      {% for document in consignment.documents %}
+        <section class="importer-notification__document-card">
+          <div class="importer-notification__document-header">
+            <h3 class="govuk-heading-m govuk-!-margin-bottom-1">{{ document.type }}</h3>
+            <strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong>
+          </div>
+          <p class="govuk-body-s govuk-!-margin-bottom-2">{{ document.reference }}</p>
+          <p class="govuk-body">{{ document.summary }}</p>
+          <p class="govuk-body"><strong>Overall extraction confidence:</strong> {{ document.confidence }}%</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">
+            <a class="govuk-link" href="{{ basePath }}/dashboard/notifications/{{ consignment.reference }}/documents/{{ document.id }}?variant={{ variant }}">Review AI-extracted information<span class="govuk-visually-hidden"> from {{ document.type }}</span></a>
+          </p>
+        </section>
+      {% endfor %}
+    </div>
+
+    <h2 class="govuk-heading-l">Notification history</h2>
+    <ol class="govuk-list importer-notification__timeline">
+      {% for event in consignment.timeline %}
+        <li>
+          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">{{ event.text }}</p>
+          <p class="govuk-body-s govuk-!-margin-bottom-0">{{ event.date }}</p>
+        </li>
+      {% endfor %}
+    </ol>
+
+    <p class="govuk-body govuk-!-margin-top-6">
+      <a class="govuk-link" href="{{ basePath }}/dashboard?variant={{ variant }}">Return to your notifications</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Change extracted document details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Non-Manipulation Declaration</span>
+    <h1 class="govuk-heading-l">Change extracted details</h1>
+    <p class="govuk-body">Document {{ document.reference }} - {{ document.documentNumber }}</p>
+
+    <form action="{{ basePath }}/review-extraction-a/document/{{ document.id }}/change/{{ sectionKey }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
+      {% for field in sectionFields %}
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="{{ field.key }}">{{ field.label }}</label>
+
+          {% if field.control == 'textarea' %}
+            <textarea class="govuk-textarea" id="{{ field.key }}" name="{{ field.key }}" rows="{{ field.rows or 3 }}">{{ field.value }}</textarea>
+          {% else %}
+            <input class="govuk-input" id="{{ field.key }}" name="{{ field.key }}" type="text" value="{{ field.value }}">
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and return
+        </button>
+        <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

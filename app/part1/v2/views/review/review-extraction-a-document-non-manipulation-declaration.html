@@ -1,0 +1,61 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Extracted document details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Non-Manipulation Declaration | Document {{ documentIndex }} of {{ totalDocuments }}</span>
+    <h1 class="govuk-heading-l">{{ document.reference }} - {{ document.documentNumber }}</h1>
+
+    {% if document.statusKey == 'incomplete' or document.statusKey == 'manual-check' %}
+      <div class="govuk-inset-text">
+        Some values are missing or low confidence. Check this document before submission.
+      </div>
+    {% endif %}
+
+    {% for section in document.detailSections %}
+      <div class="govuk-summary-card govuk-!-margin-bottom-6">
+        <div class="govuk-summary-card__title-wrapper">
+          <h2 class="govuk-summary-card__title">{{ section.title }}</h2>
+          {% if section.editable !== false %}
+            <ul class="govuk-summary-card__actions">
+              <li class="govuk-summary-card__action">
+                <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}/change/{{ section.key }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">
+                  Change<span class="govuk-visually-hidden"> {{ section.title }}</span>
+                </a>
+              </li>
+            </ul>
+          {% endif %}
+        </div>
+        <div class="govuk-summary-card__content">
+          <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+            {% for row in section.rows %}
+              <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">{{ row.label }}</dt>
+                <dd class="govuk-summary-list__value">
+                  {% if row.isMissing %}
+                    <span class="govuk-error-message govuk-!-margin-bottom-0">Missing</span>
+                  {% else %}
+                    {{ row.value }}
+                  {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                  {% if row.isMissing %}
+                    <strong class="govuk-tag govuk-tag--red">Missing</strong>
+                  {% else %}
+                    <strong class="govuk-tag {{ row.fieldConfidenceTagClass }}">{{ row.fieldConfidenceLabel }}</strong>
+                  {% endif %}
+                </dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+{% endblock %}
