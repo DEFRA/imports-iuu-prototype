@@ -1,0 +1,76 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName = "Main reason for import" %}
+{% set backLinkHref = basePath + "/what-are-you-importing?variant=" + variant %}
+
+{% macro reason(id, value, title, description, conditionalId) %}
+  <div class="govuk-radios__item">
+    <input class="govuk-radios__input" id="{{ id }}" name="main-reason-for-import" type="radio" value="{{ value }}" {% if conditionalId %}data-aria-controls="{{ conditionalId }}"{% endif %} {% if data['main-reason-for-import'] == value %}checked{% endif %}>
+    <label class="govuk-label govuk-radios__label" for="{{ id }}">
+      {{ title }}
+      {% if description %}<span class="notification-flow__option-description govuk-body-s">{{ description }}</span>{% endif %}
+    </label>
+  </div>
+{% endmacro %}
+
+{% macro purpose(id, value, title, description) %}
+  <div class="govuk-radios__item">
+    <input class="govuk-radios__input" id="{{ id }}" name="internal-market-purpose" type="radio" value="{{ value }}" {% if data['internal-market-purpose'] == value %}checked{% endif %}>
+    <label class="govuk-label govuk-radios__label" for="{{ id }}">
+      {{ title }}
+      {% if description %}<span class="notification-flow__option-description govuk-body-s">{{ description }}</span>{% endif %}
+    </label>
+  </div>
+{% endmacro %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% include "app/part1/v2/views/notification/_draft-header.html" %}
+
+    <span class="govuk-caption-l">About the consignment</span>
+    <h1 class="govuk-heading-l">Main reason for import</h1>
+
+    <form action="{{ basePath }}/main-reason-for-import" method="post">
+      <input type="hidden" name="variant" value="{{ variant }}">
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-visually-hidden">Main reason for import</legend>
+          <div class="govuk-radios" data-module="govuk-radios">
+            {{ reason("reason-internal-market", "internal-market", "Internal market", "For imports of animals intended for sale or use in Great Britain (England, Scotland or Wales).", "conditional-internal-market") }}
+
+            <div class="govuk-radios__conditional{% if data['main-reason-for-import'] != 'internal-market' %} govuk-radios__conditional--hidden{% endif %}" id="conditional-internal-market">
+              <h2 class="govuk-heading-m">Purpose in the internal market</h2>
+              <div class="govuk-radios" data-module="govuk-radios">
+                {{ purpose("purpose-sale-gift", "sale-gift", "Transfer of ownership - Sale/gift", "Any movement of an animal that has as its aim the sale of or the transfer of ownership of the animal from one person or entity to another. For example, animals that have been sold and are being moved to a new owner or will be sold once in Great Britain, purchases from a breeder/shop overseas and where an animal is being moved to a new owner with no sale involved (for example a gift).") }}
+                {{ purpose("purpose-rescue", "rescue", "Transfer of ownership - Rescue", "Ownership of animals changes from one person or entity to another through rehoming and is adopted/fostered by new families, with or without an exchange or donation of money.") }}
+                {{ purpose("purpose-breeding", "breeding", "Breeding", "Animals for reproduction. This includes animals intended to contribute to the genetic pool of a breeding program, improve livestock quality, or produce offspring.") }}
+                {{ purpose("purpose-research", "research", "Research", "Animals for use in scientific or medical research.") }}
+                {{ purpose("purpose-racing", "racing-competition-show-training", "Racing, competition, show or training", "Animals to participate in competitive or training events.") }}
+                {{ purpose("purpose-approved-premises", "approved-premises", "Approved premises or body", "Animals for exhibition, zoos, collections, or conservation programmes where a licence or approval is needed.") }}
+                {{ purpose("purpose-companion-animal", "companion-animal", "Companion animal not for resale or rehoming", "Privately owned animals being imported under the commercial rules as the animal is unable to meet the non-commercial requirements, for example, one or more animals being transported by a commercial transporter without their owner or an authorised person, owner that is not traveling within five days of the animals' movement or a group of five or more animals being accompanied by their owner.") }}
+                {{ purpose("purpose-production", "production", "Production", "Animals that are farmed for the production of meat, milk, eggs, wool or any other animal product or by-product.") }}
+                {{ purpose("purpose-slaughter", "slaughter", "Slaughter", "Animals to be slaughtered and processed for meat production shortly after arrival into Great Britain.") }}
+                {{ purpose("purpose-fattening", "fattening", "Fattening", "Animals to be fattened for meat production.") }}
+                {{ purpose("purpose-restocking", "restocking", "Restocking", "To replenish or enhance populations of species, for example, restocking of game or fish.") }}
+              </div>
+            </div>
+
+            {{ reason("reason-transhipment", "transhipment", "Transhipment or onward travel", "For animals intended for direct travel to a third country, that will stay only within the same port or airport in Great Britain while moving to another means of transport.") }}
+            {{ reason("reason-transit", "transit", "Transit", "For animals moving through Great Britain for direct travel to a third country, that will enter Great Britain at one port or airport and leave from a different one within England, Scotland or Wales.") }}
+            {{ reason("reason-re-entry", "re-entry", "Re-entry", "For animals authorised for re-entry, or rejected exports re-entering Great Britain.") }}
+            {{ reason("reason-temporary-admission-horses", "temporary-admission-horses", "Temporary admission horses", "For horses authorised for temporary entry.") }}
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">Save and continue</button>
+        <button class="govuk-button govuk-button--secondary" name="action" value="overview" data-module="govuk-button">Save and return to overview</button>
+      </div>
+      <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/dashboard?variant={{ variant }}">Cancel and return to overview</a></p>
+    </form>
+  </div>
+</div>
+{% endblock %}

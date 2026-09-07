@@ -5,6 +5,55 @@
 
 // Add extra styles here
 
+.notification-flow__draft-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.notification-flow__draft-header .govuk-tag,
+.notification-flow__draft-header .govuk-body {
+  margin-bottom: 0;
+}
+
+.notification-flow__search {
+  display: flex;
+  max-width: 620px;
+}
+
+.notification-flow__search .govuk-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notification-flow__search-button {
+  width: 40px;
+  border: 0;
+  background: #1d70b8;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.notification-flow__search-button:hover {
+  background: #003078;
+}
+
+.notification-flow__search-button:focus {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+  background: #003078;
+}
+
+.notification-flow__option-description {
+  display: block;
+  max-width: 580px;
+  margin-top: 4px;
+  color: #505a5f;
+}
+
 .importer-dashboard__summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

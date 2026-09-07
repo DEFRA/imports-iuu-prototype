@@ -1323,6 +1323,11 @@ const findImporterDashboardDocument = (type, reference) => {
   return { consignment, document }
 }
 
+const getNewNotificationVariant = (req) => {
+  const requestedVariant = (req.body && req.body.variant) || req.query.variant || req.session.data['new-notification-variant']
+  return getDashboardVariant(requestedVariant) || 'a'
+}
+
 router.get('/dashboard', (req, res) => {
   const variant = getDashboardVariant(req.query.variant)
   if (!variant) {
@@ -1444,6 +1449,65 @@ router.get('/documents/file/:type/:reference', (req, res) => {
 router.get('/dashboard/assumptions', (req, res) => {
   const variant = getDashboardVariant(req.query.variant) || 'a'
   res.render('part1/dashboard/assumptions', { variant })
+})
+
+router.get('/origin-of-import', (req, res) => {
+  const variant = getNewNotificationVariant(req)
+  req.session.data['new-notification-variant'] = variant
+  res.render('part1/notification/origin-of-import', { variant })
+})
+
+router.post('/origin-of-import', (req, res) => {
+  const variant = getNewNotificationVariant(req)
+  const data = req.session.data
+  data['new-notification-variant'] = variant
+  data['country-of-origin'] = req.body['country-of-origin'] || ''
+  data['has-region-of-origin-code'] = req.body['has-region-of-origin-code'] || ''
+  data['internal-reference'] = req.body['internal-reference'] || ''
+  res.redirect('/what-are-you-importing?variant=' + variant)
+})
+
+router.get('/what-are-you-importing', (req, res) => {
+  const variant = getNewNotificationVariant(req)
+  req.session.data['new-notification-variant'] = variant
+  res.render('part1/notification/what-are-you-importing', { variant })
+})
+
+router.post('/what-are-you-importing', (req, res) => {
+  const variant = getNewNotificationVariant(req)
+  const data = req.session.data
+  const selectedCommodities = req.body['selected-commodities']
+  data['new-notification-variant'] = variant
+  data['commodity-search'] = req.body['commodity-search'] || ''
+  data['selected-commodities'] = selectedCommodities
+    ? (Array.isArray(selectedCommodities) ? selectedCommodities : [selectedCommodities])
+    : []
+
+  if (req.body.action === 'overview') {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  res.redirect('/main-reason-for-import?variant=' + variant)
+})
+
+router.get('/main-reason-for-import', (req, res) => {
+  const variant = getNewNotificationVariant(req)
+  req.session.data['new-notification-variant'] = variant
+  res.render('part1/notification/main-reason-for-import', { variant })
+})
+
+router.post('/main-reason-for-import', (req, res) => {
+  const variant = getNewNotificationVariant(req)
+  const data = req.session.data
+  data['new-notification-variant'] = variant
+  data['main-reason-for-import'] = req.body['main-reason-for-import'] || ''
+  data['internal-market-purpose'] = req.body['internal-market-purpose'] || ''
+
+  if (req.body.action === 'overview') {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  res.redirect('/upload-guidance?variant=' + variant)
 })
 
 const part1StaticViews = {
