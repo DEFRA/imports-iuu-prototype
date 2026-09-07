@@ -1,7 +1,7 @@
 {% extends "layouts/main.html" %}
 
-{% set pageName="DEFRA fish imports prototype selector" %}
-{% set serviceName="DEFRA Fish Imports prototypes" %}
+{% set pageName="Defra fish imports prototype selector" %}
+{% set serviceName="Defra Fish Imports prototypes" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% macro importerVersionCard(version, basePath, startPage) %}
@@ -64,7 +64,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">DEFRA fish imports prototype selector</h1>
+    <h1 class="govuk-heading-xl">Defra Fish Imports prototype selector</h1>
     <p class="govuk-body-l">Choose which prototype journey and version you want to test.</p>
     <div class="govuk-inset-text">All scenarios and records in this prototype are fictional and for user research only.</div>
   </div>
@@ -76,15 +76,15 @@
     <p class="govuk-body govuk-!-margin-bottom-6">Use these journeys to test importer or agent submission flows.</p>
   </div>
 
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-full">
     {{ importerVersionCard("Version 3 (work-in-progress)", "/part1/v3", "/dashboard") }}
   </div>
 
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-full">
     {{ importerVersionCard("Version 2", "/part1/v2", "/dashboard") }}
   </div>
 
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-full">
     {{ importerVersionCard("Version 1", "/part1/v1") }}
   </div>
 </div>
@@ -97,11 +97,11 @@
     <p class="govuk-body govuk-!-margin-bottom-6">Use these journeys to test Port Health Authority inspection workflows.</p>
   </div>
 
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-full">
     {{ inspectionVersionCard("Version 2 (work-in-progress)", "/part2/v2") }}
   </div>
 
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-full">
     {{ inspectionVersionCard("Version 1", "/part2/v1") }}
   </div>
 </div>
