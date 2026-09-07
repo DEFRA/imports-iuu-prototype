@@ -31,6 +31,16 @@ module.exports = {
   'country-of-origin': '',
   'country-of-export': '',
 
+  // New notification details
+  'notification-draft-reference': 'GBN-AG-26-7K8M2P',
+  'new-notification-variant': 'a',
+  'has-region-of-origin-code': '',
+  'internal-reference': '',
+  'commodity-search': '',
+  'selected-commodities': [],
+  'main-reason-for-import': '',
+  'internal-market-purpose': '',
+
   // Fish species (array added via routes)
   'species-list': [],
 
