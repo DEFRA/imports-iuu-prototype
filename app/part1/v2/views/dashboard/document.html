@@ -19,7 +19,7 @@
     {% if document.originalFileUrl %}
       <p class="govuk-body">
         <a class="govuk-button govuk-button--secondary" href="{{ document.originalFileUrl }}">
-          View PDF<span class="govuk-visually-hidden"> for {{ document.type | lower }} {{ document.reference }}</span>
+          View original file<span class="govuk-visually-hidden"> for {{ document.type | lower }} {{ document.reference }}</span>
         </a>
       </p>
     {% endif %}
