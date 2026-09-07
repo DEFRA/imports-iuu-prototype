@@ -1,0 +1,14 @@
+{% extends "app/part1/v2/views/layouts/main.html" %}
+
+{% set pageName="Document not found" %}
+{% set backLinkHref=basePath + "/dashboard?variant=" + variant %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Document not found</h1>
+    <p class="govuk-body">The evidence document you requested could not be found.</p>
+    <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/dashboard?variant={{ variant }}">Return to your notifications</a></p>
+  </div>
+</div>
+{% endblock %}

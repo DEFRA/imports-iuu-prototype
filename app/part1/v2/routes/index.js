@@ -74,6 +74,7 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
+const dashboardSampleDocumentsPath = path.join(__dirname, '..', 'data', 'dashboard-sample-documents')
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
 const importerDashboardConsignments = require('../data/importer-dashboard-consignments')
 const {
@@ -1310,13 +1311,25 @@ const getDashboardVariant = (value) => {
   return supportedExtractionVariants.has(variant) ? variant : ''
 }
 
+const findImporterDashboardDocument = (type, reference) => {
+  const consignment = importerDashboardConsignments.find((item) => (
+    item.documents.some((document) => (
+      document.typeSlug === type && document.reference === reference
+    ))
+  ))
+  const document = consignment && consignment.documents.find((item) => (
+    item.typeSlug === type && item.reference === reference
+  ))
+  return { consignment, document }
+}
+
 router.get('/dashboard', (req, res) => {
   const variant = getDashboardVariant(req.query.variant)
   if (!variant) {
     return res.redirect('/dashboard?variant=a')
   }
 
-  const activeTab = ['submitted', 'historical'].includes(req.query.tab) ? req.query.tab : 'drafts'
+  const activeTab = ['drafts', 'historical'].includes(req.query.tab) ? req.query.tab : 'submitted'
   const filters = getDashboardFilters(req.query)
   const draftConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'drafts')
   const submittedConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'submitted')
@@ -1339,25 +1352,93 @@ router.get('/dashboard', (req, res) => {
   })
 })
 
+router.get('/dashboard/drafts/:reference', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const draft = importerDashboardConsignments.find((item) => (
+    item.status === 'draft' && item.reference === req.params.reference
+  ))
+
+  if (!draft) {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  return res.render('part1/dashboard/notification-not-available', {
+    variant,
+    reference: draft.reference,
+    dashboardUrl: `${basePath}/dashboard?variant=${variant}&tab=drafts#drafts`
+  })
+})
+
 router.get('/dashboard/notifications/:reference', (req, res) => {
   const variant = getDashboardVariant(req.query.variant) || 'a'
   const consignment = importerDashboardConsignments.find((item) => item.reference === req.params.reference)
   if (!consignment) {
     return res.redirect('/dashboard?variant=' + variant)
   }
-
-  res.render('part1/dashboard/notification', { variant, consignment })
-})
-
-router.get('/dashboard/notifications/:reference/documents/:documentId', (req, res) => {
-  const variant = getDashboardVariant(req.query.variant) || 'a'
-  const consignment = importerDashboardConsignments.find((item) => item.reference === req.params.reference)
-  const document = consignment && consignment.documents.find((item) => item.id === req.params.documentId)
-  if (!consignment || !document) {
-    return res.redirect('/dashboard?variant=' + variant)
+  if (consignment.isAvailable === false) {
+    return res.render('part1/dashboard/notification-not-available', {
+      variant,
+      reference: consignment.reference
+    })
   }
 
-  res.render('part1/dashboard/document', { variant, consignment, document })
+  const evidenceSections = consignment.evidenceSections.map((section) => ({
+    ...section,
+    references: section.references.map((reference) => {
+      const document = consignment.documents.find((item) => item.reference === reference)
+      return {
+        text: reference,
+        href: document
+          ? `${basePath}/documents/${document.typeSlug}/${encodeURIComponent(reference)}?variant=${variant}`
+          : '',
+        visuallyHiddenText: document ? `View ${document.type.toLowerCase()}` : ''
+      }
+    })
+  }))
+
+  res.render('part1/dashboard/notification', {
+    variant,
+    consignment: { ...consignment, evidenceSections }
+  })
+})
+
+router.get('/documents/:type/:reference', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const { consignment, document } = findImporterDashboardDocument(req.params.type, req.params.reference)
+  if (!consignment || !document) {
+    return res.status(404).render('part1/dashboard/document-not-found', { variant })
+  }
+
+  const documentLinksByReference = Object.fromEntries(consignment.documents.map((item) => [
+    item.reference,
+    {
+      text: item.reference,
+      href: `${basePath}/documents/${item.typeSlug}/${encodeURIComponent(item.reference)}?variant=${variant}`,
+      visuallyHiddenText: `View ${item.type.toLowerCase()}`
+    }
+  ]))
+
+  res.render('part1/dashboard/document', {
+    variant,
+    consignment,
+    document: {
+      ...document,
+      originalFileUrl: document.sourceFile
+        ? `${basePath}/documents/file/${document.typeSlug}/${encodeURIComponent(document.reference)}?variant=${variant}`
+        : ''
+    },
+    documentLinksByReference
+  })
+})
+
+router.get('/documents/file/:type/:reference', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const { consignment, document } = findImporterDashboardDocument(req.params.type, req.params.reference)
+  if (!consignment || !document || !document.sourceFile) {
+    return res.status(404).render('part1/dashboard/document-not-found', { variant })
+  }
+
+  res.sendFile(path.join(dashboardSampleDocumentsPath, document.sourceFile))
 })
 
 router.get('/dashboard/assumptions', (req, res) => {
@@ -1981,6 +2062,7 @@ router.get('/review-extraction-a', (req, res) => {
     tablePreviousUrl: tablePage > 1 ? buildReviewExtractionAUrl(tablePage - 1) + '#document-summary' : '',
     tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionAUrl(tablePage + 1) + '#document-summary' : '',
     commodityDetails,
+    draftReference: data['dashboard-draft-reference'],
     arrivalDetails: {
       portOfEntry,
       expectedDateOfArrival
