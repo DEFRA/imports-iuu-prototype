@@ -113,6 +113,21 @@ PROCESSING_STATEMENTS = [
     }
 ]
 
+BILLS_OF_LADING = [
+    {
+        'filename': 'IUU packing list.pdf',
+        'number': 'BOL-2026-55190',
+        'shipper': 'Dakar Ocean Exports SA, Port de Dakar, Senegal',
+        'consignee': 'Atlantic Seafoods Ltd, Felixstowe, United Kingdom',
+        'container': 'MSCU 7391842',
+        'cargo': 'Frozen yellowfin tuna',
+        'weight': '24,800 kg',
+        'departure': 'Port of Dakar, Senegal',
+        'destination': 'Port of Felixstowe, United Kingdom',
+        'issued': '16 July 2026'
+    }
+]
+
 
 def append_value(cell, value):
     paragraph = cell.add_paragraph()
@@ -210,6 +225,40 @@ def build_processing_statement(data, output):
     document.save(output)
 
 
+def build_bill_of_lading(data, output):
+    document = canvas.Canvas(str(output), pagesize=(595, 842))
+    document.setTitle('Sample bill of lading')
+    document.setFont('Helvetica-Bold', 18)
+    document.drawString(50, 790, 'BILL OF LADING')
+    document.setFont('Helvetica', 9)
+    document.drawRightString(545, 794, 'Fictional document for user research only')
+
+    rows = [
+        ('Document number', data['number']),
+        ('Date issued', data['issued']),
+        ('Shipper', data['shipper']),
+        ('Consignee', data['consignee']),
+        ('Port of loading', data['departure']),
+        ('Port of discharge', data['destination']),
+        ('Container number', data['container']),
+        ('Description of goods', data['cargo']),
+        ('Gross weight', data['weight'])
+    ]
+    y_position = 735
+    for label, value in rows:
+        document.setFont('Helvetica-Bold', 10)
+        document.drawString(55, y_position, label)
+        document.setFont('Helvetica', 10)
+        document.drawString(190, y_position, value)
+        document.line(50, y_position - 8, 545, y_position - 8)
+        y_position -= 48
+
+    document.setFont('Helvetica', 9)
+    document.drawString(55, 270, 'Received for shipment in apparent good order and condition.')
+    document.drawString(55, 245, 'Carrier signature: Signed electronically for sample')
+    document.save()
+
+
 def export_pdf(docx_path, pdf_path):
     script = '''
 on run argv
@@ -254,8 +303,10 @@ def watermark(source, destination):
         writer.write(pdf_file)
 
 
-def generate(pilot=False):
-    records = CATCH_CERTIFICATES[:1] if pilot else CATCH_CERTIFICATES + PROCESSING_STATEMENTS
+def generate(pilot=False, bill_of_lading_only=False):
+    records = CATCH_CERTIFICATES[:1] if pilot else CATCH_CERTIFICATES + PROCESSING_STATEMENTS + BILLS_OF_LADING
+    if bill_of_lading_only:
+        records = BILLS_OF_LADING
     staging = VERSION_ROOT / '.tmp' / 'sample-evidence'
     if staging.exists():
         shutil.rmtree(staging)
@@ -268,9 +319,12 @@ def generate(pilot=False):
             output_pdf = staging / record['filename']
             if record in CATCH_CERTIFICATES:
                 build_catch_certificate(record, docx_path)
-            else:
+                export_pdf(docx_path, raw_pdf)
+            elif record in PROCESSING_STATEMENTS:
                 build_processing_statement(record, docx_path)
-            export_pdf(docx_path, raw_pdf)
+                export_pdf(docx_path, raw_pdf)
+            else:
+                build_bill_of_lading(record, raw_pdf)
             watermark(raw_pdf, output_pdf)
             print(output_pdf)
     return staging
@@ -284,8 +338,9 @@ def install(staging):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--pilot', action='store_true', help='Generate only the first catch certificate')
+    parser.add_argument('--bill-of-lading-only', action='store_true', help='Generate only the sample bill of lading')
     parser.add_argument('--install', action='store_true', help='Replace this version\'s evidence PDFs')
     arguments = parser.parse_args()
-    generated = generate(arguments.pilot)
+    generated = generate(arguments.pilot, arguments.bill_of_lading_only)
     if arguments.install:
         install(generated)

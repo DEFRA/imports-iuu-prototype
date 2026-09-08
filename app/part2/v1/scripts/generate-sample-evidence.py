@@ -18,7 +18,8 @@ TARGET = VERSION_ROOT / 'data' / 'sample-documents'
 TEMPLATES = TARGET / 'templates'
 GENERATED_FILENAMES = {
     'CL-2026-44-000079-N.pdf',
-    'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
+    'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf',
+    'IUU packing list.pdf'
 }
 
 IMPORTER = 'New England Seafood International Ltd, Genesis Way, Healing, Grimsby DN37 9TU, United Kingdom'
@@ -114,6 +115,21 @@ PROCESSING_STATEMENTS = [
             ('FRA 2026 CSP 000101', 'BERNICA - France', '9 December 2026', 'Skipjack tuna', '78,000', '74,000', '66,600'),
             ('CL-2026-44-000079-N', 'PACIFIC DAWN - Chile', '9 December 2026', 'Skipjack tuna', '100,000', '98,000', '88,200')
         ]
+    }
+]
+
+BILLS_OF_LADING = [
+    {
+        'filename': 'IUU packing list.pdf',
+        'number': 'BOL-2026-55190',
+        'shipper': 'Dakar Ocean Exports SA, Port de Dakar, Senegal',
+        'consignee': 'Atlantic Seafoods Ltd, Felixstowe, United Kingdom',
+        'container': 'MSCU 7391842',
+        'cargo': 'Frozen yellowfin tuna',
+        'weight': '24,800 kg',
+        'departure': 'Port of Dakar, Senegal',
+        'destination': 'Port of Felixstowe, United Kingdom',
+        'issued': '16 July 2026'
     }
 ]
 
@@ -214,6 +230,40 @@ def build_processing_statement(data, output):
     document.save(output)
 
 
+def build_bill_of_lading(data, output):
+    document = canvas.Canvas(str(output), pagesize=(595, 842))
+    document.setTitle('Sample bill of lading')
+    document.setFont('Helvetica-Bold', 18)
+    document.drawString(50, 790, 'BILL OF LADING')
+    document.setFont('Helvetica', 9)
+    document.drawRightString(545, 794, 'Fictional document for user research only')
+
+    rows = [
+        ('Document number', data['number']),
+        ('Date issued', data['issued']),
+        ('Shipper', data['shipper']),
+        ('Consignee', data['consignee']),
+        ('Port of loading', data['departure']),
+        ('Port of discharge', data['destination']),
+        ('Container number', data['container']),
+        ('Description of goods', data['cargo']),
+        ('Gross weight', data['weight'])
+    ]
+    y_position = 735
+    for label, value in rows:
+        document.setFont('Helvetica-Bold', 10)
+        document.drawString(55, y_position, label)
+        document.setFont('Helvetica', 10)
+        document.drawString(190, y_position, value)
+        document.line(50, y_position - 8, 545, y_position - 8)
+        y_position -= 48
+
+    document.setFont('Helvetica', 9)
+    document.drawString(55, 270, 'Received for shipment in apparent good order and condition.')
+    document.drawString(55, 245, 'Carrier signature: Signed electronically for sample')
+    document.save()
+
+
 def export_pdf(docx_path, pdf_path):
     script = '''
 on run argv
@@ -258,11 +308,13 @@ def watermark(source, destination):
         writer.write(pdf_file)
 
 
-def generate(pilot=False):
+def generate(pilot=False, bill_of_lading_only=False):
     records = [
-        record for record in CATCH_CERTIFICATES + PROCESSING_STATEMENTS
+        record for record in CATCH_CERTIFICATES + PROCESSING_STATEMENTS + BILLS_OF_LADING
         if record['filename'] in GENERATED_FILENAMES
     ]
+    if bill_of_lading_only:
+        records = BILLS_OF_LADING
     if pilot:
         records = records[:1]
     staging = VERSION_ROOT / '.tmp' / 'sample-evidence'
@@ -277,9 +329,12 @@ def generate(pilot=False):
             output_pdf = staging / record['filename']
             if record in CATCH_CERTIFICATES:
                 build_catch_certificate(record, docx_path)
-            else:
+                export_pdf(docx_path, raw_pdf)
+            elif record in PROCESSING_STATEMENTS:
                 build_processing_statement(record, docx_path)
-            export_pdf(docx_path, raw_pdf)
+                export_pdf(docx_path, raw_pdf)
+            else:
+                build_bill_of_lading(record, raw_pdf)
             watermark(raw_pdf, output_pdf)
             print(output_pdf)
     return staging
@@ -293,8 +348,9 @@ def install(staging):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--pilot', action='store_true', help='Generate only the first catch certificate')
+    parser.add_argument('--bill-of-lading-only', action='store_true', help='Generate only the sample bill of lading')
     parser.add_argument('--install', action='store_true', help='Replace this version\'s evidence PDFs')
     arguments = parser.parse_args()
-    generated = generate(arguments.pilot)
+    generated = generate(arguments.pilot, arguments.bill_of_lading_only)
     if arguments.install:
         install(generated)
