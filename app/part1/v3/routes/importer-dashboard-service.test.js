@@ -375,18 +375,21 @@ test('reconciles the multi-document case and identifies its missing evidence', (
   ])
 })
 
-test('only offers locally available PDFs that match their document references', () => {
-  const sourceDocuments = consignments.flatMap((consignment) => (
-    consignment.documents.filter((document) => document.sourceFile)
-  ))
-  const dashboardDocumentsPath = path.join(__dirname, '..', 'data', 'dashboard-sample-documents')
-
-  assert.deepEqual(sourceDocuments.map((document) => document.reference), [
-    'CL-2026-44-000079-N',
-    'CATCH.PS.PT.2026.0001149'
+test('offers local PDFs for every submitted document in consignments 11001 to 11003', () => {
+  const targetReferences = new Set([
+    'GB-IUU-2026-11001',
+    'GB-IUU-2026-11002',
+    'GB-IUU-2026-11003'
   ])
+  const targetConsignments = consignments.filter((consignment) => targetReferences.has(consignment.reference))
+  const sourceDocuments = targetConsignments.flatMap((consignment) => consignment.documents)
+  const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
+
+  assert.equal(targetConsignments.length, 3)
+  assert.equal(sourceDocuments.length, 7)
+  assert.equal(sourceDocuments.every((document) => document.sourceFile), true)
 
   for (const document of sourceDocuments) {
-    assert.equal(fs.existsSync(path.join(dashboardDocumentsPath, document.sourceFile)), true)
+    assert.equal(fs.existsSync(path.join(sampleDocumentsPath, document.sourceFile)), true)
   }
 })

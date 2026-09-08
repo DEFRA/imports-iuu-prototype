@@ -1,5 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
 
 const {
   buildDashboardFilters,
@@ -8,6 +10,7 @@ const {
   buildInspectionDashboardViewModel
 } = require('./inspection-dashboard-service')
 const { mockConsignmentSummariesApi } = require('../mock-api/consignment-summaries-api')
+const additionalDocuments = require('../../../data/additional-documents')
 
 const fixedToday = new Date(Date.UTC(2026, 0, 1))
 
@@ -108,6 +111,15 @@ test('maps document counts as separate display lines', () => {
   const documentLabels = viewModel.forReview.rows.flatMap((row) => row.documentsProvidedLines)
   assert.ok(documentLabels.some((label) => label.startsWith('Processing statement')))
   assert.ok(documentLabels.some((label) => label.startsWith('Non-manipulation declaration')))
+})
+
+test('serves a fictional sample bill of lading', () => {
+  const billOfLading = additionalDocuments.find((document) => document.id === 'BOL-2026-55190')
+  const sourcePath = path.join(__dirname, '..', '..', '..', 'data', 'sample-documents', billOfLading.sourceFile)
+  const sourcePdf = fs.readFileSync(sourcePath)
+
+  assert.equal(sourcePdf.includes(Buffer.from('SAMPLE')), true)
+  assert.equal(sourcePdf.includes(Buffer.from('Fictional document for user research only')), true)
 })
 
 test('labels past arrival dates as overdue', () => {
