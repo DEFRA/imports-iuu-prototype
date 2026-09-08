@@ -288,10 +288,10 @@ const registerInspectionRoutes = (router, basePath) => {
   })
 
   router.get('/inspection/:reference/confirm-details', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    const inspectionNotification = getInspectionNotificationByReference(req.params.reference)
+    if (!inspectionNotification?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
-    const inspectionNotification = getInspectionNotificationByReference(inspectionReference)
     const data = req.session.data
     data['inspection-location'] = data['inspection-location'] || 'Port of Felixstowe - inspection bay 2'
     data['inspection-date-day'] = data['inspection-date-day'] || String(inspectionNotification.arrivalDate.getUTCDate())
@@ -302,10 +302,15 @@ const registerInspectionRoutes = (router, basePath) => {
   })
 
   router.post('/inspection/:reference/confirm-details', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['inspection-location'] = req.body['inspection-location'] || ''
+    data['inspection-date-day'] = req.body['inspection-date-day'] || ''
+    data['inspection-date-month'] = req.body['inspection-date-month'] || ''
+    data['inspection-date-year'] = req.body['inspection-date-year'] || ''
+    data['inspection-lead-officer'] = req.body['inspection-lead-officer'] || ''
     const errors = []
     if (!data['inspection-location']) errors.push({ name: 'inspection-location', text: 'Enter the inspection location' })
     if (!data['inspection-date-day'] || !data['inspection-date-month'] || !data['inspection-date-year']) {
@@ -313,7 +318,7 @@ const registerInspectionRoutes = (router, basePath) => {
     }
     if (!data['inspection-lead-officer']) errors.push({ name: 'inspection-lead-officer', text: 'Enter the lead inspecting officer' })
     if (errors.length) return renderInspectionPage(res, 'confirm-details', errors)
-    res.redirect(`/inspection/${inspectionReference}/check-documents`)
+    res.redirect(`/inspection/${req.params.reference}/check-documents`)
   })
 
   router.get('/inspection/:reference/check-documents', (req, res) => {
@@ -393,17 +398,20 @@ const registerInspectionRoutes = (router, basePath) => {
   })
 
   router.get('/inspection/:reference/identity-checks', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     res.render(inspectionView('identity-checks'))
   })
 
   router.post('/inspection/:reference/identity-checks', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['identity-check-result'] = req.body['identity-check-result'] || ''
+    data['seal-number-found'] = req.body['seal-number-found'] || ''
+    data['identity-discrepancy-details'] = req.body['identity-discrepancy-details'] || ''
     const result = data['identity-check-result']
     const sealFound = data['seal-number-found']
     const details = data['identity-discrepancy-details']
@@ -414,21 +422,25 @@ const registerInspectionRoutes = (router, basePath) => {
       errors.push({ name: 'identity-discrepancy-details', text: 'Describe the identity discrepancy' })
     }
     if (errors.length) return renderInspectionPage(res, 'identity-checks', errors)
-    res.redirect(`/inspection/${inspectionReference}/physical-checks`)
+    res.redirect(`/inspection/${req.params.reference}/physical-checks`)
   })
 
   router.get('/inspection/:reference/physical-checks', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     res.render(inspectionView('physical-checks'))
   })
 
   router.post('/inspection/:reference/physical-checks', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['physical-check-result'] = req.body['physical-check-result'] || ''
+    data['physical-not-completed-reason'] = req.body['physical-not-completed-reason'] || ''
+    data['physical-temperature'] = req.body['physical-temperature'] || ''
+    data['physical-check-notes'] = req.body['physical-check-notes'] || ''
     const result = data['physical-check-result']
     const notCompletedReason = data['physical-not-completed-reason']
     const errors = []
@@ -437,21 +449,24 @@ const registerInspectionRoutes = (router, basePath) => {
       errors.push({ name: 'physical-not-completed-reason', text: 'Enter why physical checks were not completed' })
     }
     if (errors.length) return renderInspectionPage(res, 'physical-checks', errors)
-    res.redirect(`/inspection/${inspectionReference}/findings`)
+    res.redirect(`/inspection/${req.params.reference}/findings`)
   })
 
   router.get('/inspection/:reference/findings', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     res.render(inspectionView('findings'))
   })
 
   router.post('/inspection/:reference/findings', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['inspection-finding'] = req.body['inspection-finding'] || ''
+    data['inspection-finding-notes'] = req.body['inspection-finding-notes'] || ''
+    data['inspection-evidence-considered'] = req.body['inspection-evidence-considered'] || ''
     const finding = data['inspection-finding']
     const notes = data['inspection-finding-notes']
     const evidence = data['inspection-evidence-considered']
@@ -460,21 +475,29 @@ const registerInspectionRoutes = (router, basePath) => {
     if (!notes) errors.push({ name: 'inspection-finding-notes', text: 'Enter inspection notes' })
     if (!evidence) errors.push({ name: 'inspection-evidence-considered', text: 'Summarise evidence considered' })
     if (errors.length) return renderInspectionPage(res, 'findings', errors)
-    res.redirect(`/inspection/${inspectionReference}/outcome`)
+    res.redirect(`/inspection/${req.params.reference}/outcome`)
   })
 
   router.get('/inspection/:reference/outcome', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     res.render(inspectionView('outcome'))
   })
 
   router.post('/inspection/:reference/outcome', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['inspection-outcome'] = req.body['inspection-outcome'] || ''
+    data['hold-reason'] = req.body['hold-reason'] || ''
+    data['hold-required-action'] = req.body['hold-required-action'] || ''
+    data['hold-responsible-organisation'] = req.body['hold-responsible-organisation'] || ''
+    data['refusal-reason'] = req.body['refusal-reason'] || ''
+    data['refusal-non-compliance'] = req.body['refusal-non-compliance'] || ''
+    data['refusal-required-action'] = req.body['refusal-required-action'] || ''
+    data['refusal-reexport-considered'] = req.body['refusal-reexport-considered'] || ''
     const outcome = data['inspection-outcome']
     const errors = []
     if (!outcome) errors.push({ name: 'inspection-outcome', text: 'Select what should happen to this consignment' })
@@ -490,35 +513,36 @@ const registerInspectionRoutes = (router, basePath) => {
       if (!data['refusal-reexport-considered']) errors.push({ name: 'refusal-reexport-considered', text: 'Select whether re-export or another outcome needs to be considered' })
     }
     if (errors.length) return renderInspectionPage(res, 'outcome', errors)
-    res.redirect(`/inspection/${inspectionReference}/check-record`)
+    res.redirect(`/inspection/${req.params.reference}/check-record`)
   })
 
   router.get('/inspection/:reference/check-record', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('check-record'), { inspectionReference })
+    res.render(inspectionView('check-record'), { inspectionReference: req.params.reference })
   })
 
   router.post('/inspection/:reference/check-record', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
     const data = req.session.data
+    data['inspection-record-confirmed'] = req.body['inspection-record-confirmed'] || ''
     if (data['inspection-record-confirmed'] !== 'yes') {
       delete data['inspection-record-confirmed']
       return renderInspectionPage(res, 'check-record', [
         { name: 'inspection-record-confirmed', text: 'Confirm that the inspection record is complete and accurate to the best of your knowledge' }
-      ], { inspectionReference })
+      ], { inspectionReference: req.params.reference })
     }
-    res.redirect(`/inspection/${inspectionReference}/confirmation`)
+    res.redirect(`/inspection/${req.params.reference}/confirmation`)
   })
 
   router.get('/inspection/:reference/confirmation', (req, res) => {
-    if (req.params.reference !== inspectionReference) {
+    if (!getInspectionNotificationByReference(req.params.reference)?.hasJourneyLink) {
       return renderInspectionNotImplementedPage(res)
     }
-    res.render(inspectionView('inspection-confirmation'), { inspectionReference })
+    res.render(inspectionView('inspection-confirmation'), { inspectionReference: req.params.reference })
   })
 }
 
