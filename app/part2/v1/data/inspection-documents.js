@@ -14,7 +14,6 @@ const inspectionDocuments = [
     typeLabel: 'Catch certificate',
     reference: 'FRA 2026 CSP 000205',
     issuer: 'Centre National de Surveillance des Peches, France',
-    sourceFile: 'FRA-2026-CSP-000205.pdf',
     details: [
       { label: 'Vessel', value: 'PENDRUC (IMO 9741102)' },
       { label: 'Species', value: 'Skipjack tuna and Yellowfin tuna' },
@@ -30,7 +29,6 @@ const inspectionDocuments = [
     typeLabel: 'Catch certificate',
     reference: 'FRA 2026 CSP 100124',
     issuer: 'Centre National de Surveillance des Pêches',
-    sourceFile: 'CATCH.CC.FR.2026.0000148 for FRA.2025.CSP.000518.pdf',
     details: [
       { label: 'Vessel', value: 'BERNICA (IMO 9600853)' },
       { label: 'Species', value: 'Skipjack Tuna (Katsuwonus pelamis)' },
@@ -46,7 +44,6 @@ const inspectionDocuments = [
     typeLabel: 'Catch certificate',
     reference: 'ESP/SGCI/AI/2026/101',
     issuer: 'Secretaría General de Pesca',
-    sourceFile: 'ESP.SGCI.AI.2025.944.pdf',
     details: [
       { label: 'Vessel', value: 'ELAI ALAI (IMO 9046966)' },
       { label: 'Species', value: 'Skipjack Tuna (Katsuwonus pelamis)' },
@@ -62,7 +59,6 @@ const inspectionDocuments = [
     typeLabel: 'Catch certificate',
     reference: 'FRA 2026 CSP 000101',
     issuer: 'Centre National de Surveillance des Pêches',
-    sourceFile: 'FRA-2025-CSP-000472.pdf',
     details: [
       { label: 'Vessel', value: 'BERNICA (IMO 9600853)' },
       { label: 'Species', value: 'Skipjack Tuna (Katsuwonus pelamis)' },
@@ -78,7 +74,6 @@ const inspectionDocuments = [
     typeLabel: 'Catch certificate',
     reference: 'SYC/SFA/10/2026-SW0454',
     issuer: 'Seychelles Fishing Authority',
-    sourceFile: 'SYC-SFA-10-2025-SW0454.pdf',
     details: [
       { label: 'Vessel', value: 'OCEAN VOYAGER (IMO 9800006)' },
       { label: 'Species', value: 'Skipjack Tuna (Katsuwonus pelamis)' },

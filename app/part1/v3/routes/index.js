@@ -74,7 +74,6 @@ const getMissingValues = (requiredValues, actualValues) => {
 }
 
 const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
-const dashboardSampleDocumentsPath = path.join(__dirname, '..', 'data', 'dashboard-sample-documents')
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
 const importerDashboardConsignments = require('../data/importer-dashboard-consignments')
 const {
@@ -1443,7 +1442,7 @@ router.get('/documents/file/:type/:reference', (req, res) => {
     return res.status(404).render('part1/dashboard/document-not-found', { variant })
   }
 
-  res.sendFile(path.join(dashboardSampleDocumentsPath, document.sourceFile))
+  res.sendFile(path.join(sampleDocumentsPath, document.sourceFile))
 })
 
 router.get('/dashboard/assumptions', (req, res) => {

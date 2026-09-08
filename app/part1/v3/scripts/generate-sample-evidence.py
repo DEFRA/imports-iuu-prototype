@@ -13,12 +13,13 @@ from pypdf import PdfReader, PdfWriter
 from reportlab.pdfgen import canvas
 
 
-ROOT = Path(__file__).resolve().parents[1]
-TEMPLATES = ROOT / 'sample-documents' / 'templates'
-TARGETS = [
-    ROOT / 'app' / 'part2' / 'v1' / 'data' / 'sample-documents',
-    ROOT / 'app' / 'part2' / 'v2' / 'data' / 'sample-documents'
-]
+VERSION_ROOT = Path(__file__).resolve().parents[1]
+TARGET = VERSION_ROOT / 'data' / 'sample-documents'
+TEMPLATES = TARGET / 'templates'
+GENERATED_FILENAMES = {
+    'CL-2026-44-000079-N.pdf',
+    'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
+}
 
 IMPORTER = 'New England Seafood International Ltd, Genesis Way, Healing, Grimsby DN37 9TU, United Kingdom'
 
@@ -258,8 +259,13 @@ def watermark(source, destination):
 
 
 def generate(pilot=False):
-    records = CATCH_CERTIFICATES[:1] if pilot else CATCH_CERTIFICATES + PROCESSING_STATEMENTS
-    staging = ROOT / '.tmp' / 'sample-evidence'
+    records = [
+        record for record in CATCH_CERTIFICATES + PROCESSING_STATEMENTS
+        if record['filename'] in GENERATED_FILENAMES
+    ]
+    if pilot:
+        records = records[:1]
+    staging = VERSION_ROOT / '.tmp' / 'sample-evidence'
     if staging.exists():
         shutil.rmtree(staging)
     staging.mkdir(parents=True)
@@ -281,14 +287,13 @@ def generate(pilot=False):
 
 def install(staging):
     for pdf in staging.glob('*.pdf'):
-        for target in TARGETS:
-            shutil.copy2(pdf, target / pdf.name)
+        shutil.copy2(pdf, TARGET / pdf.name)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--pilot', action='store_true', help='Generate only the first catch certificate')
-    parser.add_argument('--install', action='store_true', help='Replace matching v1 and v2 evidence PDFs')
+    parser.add_argument('--install', action='store_true', help='Replace this version\'s evidence PDFs')
     arguments = parser.parse_args()
     generated = generate(arguments.pilot)
     if arguments.install:

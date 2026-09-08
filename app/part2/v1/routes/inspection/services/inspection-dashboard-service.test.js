@@ -1,5 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const fs = require('fs')
+const path = require('path')
 
 const {
   buildDashboardFilters,
@@ -8,6 +10,8 @@ const {
   buildInspectionDashboardViewModel
 } = require('./inspection-dashboard-service')
 const { mockConsignmentSummariesApi } = require('../mock-api/consignment-summaries-api')
+const inspectionDocuments = require('../../../data/inspection-documents')
+const additionalDocuments = require('../../../data/additional-documents')
 
 const fixedToday = new Date(Date.UTC(2026, 0, 1))
 
@@ -108,6 +112,21 @@ test('maps document counts as separate display lines', () => {
   const documentLabels = viewModel.forReview.rows.flatMap((row) => row.documentsProvidedLines)
   assert.ok(documentLabels.some((label) => label.startsWith('Processing statement')))
   assert.ok(documentLabels.some((label) => label.startsWith('Non-manipulation declaration')))
+})
+
+test('only offers the original files available in the archived version', () => {
+  const sourceDocuments = [...inspectionDocuments, ...additionalDocuments]
+    .filter((document) => document.sourceFile)
+  const sampleDocumentsPath = path.join(__dirname, '..', '..', '..', 'data', 'sample-documents')
+
+  assert.deepEqual([...new Set(sourceDocuments.map((document) => document.sourceFile))], [
+    'CL-2026-44-000079-N.pdf',
+    'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
+  ])
+
+  for (const document of sourceDocuments) {
+    assert.equal(fs.existsSync(path.join(sampleDocumentsPath, document.sourceFile)), true)
+  }
 })
 
 test('labels past arrival dates as overdue', () => {

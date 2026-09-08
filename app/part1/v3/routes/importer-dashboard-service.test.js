@@ -379,7 +379,7 @@ test('only offers locally available PDFs that match their document references', 
   const sourceDocuments = consignments.flatMap((consignment) => (
     consignment.documents.filter((document) => document.sourceFile)
   ))
-  const dashboardDocumentsPath = path.join(__dirname, '..', 'data', 'dashboard-sample-documents')
+  const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents')
 
   assert.deepEqual(sourceDocuments.map((document) => document.reference), [
     'CL-2026-44-000079-N',
@@ -387,6 +387,6 @@ test('only offers locally available PDFs that match their document references', 
   ])
 
   for (const document of sourceDocuments) {
-    assert.equal(fs.existsSync(path.join(dashboardDocumentsPath, document.sourceFile)), true)
+    assert.equal(fs.existsSync(path.join(sampleDocumentsPath, document.sourceFile)), true)
   }
 })
