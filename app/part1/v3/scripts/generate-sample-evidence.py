@@ -17,6 +17,11 @@ VERSION_ROOT = Path(__file__).resolve().parents[1]
 TARGET = VERSION_ROOT / 'data' / 'sample-documents'
 TEMPLATES = TARGET / 'templates'
 GENERATED_FILENAMES = {
+    'FRA-2026-CSP-000205.pdf',
+    'CATCH.CC.FR.2026.0000148 for FRA.2025.CSP.000518.pdf',
+    'ESP.SGCI.AI.2025.944.pdf',
+    'FRA-2025-CSP-000472.pdf',
+    'SYC-SFA-10-2025-SW0454.pdf',
     'CL-2026-44-000079-N.pdf',
     'CATCH.PS.PT.2026.0001149 (Exp. 0125-26-GB).pdf'
 }
