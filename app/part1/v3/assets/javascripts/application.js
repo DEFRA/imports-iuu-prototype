@@ -100,4 +100,222 @@ window.GOVUKPrototypeKit.documentReady(() => {
     selectedFlagId: 'nmd-selected'
   })
 
+  const countrySearch = document.querySelector('[data-module="app-country-search"]')
+
+  if (countrySearch) {
+    const minimumSearchLength = 3
+    const countryOptions = JSON.parse(countrySearch.querySelector('.app-country-search__data').textContent)
+    const countriesByValue = new Map(countryOptions.map((country) => [country.value, country]))
+    const input = countrySearch.querySelector('.app-commodity-search__input')
+    const searchBox = countrySearch.querySelector('.app-commodity-search')
+    const button = countrySearch.querySelector('.app-commodity-search__button')
+    const results = countrySearch.querySelector('.app-commodity-search__results')
+    const status = countrySearch.querySelector('.app-country-search__status')
+    const valueInput = countrySearch.querySelector('.app-country-search__value')
+    const regionCodePrefix = document.querySelector('#region-of-origin-code-prefix')
+    const form = countrySearch.closest('form')
+    let selectedCountry = valueInput.value
+
+    const announce = (message) => {
+      status.textContent = message
+    }
+
+    const setExpanded = (isExpanded) => {
+      searchBox.setAttribute('aria-expanded', isExpanded ? 'true' : 'false')
+      searchBox.classList.toggle('app-commodity-search--open', isExpanded)
+    }
+
+    const closeResults = () => {
+      results.hidden = true
+      results.replaceChildren()
+      setExpanded(false)
+    }
+
+    const updateRegionCodePrefix = (country) => {
+      const selectedCountry = countriesByValue.get(country)
+      regionCodePrefix.textContent = selectedCountry ? selectedCountry.regionCodePrefix : ''
+    }
+
+    const updateValue = (country) => {
+      selectedCountry = country
+      input.value = country
+      valueInput.value = country
+      updateRegionCodePrefix(country)
+
+      countrySearch.dispatchEvent(new CustomEvent('app-country-search:change', {
+        bubbles: true,
+        detail: { country }
+      }))
+    }
+
+    const selectCountry = (country) => {
+      updateValue(country)
+      closeResults()
+      announce('Selected ' + country)
+    }
+
+    const countryMatches = (option, query) => {
+      return option.label.toLowerCase().includes(query) ||
+        (option.parent && option.parent.toLowerCase().includes(query))
+    }
+
+    const sortCountryResults = (options, query) => {
+      const getSortKey = (option) => {
+        if (!option.parent) {
+          return { tier: 0, group: '', label: option.label }
+        }
+
+        return {
+          tier: option.parent.toLowerCase().includes(query) ? 1 : 2,
+          group: option.parent,
+          label: option.label
+        }
+      }
+
+      return [...options].sort((left, right) => {
+        const leftKey = getSortKey(left)
+        const rightKey = getSortKey(right)
+
+        return leftKey.tier - rightKey.tier ||
+          leftKey.group.localeCompare(rightKey.group) ||
+          leftKey.label.localeCompare(rightKey.label)
+      })
+    }
+
+    const appendHighlightedLabel = (element, label, query) => {
+      const matchIndex = label.toLowerCase().indexOf(query)
+
+      if (matchIndex === -1) {
+        element.textContent = label
+        return
+      }
+
+      element.append(
+        document.createTextNode(label.slice(0, matchIndex)),
+        Object.assign(document.createElement('strong'), {
+          className: 'app-commodity-search__match',
+          textContent: label.slice(matchIndex, matchIndex + query.length)
+        }),
+        document.createTextNode(label.slice(matchIndex + query.length))
+      )
+    }
+
+    const renderResults = () => {
+      const trimmedQuery = input.value.trim()
+      const query = trimmedQuery.toLowerCase()
+
+      if (query.length < minimumSearchLength) {
+        closeResults()
+        return
+      }
+
+      const matches = sortCountryResults(
+        countryOptions.filter((option) => countryMatches(option, query)),
+        query
+      )
+      results.replaceChildren()
+
+      if (!matches.length) {
+        const row = document.createElement('li')
+        const message = document.createElement('span')
+
+        row.className = 'app-commodity-search__row app-commodity-search__row--message'
+        message.className = 'app-commodity-search__no-results'
+        message.textContent = 'No results found'
+        row.append(message)
+        results.append(row)
+        results.hidden = false
+        setExpanded(true)
+        announce('No results found')
+        return
+      }
+
+      matches.forEach((option, index) => {
+        const row = document.createElement('li')
+        const optionButton = document.createElement('button')
+        const isSelected = selectedCountry === option.value
+
+        row.className = 'app-commodity-search__row' +
+          (index % 2 === 1 ? ' app-commodity-search__row--alt' : '')
+        optionButton.type = 'button'
+        optionButton.className = 'app-country-search__option' +
+          (isSelected ? ' app-country-search__option--selected' : '')
+        appendHighlightedLabel(optionButton, option.label, trimmedQuery.toLowerCase())
+        optionButton.addEventListener('click', () => selectCountry(option.value))
+        row.append(optionButton)
+        results.append(row)
+      })
+
+      results.hidden = false
+      setExpanded(true)
+      announce(matches.length + ' result' + (matches.length === 1 ? '' : 's') + ' available')
+    }
+
+    results.addEventListener('mousedown', (event) => {
+      event.preventDefault()
+    })
+
+    input.addEventListener('input', () => {
+      if (input.value !== selectedCountry) {
+        selectedCountry = ''
+        valueInput.value = ''
+        updateRegionCodePrefix('')
+
+        countrySearch.dispatchEvent(new CustomEvent('app-country-search:change', {
+          bubbles: true,
+          detail: { country: '' }
+        }))
+      }
+
+      renderResults()
+    })
+
+    input.addEventListener('focus', () => {
+      if (input.value.trim().length >= minimumSearchLength) {
+        renderResults()
+      }
+    })
+
+    input.addEventListener('blur', () => {
+      window.setTimeout(() => {
+        closeResults()
+
+        if (selectedCountry && input.value !== selectedCountry) {
+          input.value = selectedCountry
+        }
+      }, 200)
+    })
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeResults()
+      }
+    })
+
+    button.addEventListener('click', (event) => {
+      event.preventDefault()
+      renderResults()
+      input.focus()
+    })
+
+    form.addEventListener('submit', () => {
+      if (selectedCountry) {
+        updateValue(selectedCountry)
+        return
+      }
+
+      const typedCountry = input.value.trim().toLowerCase()
+      const exactMatch = countryOptions.find((option) => {
+        return option.value.toLowerCase() === typedCountry ||
+          option.label.toLowerCase() === typedCountry
+      })
+
+      if (exactMatch) {
+        updateValue(exactMatch.value)
+      }
+    })
+
+    updateRegionCodePrefix(selectedCountry)
+  }
+
 })

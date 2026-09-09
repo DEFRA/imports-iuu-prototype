@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds app-origin-page">
     {% include "app/part1/v3/views/notification/_draft-header.html" %}
 
     <span class="govuk-caption-l">About the consignment</span>
@@ -18,14 +18,23 @@
         <label class="govuk-label govuk-label--m" for="country-of-origin">
           Country of origin
         </label>
-        <div class="notification-flow__search">
-          <input class="govuk-input" id="country-of-origin" name="country-of-origin" type="text" value="{{ data['country-of-origin'] }}" placeholder="Search for a country">
-          <button class="notification-flow__search-button" type="button" aria-label="Search for a country">
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
-              <circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"></circle>
-              <path d="M13.5 13.5L20 20" fill="none" stroke="currentColor" stroke-width="2"></path>
-            </svg>
-          </button>
+        <div class="app-commodity-search-wrapper app-origin-country__search" data-module="app-country-search">
+          <script type="application/json" class="app-country-search__data">{{ countriesJson | safe }}</script>
+          <div class="app-commodity-search-panel">
+            <div class="app-commodity-search" aria-expanded="false" aria-controls="country-search-results">
+              <input class="app-commodity-search__input" id="country-of-origin" type="search" value="{{ data['country-of-origin'] }}" placeholder="Search for a country" autocomplete="off" aria-controls="country-search-results">
+              <button class="app-commodity-search__button" type="button">
+                <span class="govuk-visually-hidden">Search</span>
+                <svg class="app-commodity-search__icon" width="20" height="20" viewBox="0 0 20.3765 20" aria-hidden="true" focusable="false">
+                  <path d="M8.90084 14.4683C12.3848 14.4683 15.2091 11.644 15.2091 8.16008C15.2091 4.67613 12.3848 1.85184 8.90084 1.85184C5.41689 1.85184 2.59259 4.67613 2.59259 8.16008C2.59259 11.644 5.41689 14.4683 8.90084 14.4683Z" stroke="currentColor" stroke-width="2.22222" fill="none"></path>
+                  <path d="M13.2347 12.8583L19.5908 19.2143" stroke="currentColor" stroke-width="2.22222" fill="none"></path>
+                </svg>
+              </button>
+            </div>
+            <ul id="country-search-results" class="app-commodity-search__results" role="list" aria-label="Country search results" hidden></ul>
+          </div>
+          <input type="hidden" name="country-of-origin" class="app-country-search__value" value="{{ data['country-of-origin'] }}">
+          <div class="app-country-search__status govuk-visually-hidden" aria-live="polite"></div>
         </div>
       </div>
 
@@ -40,8 +49,22 @@
           </div>
           <div class="govuk-radios" data-module="govuk-radios">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="has-region-of-origin-code" name="has-region-of-origin-code" type="radio" value="yes" {% if data['has-region-of-origin-code'] == 'yes' %}checked{% endif %}>
+              <input class="govuk-radios__input" id="has-region-of-origin-code" name="has-region-of-origin-code" type="radio" value="yes" data-aria-controls="conditional-region-of-origin-code" {% if data['has-region-of-origin-code'] == 'yes' %}checked{% endif %}>
               <label class="govuk-label govuk-radios__label" for="has-region-of-origin-code">Yes</label>
+            </div>
+            <div class="govuk-radios__conditional{% if data['has-region-of-origin-code'] != 'yes' %} govuk-radios__conditional--hidden{% endif %}" id="conditional-region-of-origin-code">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="region-of-origin-code">
+                  Enter the region of origin code
+                </label>
+                <div id="region-of-origin-code-input-hint" class="govuk-hint">
+                  Enter up to 5 characters.
+                </div>
+                <div class="govuk-input__wrapper">
+                  <div class="govuk-input__prefix" id="region-of-origin-code-prefix" aria-hidden="true">{{ regionOfOriginCodePrefix }}</div>
+                  <input class="govuk-input govuk-input--width-5" id="region-of-origin-code" name="region-of-origin-code" type="text" value="{{ data['region-of-origin-code'] }}" maxlength="5" aria-describedby="region-of-origin-code-input-hint" autocomplete="off" spellcheck="false">
+                </div>
+              </div>
             </div>
             <div class="govuk-radios__item">
               <input class="govuk-radios__input" id="has-region-of-origin-code-no" name="has-region-of-origin-code" type="radio" value="no" {% if data['has-region-of-origin-code'] == 'no' %}checked{% endif %}>

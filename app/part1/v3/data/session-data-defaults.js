@@ -35,6 +35,7 @@ module.exports = {
   'notification-draft-reference': 'GBN-AG-26-7K8M2P',
   'new-notification-variant': 'a',
   'has-region-of-origin-code': '',
+  'region-of-origin-code': '',
   'internal-reference': '',
   'commodity-search': '',
   'selected-commodities': [],
