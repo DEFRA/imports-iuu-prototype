@@ -9,6 +9,7 @@ const path = require('path')
 const basePath = '/part1/v3'
 const sessionDataDefaults = require('../data/session-data-defaults')
 const originCountries = require('../data/origin-countries')
+const sectionOneCommodities = require('../data/section-1-commodities')
 const viewsPath = path.join(__dirname, '..', 'views')
 const router = govukPrototypeKit.requests.setupRouter(basePath)
 govukPrototypeKit.requests.serveDirectory(basePath + '/assets', path.join(__dirname, '..', 'assets'))
@@ -1476,7 +1477,11 @@ router.post('/origin-of-import', (req, res) => {
 router.get('/what-are-you-importing', (req, res) => {
   const variant = getNewNotificationVariant(req)
   req.session.data['new-notification-variant'] = variant
-  res.render('part1/notification/what-are-you-importing', { variant })
+  res.render('part1/notification/what-are-you-importing', {
+    variant,
+    commoditiesJson: JSON.stringify(sectionOneCommodities),
+    selectedCommoditiesJson: JSON.stringify(req.session.data['selected-commodities'] || [])
+  })
 })
 
 router.post('/what-are-you-importing', (req, res) => {
