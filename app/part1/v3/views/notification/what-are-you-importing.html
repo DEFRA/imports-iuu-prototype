@@ -26,16 +26,34 @@
         <div id="commodity-search-hint" class="govuk-hint">
           You can search by common name (for example, cattle), commodity code (0102), or Latin name (Bos taurus).
         </div>
-        <div class="notification-flow__search">
-          <input class="govuk-input" id="commodity-search" name="commodity-search" type="text" aria-describedby="commodity-search-hint" value="{{ data['commodity-search'] }}">
-          <button class="notification-flow__search-button" type="button" aria-label="Search for a commodity">
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
-              <circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"></circle>
-              <path d="M13.5 13.5L20 20" fill="none" stroke="currentColor" stroke-width="2"></path>
-            </svg>
-          </button>
-        </div>
+        <div class="app-commodity-search-wrapper" data-module="app-commodity-search">
+          <script type="application/json" class="app-commodity-search__data">{{ commoditiesJson | safe }}</script>
+          <div class="app-commodity-search-panel">
+            <div class="app-commodity-search" aria-expanded="false" aria-controls="commodity-search-results">
+              <input class="app-commodity-search__input" id="commodity-search" name="commodity-search" type="search" autocomplete="off" aria-controls="commodity-search-results" aria-describedby="commodity-search-hint commodity-search-status" value="{{ data['commodity-search'] }}">
+              <button class="app-commodity-search__button" type="button">
+                <span class="govuk-visually-hidden">Search</span>
+                <svg class="app-commodity-search__icon" width="20" height="20" viewBox="0 0 20.3765 20" aria-hidden="true" focusable="false">
+                  <path d="M8.90084 14.4683C12.3848 14.4683 15.2091 11.644 15.2091 8.16008C15.2091 4.67613 12.3848 1.85184 8.90084 1.85184C5.41689 1.85184 2.59259 4.67613 2.59259 8.16008C2.59259 11.644 5.41689 14.4683 8.90084 14.4683Z" stroke="currentColor" stroke-width="2.22222" fill="none"></path>
+                  <path d="M13.2347 12.8583L19.5908 19.2143" stroke="currentColor" stroke-width="2.22222" fill="none"></path>
+                </svg>
+              </button>
+            </div>
+            <ul id="commodity-search-results" class="app-commodity-search__results" role="list" aria-label="Commodity search results" hidden></ul>
+          </div>
 
+          <div class="app-commodity-search__selected" id="commodity-search-selected" hidden>
+            <div class="app-commodity-search__selected-header">
+              <p class="app-commodity-search__selected-heading" id="commodity-search-selected-heading"></p>
+              <button class="app-commodity-search__selected-clear" type="button">Clear all</button>
+            </div>
+            <ul class="app-commodity-search__selected-list" id="commodity-search-selected-list" role="list"></ul>
+          </div>
+
+          <script type="application/json" class="app-commodity-search__initial">{{ selectedCommoditiesJson | safe }}</script>
+          <div class="app-commodity-search__selected-inputs"></div>
+          <div id="commodity-search-status" class="app-commodity-search__status govuk-visually-hidden" aria-live="polite"></div>
+        </div>
       </div>
 
       <details class="govuk-details" data-module="govuk-details">
