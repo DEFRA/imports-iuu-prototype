@@ -324,8 +324,15 @@ window.GOVUKPrototypeKit.documentReady(() => {
     const minimumSearchLength = 3
     const commodityOptions = JSON.parse(commoditySearch.querySelector('.app-commodity-search__data').textContent)
     const initialSelections = JSON.parse(commoditySearch.querySelector('.app-commodity-search__initial').textContent)
-    const commoditiesByCode = new Map(commodityOptions.map((commodity) => [commodity.commodityCode, commodity]))
-    const selectedCodes = new Set(initialSelections.filter((code) => commoditiesByCode.has(code)))
+    const speciesById = new Map()
+
+    commodityOptions.forEach((commodity) => {
+      commodity.species.forEach((species) => {
+        speciesById.set(species.id, { commodity, species })
+      })
+    })
+
+    const selectedIds = new Set(initialSelections.filter((selectionId) => speciesById.has(selectionId)))
     const input = commoditySearch.querySelector('.app-commodity-search__input')
     const searchBox = commoditySearch.querySelector('.app-commodity-search')
     const button = commoditySearch.querySelector('.app-commodity-search__button')
@@ -376,8 +383,24 @@ window.GOVUKPrototypeKit.documentReady(() => {
       })
     }
 
-    const formatCommodity = ({ description, commodityCode }) => {
-      return description + ' (' + commodityCode + ')'
+    const formatCommodity = (commodity) => {
+      return commodity.name + ' (' + commodity.code + ')'
+    }
+
+    const formatSpecies = (species) => {
+      return species.commonName + ' (' + species.label + ')'
+    }
+
+    const speciesMatchesQuery = (species, query) => {
+      return textMatchesQuery(species.commonName, query) ||
+        textMatchesQuery(species.label, query) ||
+        species.faoCode.toLowerCase().startsWith(query)
+    }
+
+    const commodityMatchesQuery = (commodity, query) => {
+      return commodity.code.toLowerCase().startsWith(query) ||
+        commodity.tariffCommodityCodes.some((code) => code.startsWith(query)) ||
+        textMatchesQuery(commodity.name, query)
     }
 
     const getMatches = (query) => {
@@ -385,10 +408,16 @@ window.GOVUKPrototypeKit.documentReady(() => {
 
       if (normalisedQuery.length < minimumSearchLength) return []
 
-      return commodityOptions.filter((commodity) => {
-        return commodity.commodityCode.startsWith(normalisedQuery) ||
-          textMatchesQuery(commodity.description, normalisedQuery)
-      })
+      return commodityOptions
+        .map((commodity) => ({
+          commodity,
+          species: commodityMatchesQuery(commodity, normalisedQuery)
+            ? commodity.species
+            : commodity.species.filter((species) => {
+                return speciesMatchesQuery(species, normalisedQuery)
+              })
+        }))
+        .filter((group) => group.species.length > 0)
     }
 
     const setExpanded = (isExpanded) => {
@@ -408,41 +437,63 @@ window.GOVUKPrototypeKit.documentReady(() => {
     const updateSelectedInputs = () => {
       selectedInputs.replaceChildren()
 
-      selectedCodes.forEach((commodityCode) => {
+      selectedIds.forEach((selectionId) => {
         const hiddenInput = document.createElement('input')
         hiddenInput.type = 'hidden'
         hiddenInput.name = 'selected-commodities'
-        hiddenInput.value = commodityCode
+        hiddenInput.value = selectionId
         selectedInputs.append(hiddenInput)
       })
     }
 
     const renderSelectedPanel = () => {
-      const selectedCommodities = commodityOptions.filter(({ commodityCode }) => selectedCodes.has(commodityCode))
-      const hasSelections = selectedCommodities.length > 0
+      const selectedGroups = commodityOptions
+        .map((commodity) => ({
+          commodity,
+          species: commodity.species.filter((species) => selectedIds.has(species.id))
+        }))
+        .filter((group) => group.species.length > 0)
+      const hasSelections = selectedIds.size > 0
 
       selectedPanel.hidden = !hasSelections
       selectedHeading.textContent = hasSelections
-        ? selectedCommodities.length + ' selected'
+        ? selectedIds.size + ' selected'
         : ''
       selectedList.replaceChildren()
 
-      selectedCommodities.forEach((commodity) => {
-        const item = document.createElement('li')
-        const label = document.createElement('span')
-        const removeButton = document.createElement('button')
-        const formattedCommodity = formatCommodity(commodity)
+      selectedGroups.forEach(({ commodity, species }) => {
+        const entry = document.createElement('li')
+        const entryLabel = document.createElement('p')
+        const entryName = document.createElement('strong')
+        const chips = document.createElement('div')
 
-        item.className = 'app-commodity-search__selected-item'
-        label.className = 'app-commodity-search__selected-label'
-        label.textContent = formattedCommodity
-        removeButton.className = 'app-commodity-search__selected-remove'
-        removeButton.type = 'button'
-        removeButton.dataset.commodityCode = commodity.commodityCode
-        removeButton.setAttribute('aria-label', 'Remove ' + formattedCommodity)
-        removeButton.innerHTML = '<span class="govuk-visually-hidden">Remove ' + escapeHtml(formattedCommodity) + '</span>'
-        item.append(label, removeButton)
-        selectedList.append(item)
+        entry.className = 'app-commodity-search__selected-entry'
+        entryLabel.className = 'app-commodity-search__selected-entry-label'
+        entryName.className = 'app-commodity-search__selected-entry-name'
+        entryName.textContent = formatCommodity(commodity)
+        entryLabel.append(entryName, ':')
+        chips.className = 'app-commodity-search__selected-chips'
+
+        species.forEach((speciesItem) => {
+          const item = document.createElement('div')
+          const label = document.createElement('span')
+          const removeButton = document.createElement('button')
+
+          item.className = 'app-commodity-search__selected-item'
+          label.className = 'app-commodity-search__selected-label'
+          label.textContent = speciesItem.label
+          removeButton.className = 'app-commodity-search__selected-remove'
+          removeButton.type = 'button'
+          removeButton.dataset.selectionId = speciesItem.id
+          removeButton.setAttribute('aria-label', 'Remove ' + speciesItem.label)
+          removeButton.innerHTML = '<span class="govuk-visually-hidden">Remove ' +
+            escapeHtml(speciesItem.label) + '</span>'
+          item.append(label, removeButton)
+          chips.append(item)
+        })
+
+        entry.append(entryLabel, chips)
+        selectedList.append(entry)
       })
 
       updateSelectedInputs()
@@ -473,35 +524,53 @@ window.GOVUKPrototypeKit.documentReady(() => {
         return
       }
 
-      matches.forEach((commodity, index) => {
-        const row = document.createElement('li')
-        const checkboxContainer = document.createElement('div')
-        const checkboxItem = document.createElement('div')
-        const checkbox = document.createElement('input')
-        const label = document.createElement('label')
-        const checkboxId = 'commodity-' + commodity.commodityCode
+      let rowIndex = 0
+      let speciesRowCount = 0
 
-        row.className = 'app-commodity-search__row app-commodity-search__row--species' +
-          (index % 2 === 1 ? ' app-commodity-search__row--alt' : '')
-        checkboxContainer.className = 'govuk-checkboxes app-commodity-search__checkbox-item'
-        checkboxItem.className = 'govuk-checkboxes__item'
-        checkbox.className = 'govuk-checkboxes__input app-commodity-search__checkbox-input'
-        checkbox.id = checkboxId
-        checkbox.type = 'checkbox'
-        checkbox.value = commodity.commodityCode
-        checkbox.checked = selectedCodes.has(commodity.commodityCode)
-        label.className = 'govuk-label govuk-checkboxes__label app-commodity-search__row-label'
-        label.htmlFor = checkboxId
-        label.innerHTML = highlightMatch(formatCommodity(commodity), trimmedQuery)
-        checkboxItem.append(checkbox, label)
-        checkboxContainer.append(checkboxItem)
-        row.append(checkboxContainer)
-        results.append(row)
+      matches.forEach(({ commodity, species }) => {
+        const headerRow = document.createElement('li')
+        const headerLabel = document.createElement('span')
+
+        headerRow.className = 'app-commodity-search__row app-commodity-search__row--commodity-header' +
+          (rowIndex % 2 === 1 ? ' app-commodity-search__row--alt' : '')
+        headerLabel.className = 'app-commodity-search__row-label app-commodity-search__row-label--heading'
+        headerLabel.innerHTML = highlightMatch(formatCommodity(commodity), trimmedQuery)
+        headerRow.append(headerLabel)
+        results.append(headerRow)
+        rowIndex += 1
+
+        species.forEach((speciesItem) => {
+          const row = document.createElement('li')
+          const checkboxContainer = document.createElement('div')
+          const checkboxItem = document.createElement('div')
+          const checkbox = document.createElement('input')
+          const label = document.createElement('label')
+          const checkboxId = 'commodity-species-' + speciesItem.id.replace(/[^a-z0-9-]/gi, '-')
+
+          row.className = 'app-commodity-search__row app-commodity-search__row--species' +
+            (rowIndex % 2 === 1 ? ' app-commodity-search__row--alt' : '')
+          checkboxContainer.className = 'govuk-checkboxes app-commodity-search__checkbox-item'
+          checkboxItem.className = 'govuk-checkboxes__item'
+          checkbox.className = 'govuk-checkboxes__input app-commodity-search__checkbox-input'
+          checkbox.id = checkboxId
+          checkbox.type = 'checkbox'
+          checkbox.value = speciesItem.id
+          checkbox.checked = selectedIds.has(speciesItem.id)
+          label.className = 'govuk-label govuk-checkboxes__label app-commodity-search__row-label'
+          label.htmlFor = checkboxId
+          label.innerHTML = highlightMatch(formatSpecies(speciesItem), trimmedQuery)
+          checkboxItem.append(checkbox, label)
+          checkboxContainer.append(checkboxItem)
+          row.append(checkboxContainer)
+          results.append(row)
+          rowIndex += 1
+          speciesRowCount += 1
+        })
       })
 
       results.hidden = false
       setExpanded(true)
-      announce(matches.length + ' result' + (matches.length === 1 ? '' : 's') + ' available')
+      announce(speciesRowCount + ' result' + (speciesRowCount === 1 ? '' : 's') + ' available')
     }
 
     results.addEventListener('change', (event) => {
@@ -509,14 +578,14 @@ window.GOVUKPrototypeKit.documentReady(() => {
       if (!checkbox) return
 
       if (checkbox.checked) {
-        selectedCodes.add(checkbox.value)
+        selectedIds.add(checkbox.value)
       } else {
-        selectedCodes.delete(checkbox.value)
+        selectedIds.delete(checkbox.value)
       }
 
       renderSelectedPanel()
       renderResults(input.value)
-      announce(selectedCodes.size + ' ' + (selectedCodes.size === 1 ? 'option' : 'options') + ' selected')
+      announce(selectedIds.size + ' ' + (selectedIds.size === 1 ? 'option' : 'options') + ' selected')
     })
 
     selectedList.addEventListener('click', (event) => {
@@ -524,14 +593,17 @@ window.GOVUKPrototypeKit.documentReady(() => {
       if (!removeButton) return
 
       event.preventDefault()
-      selectedCodes.delete(removeButton.dataset.commodityCode)
+      selectedIds.delete(removeButton.dataset.selectionId)
       renderSelectedPanel()
-      renderResults(input.value)
+      closeResults()
+      announce(selectedIds.size
+        ? selectedIds.size + ' ' + (selectedIds.size === 1 ? 'option' : 'options') + ' selected'
+        : '')
     })
 
     clearAllButton.addEventListener('click', (event) => {
       event.preventDefault()
-      selectedCodes.clear()
+      selectedIds.clear()
       renderSelectedPanel()
       closeResults()
       announce('')

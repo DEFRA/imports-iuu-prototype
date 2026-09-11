@@ -24,7 +24,7 @@
           Search for a commodity
         </label>
         <div id="commodity-search-hint" class="govuk-hint">
-          You can search by common name (for example, cattle), commodity code (0102), or Latin name (Bos taurus).
+          You can search by common name (for example, Atlantic cod), commodity code (03047190), or scientific name (Gadus morhua).
         </div>
         <div class="app-commodity-search-wrapper" data-module="app-commodity-search">
           <script type="application/json" class="app-commodity-search__data">{{ commoditiesJson | safe }}</script>
@@ -51,7 +51,11 @@
           </div>
 
           <script type="application/json" class="app-commodity-search__initial">{{ selectedCommoditiesJson | safe }}</script>
-          <div class="app-commodity-search__selected-inputs"></div>
+          <div class="app-commodity-search__selected-inputs">
+            {% for selectionId in data['selected-commodities'] %}
+            <input type="hidden" name="selected-commodities" value="{{ selectionId }}">
+            {% endfor %}
+          </div>
           <div id="commodity-search-status" class="app-commodity-search__status govuk-visually-hidden" aria-live="polite"></div>
         </div>
       </div>

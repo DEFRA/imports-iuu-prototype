@@ -39,6 +39,7 @@ module.exports = {
   'internal-reference': '',
   'commodity-search': '',
   'selected-commodities': [],
+  'selected-commodity-details': [],
   'main-reason-for-import': '',
   'internal-market-purpose': '',
 
