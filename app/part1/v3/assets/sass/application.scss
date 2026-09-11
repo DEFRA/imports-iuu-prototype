@@ -348,6 +348,20 @@
 	margin-bottom: 3rem;
 }
 
+.review-extraction-summary__confidence {
+  white-space: nowrap;
+}
+
+.review-extraction-document-status {
+  white-space: nowrap;
+}
+
+@media (min-width: 40.0625em) {
+  .review-extraction-summary .govuk-summary-list__key {
+    width: 40%;
+  }
+}
+
 .review-extraction-section-header__change {
 	flex: 0 0 auto;
 	font-size: 1.1875rem;
