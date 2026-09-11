@@ -9,10 +9,58 @@ const path = require('path')
 const basePath = '/part1/v3'
 const sessionDataDefaults = require('../data/session-data-defaults')
 const originCountries = require('../data/origin-countries')
-const sectionOneCommodities = require('../data/section-1-commodities')
+const chedPFishCommodityGroups = require('../data/ched-p-fish-commodities')
 const viewsPath = path.join(__dirname, '..', 'views')
 const router = govukPrototypeKit.requests.setupRouter(basePath)
 govukPrototypeKit.requests.serveDirectory(basePath + '/assets', path.join(__dirname, '..', 'assets'))
+
+const commoditySearchData = chedPFishCommodityGroups
+  .map((commodity) => ({
+    id: commodity.id,
+    name: commodity.name,
+    code: commodity.code,
+    tariffCommodityCodes: commodity.tariffCommodityCodes,
+    species: commodity.species.map((species) => ({
+      id: species.id,
+      label: species.label,
+      commonName: species.commonName,
+      faoCode: species.faoCode
+    }))
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }))
+
+const fishCommoditySelections = chedPFishCommodityGroups.flatMap((commodity) => {
+  return commodity.species.map((species) => ({
+    id: species.id,
+    commodityId: commodity.id,
+    commodityCode: commodity.code,
+    commodityName: commodity.name,
+    tariffCommodityCodes: commodity.tariffCommodityCodes,
+    faoCode: species.faoCode,
+    commonName: species.commonName,
+    scientificName: species.scientificName,
+    productOptions: species.productOptions.map((option) => ({
+      id: `${option.preservation.code}:${option.presentation.code}`,
+      label: `${option.preservation.label}, ${option.presentation.label.toLowerCase()}`,
+      preservation: option.preservation,
+      presentation: option.presentation
+    }))
+  }))
+})
+
+const fishCommoditySelectionsById = new Map(
+  fishCommoditySelections.map((selection) => [selection.id, selection])
+)
+
+const getFishCommoditySelections = (selectionIds) => {
+  const ids = Array.isArray(selectionIds)
+    ? selectionIds
+    : (selectionIds ? [selectionIds] : [])
+
+  return ids
+    .map((selectionId) => fishCommoditySelectionsById.get(selectionId))
+    .filter(Boolean)
+}
 
 router.use((req, res, next) => {
   const sessionKey = 'part1-v3'
@@ -1476,23 +1524,37 @@ router.post('/origin-of-import', (req, res) => {
 
 router.get('/what-are-you-importing', (req, res) => {
   const variant = getNewNotificationVariant(req)
-  req.session.data['new-notification-variant'] = variant
+  const data = req.session.data
+  const selectedCommodityDetails = getFishCommoditySelections(data['selected-commodities'])
+  data['new-notification-variant'] = variant
+  data['selected-commodities'] = selectedCommodityDetails.map((selection) => selection.id)
+  data['selected-commodity-details'] = selectedCommodityDetails
+
   res.render('part1/notification/what-are-you-importing', {
     variant,
-    commoditiesJson: JSON.stringify(sectionOneCommodities),
-    selectedCommoditiesJson: JSON.stringify(req.session.data['selected-commodities'] || [])
+    commoditiesJson: JSON.stringify(commoditySearchData),
+    selectedCommoditiesJson: JSON.stringify(data['selected-commodities'])
   })
 })
 
 router.post('/what-are-you-importing', (req, res) => {
   const variant = getNewNotificationVariant(req)
   const data = req.session.data
-  const selectedCommodities = req.body['selected-commodities']
+  const requestedSelections = req.body['selected-commodities']
+  const requestedSelectionIds = Array.isArray(requestedSelections)
+    ? requestedSelections
+    : (requestedSelections ? [requestedSelections] : [])
+  const selectedCommodityDetails = getFishCommoditySelections(requestedSelectionIds)
+  const invalidSelectionCount = requestedSelectionIds.length - selectedCommodityDetails.length
+
+  if (invalidSelectionCount > 0) {
+    console.warn(`Ignored ${invalidSelectionCount} unknown fish commodity selection(s)`)
+  }
+
   data['new-notification-variant'] = variant
   data['commodity-search'] = req.body['commodity-search'] || ''
-  data['selected-commodities'] = selectedCommodities
-    ? (Array.isArray(selectedCommodities) ? selectedCommodities : [selectedCommodities])
-    : []
+  data['selected-commodities'] = selectedCommodityDetails.map((selection) => selection.id)
+  data['selected-commodity-details'] = selectedCommodityDetails
 
   if (req.body.action === 'overview') {
     return res.redirect('/dashboard?variant=' + variant)
