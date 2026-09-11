@@ -9,7 +9,7 @@ const path = require('path')
 const basePath = '/part1/v3'
 const sessionDataDefaults = require('../data/session-data-defaults')
 const originCountries = require('../data/origin-countries')
-const chedPFishCommodityGroups = require('../data/ched-p-fish-commodities')
+const chedPFishCommodityGroups = require('../data/commodities/ched-p-fish-commodities')
 const viewsPath = path.join(__dirname, '..', 'views')
 const router = govukPrototypeKit.requests.setupRouter(basePath)
 govukPrototypeKit.requests.serveDirectory(basePath + '/assets', path.join(__dirname, '..', 'assets'))
