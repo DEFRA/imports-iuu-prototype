@@ -26,7 +26,7 @@ SECTION_FOUR_CHAPTER_SIXTEEN_URL = (
     f"goods_nomenclatures/chapter/16.csv?as_of={AS_OF_DATE}"
 )
 
-DATA_DIRECTORY = Path(__file__).resolve().parents[1] / "data"
+DATA_DIRECTORY = Path(__file__).resolve().parents[1] / "data" / "commodities"
 SECTION_ONE_OUTPUT = DATA_DIRECTORY / "section-1-commodities.js"
 SECTION_FOUR_CHAPTER_SIXTEEN_OUTPUT = (
     DATA_DIRECTORY / "section-4-chapter-16-commodities.js"
