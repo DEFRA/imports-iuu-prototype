@@ -41,7 +41,7 @@
             </select>
           </div>
           <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-origin">Country of origin</label>
+            <label class="govuk-label" for="{{ tabId }}-origin">Exporting country</label>
             <select class="govuk-select" id="{{ tabId }}-origin" name="origin">
               {% for option in filterOptions.originOptions %}
                 <option value="{{ option.value }}" {% if filters.origin == option.value %}selected{% endif %}>{{ option.text }}</option>
@@ -114,7 +114,7 @@
               <dd class="govuk-summary-list__value">{{ consignment.port }}</dd>
             </div>
             <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Country of origin</dt>
+              <dt class="govuk-summary-list__key">Exporting country</dt>
               <dd class="govuk-summary-list__value">{{ consignment.origin }}</dd>
             </div>
             <div class="govuk-summary-list__row">

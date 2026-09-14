@@ -61,7 +61,7 @@
           </div>
           <div class="govuk-form-group govuk-!-margin-bottom-3">
             <label class="govuk-label" for="{{ tabId }}-filter-origin">
-              Origin
+              Exporting country
             </label>
             <select class="govuk-select" id="{{ tabId }}-filter-origin" name="filter-origin">
               {% for option in filterOptions.originOptions %}
@@ -160,7 +160,7 @@
                     <dd class="govuk-summary-list__value">{{ consignment.importer }}</dd>
                   </div>
                   <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">Origin</dt>
+                    <dt class="govuk-summary-list__key">Exporting country</dt>
                     <dd class="govuk-summary-list__value">{{ consignment.originCountry }}</dd>
                   </div>
                   <div class="govuk-summary-list__row">

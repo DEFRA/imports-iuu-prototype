@@ -9,7 +9,7 @@
     <span class="govuk-caption-l">Import notification</span>
     <h1 class="govuk-heading-l">Confirm your notification</h1>
 
-    <p class="govuk-body">Review the statements below before we continue.</p>
+    <p class="govuk-body">Check the statements below. Confirm that you have uploaded the documents needed for this import, or that you do not need to provide them.</p>
 
     <form action="{{ basePath }}/declaration" method="post">
       <div class="govuk-form-group">
@@ -17,19 +17,19 @@
           <div class="govuk-checkboxes__item">
             <input class="govuk-checkboxes__input" id="catch-certificates-confirmed" name="catch-certificates-confirmed" type="checkbox" value="confirmed" {% if data['catch-certificates-confirmed'] == 'confirmed' %}checked{% endif %}>
             <label class="govuk-label govuk-checkboxes__label" for="catch-certificates-confirmed">
-              I confirm that I have uploaded all Catch Certificates for this import.
+              I have uploaded all Catch Certificates for this import.
             </label>
           </div>
           <div class="govuk-checkboxes__item">
             <input class="govuk-checkboxes__input" id="processing-statements-confirmed" name="processing-statements-confirmed" type="checkbox" value="confirmed" {% if data['processing-statements-confirmed'] == 'confirmed' %}checked{% endif %}>
             <label class="govuk-label govuk-checkboxes__label" for="processing-statements-confirmed">
-              I confirm that I have uploaded all Processing Statements for this import.
+              I have uploaded all Processing Statements needed for this import, or none are needed.
             </label>
           </div>
           <div class="govuk-checkboxes__item">
             <input class="govuk-checkboxes__input" id="non-manipulation-declarations-confirmed" name="non-manipulation-declarations-confirmed" type="checkbox" value="confirmed" {% if data['non-manipulation-declarations-confirmed'] == 'confirmed' %}checked{% endif %}>
             <label class="govuk-label govuk-checkboxes__label" for="non-manipulation-declarations-confirmed">
-              I confirm that I have uploaded all Non-Manipulation Declarations for this import.
+              I have uploaded all Non-Manipulation Declarations needed for this import, or none are needed.
             </label>
           </div>
         </div>

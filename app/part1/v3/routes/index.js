@@ -211,11 +211,23 @@ const getConfidenceLabel = (confidence) => {
   return 'Low'
 }
 
+const scenarioAStatusKeys = Object.freeze({
+  complete: 'complete',
+  needsReviewMediumConfidence: 'needs-review-medium-confidence',
+  needsReviewLowConfidence: 'needs-review-low-confidence'
+})
+
+const getScenarioAStatusKey = (confidence) => {
+  if (confidence >= 90) return scenarioAStatusKeys.complete
+  if (confidence >= 70) return scenarioAStatusKeys.needsReviewMediumConfidence
+  return scenarioAStatusKeys.needsReviewLowConfidence
+}
+
 const buildScenarioAStatusMeta = (statusKey) => {
-  if (statusKey === 'complete') return { label: 'Complete', className: 'govuk-tag--green' }
-  if (statusKey === 'needs-review') return { label: 'Needs review', className: 'govuk-tag--yellow' }
-  if (statusKey === 'incomplete') return { label: 'Manual check required', className: 'govuk-tag--red' }
-  return { label: 'Manual check required', className: 'govuk-tag--red' }
+  if (statusKey === scenarioAStatusKeys.complete) return { label: 'Complete', className: 'govuk-tag--green' }
+  if (statusKey === scenarioAStatusKeys.needsReviewMediumConfidence) return { label: 'Needs review', className: 'govuk-tag--yellow' }
+  if (statusKey === scenarioAStatusKeys.needsReviewLowConfidence) return { label: 'Needs review', className: 'govuk-tag--red' }
+  throw new Error('Unsupported Scenario A status key: ' + statusKey)
 }
 
 const buildScenarioADocumentReference = (prefix, sequence) => {
@@ -530,11 +542,12 @@ const buildScenarioADocumentPresentation = (document) => {
   }
 }
 
-const createScenarioADocument = (index, documentType, confidence, statusKey, seedData) => {
+const createScenarioADocument = (index, documentType, confidence, seedData) => {
   const metadata = buildScenarioADocumentTypeMetadata(documentType)
   const sequence = index + 1
   const referenceNumber = buildScenarioADocumentReference(metadata.prefix, sequence)
   const reference = 'DOC-' + String(sequence).padStart(3, '0')
+  const statusKey = getScenarioAStatusKey(confidence)
   const status = buildScenarioAStatusMeta(statusKey)
   const confidenceLabel = getConfidenceLabel(confidence)
   const confidenceTagClass = getConfidenceTagClass(confidence)
@@ -556,12 +569,11 @@ const createScenarioADocument = (index, documentType, confidence, statusKey, see
     : 'Not applicable'
   const totalFields = 44
   const fieldsExtractedByStatus = {
-    complete: 44,
-    'needs-review': 36,
-    incomplete: 26,
-    'manual-check': 12
+    [scenarioAStatusKeys.complete]: 44,
+    [scenarioAStatusKeys.needsReviewMediumConfidence]: 36,
+    [scenarioAStatusKeys.needsReviewLowConfidence]: 12
   }
-  const fieldsExtracted = fieldsExtractedByStatus[statusKey] || 26
+  const fieldsExtracted = fieldsExtractedByStatus[statusKey]
 
   const baseRows = {
     documentType,
@@ -615,21 +627,7 @@ const createScenarioADocument = (index, documentType, confidence, statusKey, see
     transportReference
   }
 
-  if (statusKey === 'incomplete') {
-    baseRows.validatingAuthorityAddress = ''
-    baseRows.fishingGear = ''
-    baseRows.verifiedWeightLandedKg = ''
-    baseRows.catchDates = ''
-    baseRows.catchDateFrom = ''
-    baseRows.catchDateTo = ''
-    baseRows.importerRepresentativeContactDetails = ''
-    baseRows.transportDocumentReference = ''
-    baseRows.containerNumbers = ''
-    baseRows.processingReference = documentType === 'Processing Statement' ? '' : 'Not applicable'
-    baseRows.transportReference = ''
-  }
-
-  if (statusKey === 'manual-check') {
+  if (statusKey === scenarioAStatusKeys.needsReviewLowConfidence) {
     baseRows.productCode = ''
     baseRows.validatingAuthorityName = ''
     baseRows.validatingAuthorityAddress = ''
@@ -882,7 +880,7 @@ const applyScenarioADocumentOverride = (document, override = null) => {
 }
 
 const buildScenarioADocuments = (seedData) => {
-  const manualCheckMissingFields = [
+  const lowConfidenceMissingFields = [
     'Validating Authority Name',
     'Validating Authority Address',
     'Product Code',
@@ -914,7 +912,7 @@ const buildScenarioADocuments = (seedData) => {
     'Country Of Exportation Port/Airport/Other Point Of Departure',
     'Container Numbers'
   ]
-  const needsReviewMissingFields = [
+  const mediumConfidenceMissingFields = [
     'Validating Authority Address',
     'Catch Area',
     'Catch Date To',
@@ -924,30 +922,25 @@ const buildScenarioADocuments = (seedData) => {
   ]
   const documentStates = {
     'CC-001': {
-      statusKey: 'manual-check',
       confidence: 43,
-      missingFields: manualCheckMissingFields
+      missingFields: lowConfidenceMissingFields
     },
     'CC-002': {
-      statusKey: 'manual-check',
       confidence: 41,
-      missingFields: manualCheckMissingFields
+      missingFields: lowConfidenceMissingFields
     },
     'CC-003': {
-      statusKey: 'needs-review',
       confidence: 79,
-      missingFields: needsReviewMissingFields
+      missingFields: mediumConfidenceMissingFields
     },
     'CC-004': {
-      statusKey: 'needs-review',
       confidence: 74,
-      missingFields: needsReviewMissingFields
+      missingFields: mediumConfidenceMissingFields
     }
   }
 
   return prototypeSeedDocuments.map((seedDocument, index) => {
     const state = documentStates[seedDocument.reference] || {
-      statusKey: 'complete',
       confidence: 91 + (index % 9),
       missingFields: []
     }
@@ -959,7 +952,7 @@ const buildScenarioADocuments = (seedData) => {
     const fieldsExtracted = extractedFields.filter((field) => field.value).length
     const confidenceLabel = getConfidenceLabel(state.confidence)
     const confidenceTagClass = getConfidenceTagClass(state.confidence)
-    const document = createScenarioADocument(index, seedDocument.documentType, state.confidence, state.statusKey, seedData)
+    const document = createScenarioADocument(index, seedDocument.documentType, state.confidence, seedData)
     const fieldValues = Object.fromEntries(extractedFields.map((field) => [field.label, field.value]))
     const updatedDocument = {
       ...document,
@@ -1022,20 +1015,16 @@ const getScenarioADocumentChangeTemplate = (documentType) => {
 }
 
 const buildScenarioAExtractionSummary = (documents) => {
-  const complete = documents.filter((item) => item.statusKey === 'complete').length
-  const needsReview = documents.filter((item) => item.statusKey === 'needs-review').length
-  const incomplete = documents.filter((item) => item.statusKey === 'incomplete').length
-  const manualCheckOnly = documents.filter((item) => item.statusKey === 'manual-check').length
-  const manualCheckRequired = manualCheckOnly + incomplete
+  const complete = documents.filter((item) => item.statusKey === scenarioAStatusKeys.complete).length
+  const needsReviewMediumConfidence = documents.filter((item) => item.statusKey === scenarioAStatusKeys.needsReviewMediumConfidence).length
+  const needsReviewLowConfidence = documents.filter((item) => item.statusKey === scenarioAStatusKeys.needsReviewLowConfidence).length
 
   return {
     documentsUploaded: documents.length,
     documentsAnalysed: documents.length,
     complete,
-    needsReview,
-    incomplete,
-    manualCheckRequired,
-    reviewRequiredTotal: needsReview
+    needsReviewMediumConfidence,
+    needsReviewLowConfidence
   }
 }
 
@@ -2066,10 +2055,9 @@ router.get('/review-extraction-a', (req, res) => {
   const totalDocuments = documents.length
   const documentsPerPage = 10
   const tableStatusPriority = {
-    'manual-check': 1,
-    incomplete: 2,
-    'needs-review': 3,
-    complete: 4
+    [scenarioAStatusKeys.needsReviewLowConfidence]: 1,
+    [scenarioAStatusKeys.needsReviewMediumConfidence]: 2,
+    [scenarioAStatusKeys.complete]: 3
   }
   const sortedTableDocuments = [...documents].sort((left, right) => {
     const priorityDifference = (tableStatusPriority[left.statusKey] || 99) - (tableStatusPriority[right.statusKey] || 99)

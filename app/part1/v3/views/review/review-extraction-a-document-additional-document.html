@@ -9,7 +9,7 @@
     <span class="govuk-caption-l">Additional document | Document {{ documentIndex }} of {{ totalDocuments }}</span>
     <h1 class="govuk-heading-l">{{ document.reference }} - {{ document.documentNumber }}</h1>
 
-    {% if document.statusKey == 'incomplete' or document.statusKey == 'manual-check' %}
+    {% if document.statusKey == 'needs-review-low-confidence' %}
       <div class="govuk-inset-text">
         Some values are missing or low confidence. Check this document before submission.
       </div>

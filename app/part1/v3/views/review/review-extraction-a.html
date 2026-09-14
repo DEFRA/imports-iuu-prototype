@@ -85,23 +85,32 @@
         <h2 class="govuk-summary-card__title">Extraction summary</h2>
       </div>
       <div class="govuk-summary-card__content">
-        <dl class="govuk-summary-list govuk-!-margin-bottom-0">
+        <dl class="govuk-summary-list review-extraction-summary govuk-!-margin-bottom-0">
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Documents analysed</dt>
             <dd class="govuk-summary-list__value">{{ extractionSummary.documentsAnalysed }}</dd>
           </div>
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Manual check required</dt>
-            <dd class="govuk-summary-list__value">{{ extractionSummary.manualCheckRequired }}</dd>
-            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--red">Manual check required</strong></dd>
+            <dt class="govuk-summary-list__key">
+              <div>Needs review</div>
+              <div class="govuk-hint review-extraction-summary__confidence govuk-!-font-size-16 govuk-!-margin-top-1 govuk-!-margin-bottom-0">Confidence: below 70%</div>
+            </dt>
+            <dd class="govuk-summary-list__value">{{ extractionSummary.needsReviewLowConfidence }}</dd>
+            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--red">Needs review</strong></dd>
           </div>
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Needs review</dt>
-            <dd class="govuk-summary-list__value">{{ extractionSummary.reviewRequiredTotal }}</dd>
+            <dt class="govuk-summary-list__key">
+              <div>Needs review</div>
+              <div class="govuk-hint review-extraction-summary__confidence govuk-!-font-size-16 govuk-!-margin-top-1 govuk-!-margin-bottom-0">Confidence: 70–89%</div>
+            </dt>
+            <dd class="govuk-summary-list__value">{{ extractionSummary.needsReviewMediumConfidence }}</dd>
             <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Needs review</strong></dd>
           </div>
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Complete</dt>
+            <dt class="govuk-summary-list__key">
+              <div>Complete</div>
+              <div class="govuk-hint review-extraction-summary__confidence govuk-!-font-size-16 govuk-!-margin-top-1 govuk-!-margin-bottom-0">Confidence: 90% and above</div>
+            </dt>
             <dd class="govuk-summary-list__value">{{ extractionSummary.complete }}</dd>
             <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">Complete</strong></dd>
           </div>
@@ -134,7 +143,7 @@
               <td class="govuk-table__cell">{{ document.documentType }}</td>
               <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.extractionConfidence }}%</strong></td>
               <td class="govuk-table__cell">{{ document.fieldsExtractedDisplay }}</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
+              <td class="govuk-table__cell"><strong class="govuk-tag review-extraction-document-status {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
             </tr>
           {% endfor %}
         </tbody>
