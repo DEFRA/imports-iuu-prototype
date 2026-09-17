@@ -38,6 +38,22 @@ the [GOV.UK Frontend](https://github.com/alphagov/govuk-frontend).
 
 This service prototype covers fish and fish product import notifications into Great Britain.
 
+The prototype selector has two service navigation sections:
+
+- **Latest** (`/`): Part 1 v4 and Part 2 v3, marked as work-in-progress.
+- **Archive** (`/archive`): Part 1 v3, v2 and v1, and Part 2 v2 and v1, newest first.
+
+Latest and Archive use separate templates: [index.html](app/views/index.html) and
+[archive.html](app/views/archive.html). Each owns its page heading, section headings,
+descriptions and version lists, so sections can be edited or added independently.
+The shared [selector layout](app/views/layouts/main.html) supplies only the service
+name, navigation and GOV.UK page shell. Journey layouts remain version-local.
+
+Cards are written directly in each page template. Edit a card's HTML, text or links
+there without affecting any other card. Buttons use the standard GOV.UK component.
+
+Switching sections does not reset journey data. Archived versions stay available at their existing versioned URLs.
+
 ### What this prototype covers
 
 1. Enter importer details
@@ -51,7 +67,8 @@ This service prototype covers fish and fish product import notifications into Gr
 
 ### Service journey (current routes)
 
-- `/` Start page (also clears session data)
+- `/` Latest prototype selector
+- `/archive` Archived prototype selector
 - `/importer-details`
 - `/transport-details`
 - `/arrival-details`
@@ -77,7 +94,8 @@ The prototype also includes a separate inspection journey for Port Health Author
   - Views: `app/views/part2/inspection/` (grouped into `dashboard/`, `case/`, `journey/`, `support/`)
 
 - Entry points:
-  - `/` Prototype selector
+  - `/` Latest prototype selector
+  - `/archive` Archived prototype selector
   - `/inspections` Inspection work queue
 - Functional inspection case:
   - `GB-IUU-2026-11002` at `/inspection/GB-IUU-2026-11002`
@@ -103,7 +121,7 @@ The prototype also includes a separate inspection journey for Port Health Author
   - Non-Manipulation Declarations
 - Processing Statement and NMD flows use separate Yes/No decision pages before upload pages
 - Scenario A and Scenario B extraction journeys include a commodity details page after arrival details
-- Session data is reset when a user returns to the start page (`/`)
+- Use the standard Clear data link to reset session data; browsing the selector does not reset it.
 
 ### Important prototype limitations
 

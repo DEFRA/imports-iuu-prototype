@@ -1,0 +1,177 @@
+{% extends "layouts/main.html" %}
+
+{% set pageName = "Archive" %}
+{% set isArchive = true %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <span class="govuk-caption-xl">{{ serviceName }}</span>
+      <h1 class="govuk-heading-xl">{{ pageName }}</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Part 1: Importer</h2>
+      <p class="govuk-body govuk-!-margin-bottom-6">User journey for importer or agent submission flows.</p>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <section class="prototype-selector-card">
+        <h3 class="govuk-heading-m">
+          <span class="govuk-caption-m">Version 3</span>
+          Multiple document extraction (Primary flow)
+        </h3>
+
+        <div>
+          <p class="govuk-body">Upload multiple documents, review extracted data and submit the notification.</p>
+          {{ govukButton({
+            text: "View prototype: scenario A",
+            href: "/part1/v3/dashboard?variant=a",
+            classes: "govuk-!-margin-bottom-0"
+          }) }}
+
+          <details class="govuk-details govuk-!-margin-top-3 govuk-!-margin-bottom-0" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">Other scenarios</span>
+            </summary>
+            <div class="govuk-details__text">
+              <a class="govuk-link" href="/part1/v3/dashboard?variant=b">View prototype: scenario B (Extraction failed)</a>
+            </div>
+          </details>
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+        <div>
+          <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Manual data entry (Alternative flow)</h3>
+          <p class="govuk-body">End-to-end import notification flow without document extraction.</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">
+            <a class="govuk-link" href="/part1/v3/importer-details">View prototype: manual entry</a>
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <section class="prototype-selector-card">
+        <h3 class="govuk-heading-m">
+          <span class="govuk-caption-m">Version 2</span>
+          Multiple document extraction (Primary flow)
+        </h3>
+
+        <div>
+          <p class="govuk-body">Upload multiple documents, review extracted data and submit the notification.</p>
+          {{ govukButton({
+            text: "View prototype: scenario A",
+            href: "/part1/v2/dashboard?variant=a",
+            classes: "govuk-!-margin-bottom-0"
+          }) }}
+
+          <details class="govuk-details govuk-!-margin-top-3 govuk-!-margin-bottom-0" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">Other scenarios</span>
+            </summary>
+            <div class="govuk-details__text">
+              <a class="govuk-link" href="/part1/v2/dashboard?variant=b">View prototype: scenario B (Extraction failed)</a>
+            </div>
+          </details>
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+        <div>
+          <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Manual data entry (Alternative flow)</h3>
+          <p class="govuk-body">End-to-end import notification flow without document extraction.</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">
+            <a class="govuk-link" href="/part1/v2/importer-details">View prototype: manual entry</a>
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <section class="prototype-selector-card">
+        <h3 class="govuk-heading-m">
+          <span class="govuk-caption-m">Version 1</span>
+          Multiple document extraction (Primary flow)
+        </h3>
+
+        <div>
+          <p class="govuk-body">Upload multiple documents, review extracted data and submit the notification.</p>
+          {{ govukButton({
+            text: "View prototype: scenario A",
+            href: "/part1/v1/upload-guidance?variant=a",
+            classes: "govuk-!-margin-bottom-0"
+          }) }}
+
+          <details class="govuk-details govuk-!-margin-top-3 govuk-!-margin-bottom-0" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+              <span class="govuk-details__summary-text">Other scenarios</span>
+            </summary>
+            <div class="govuk-details__text">
+              <a class="govuk-link" href="/part1/v1/upload-guidance?variant=b">View prototype: scenario B (Extraction failed)</a>
+            </div>
+          </details>
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+        <div>
+          <h3 class="govuk-heading-s govuk-!-margin-bottom-2">Manual data entry (Alternative flow)</h3>
+          <p class="govuk-body">End-to-end import notification flow without document extraction.</p>
+          <p class="govuk-body govuk-!-margin-bottom-0">
+            <a class="govuk-link" href="/part1/v1/importer-details">View prototype: manual entry</a>
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-l govuk-!-margin-bottom-2">Part 2: Inspection</h2>
+      <p class="govuk-body govuk-!-margin-bottom-6">User journey for Port Health Authority inspection workflows.</p>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <section class="prototype-selector-card">
+        <h3 class="govuk-heading-m">
+          <span class="govuk-caption-m">Version 2</span>
+          Inspection recording (PHA officer flow)
+        </h3>
+
+        <div>
+          <p class="govuk-body">Review queue cases, complete checks and record outcomes.</p>
+          {{ govukButton({
+            text: "View prototype",
+            href: "/part2/v2/inspections",
+            classes: "govuk-!-margin-bottom-0"
+          }) }}
+        </div>
+      </section>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <section class="prototype-selector-card">
+        <h3 class="govuk-heading-m">
+          <span class="govuk-caption-m">Version 1</span>
+          Inspection recording (PHA officer flow)
+        </h3>
+
+        <div>
+          <p class="govuk-body">Review queue cases, complete checks and record outcomes.</p>
+          {{ govukButton({
+            text: "View prototype",
+            href: "/part2/v1/inspections",
+            classes: "govuk-!-margin-bottom-0"
+          }) }}
+        </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}
