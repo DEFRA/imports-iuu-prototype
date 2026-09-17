@@ -40,7 +40,7 @@ This service prototype covers fish and fish product import notifications into Gr
 
 The prototype selector has two service navigation sections:
 
-- **Latest** (`/`): Part 1 v4 and Part 2 v3, marked as work-in-progress.
+- **Latest** (`/`): Part 1 v3 and Part 2 v2.
 - **Archive** (`/archive`): Part 1 v3, v2 and v1, and Part 2 v2 and v1, newest first.
 
 Latest and Archive use separate templates: [index.html](app/views/index.html) and
