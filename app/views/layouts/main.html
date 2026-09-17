@@ -1,24 +1,23 @@
-{#
-For guidance on how to use layouts see:
-https://prototype-kit.service.gov.uk/docs/how-to-use-layouts
-#}
-
 {% extends "govuk-prototype-kit/layouts/govuk-branded.njk" %}
-{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
-{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
-{% block beforeContent %}
-  {{ govukPhaseBanner({
-    tag: {
-      text: "Alpha"
-    },
-    html: 'This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us improve it.'
+{% set serviceName = "Defra Fish Imports prototypes" %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+
+{% block govukServiceNavigation %}
+  {{ govukServiceNavigation({
+    serviceName: serviceName,
+    serviceUrl: "/",
+    navigation: [
+      {
+        text: "Latest",
+        href: "/",
+        current: not isArchive
+      },
+      {
+        text: "Archive",
+        href: "/archive",
+        current: isArchive
+      }
+    ]
   }) }}
-
-  {% if showBackLink %}
-    {{ govukBackLink({
-      text: "Back",
-      href: backLinkHref or "javascript:history.back()"
-    }) }}
-  {% endif %}
 {% endblock %}

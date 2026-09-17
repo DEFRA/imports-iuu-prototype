@@ -1,0 +1,10 @@
+{% macro documentMetadataPanel(document) %}
+  <h2 class="govuk-heading-m govuk-!-margin-top-4">Document metadata</h2>
+  <dl class="govuk-summary-list govuk-summary-list--no-border govuk-!-margin-bottom-4">
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Document name</dt><dd class="govuk-summary-list__value">{{ document.name }}</dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">Upload date</dt><dd class="govuk-summary-list__value">{{ document.uploadDate }}</dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">File type</dt><dd class="govuk-summary-list__value">{{ document.fileType }}</dd></div>
+    <div class="govuk-summary-list__row"><dt class="govuk-summary-list__key">File size</dt><dd class="govuk-summary-list__value">{{ document.fileSize }}</dd></div>
+  </dl>
+  <a class="govuk-button govuk-button--secondary" href="{{ document.downloadUrl }}"{% if document.previewType == 'image' %} download="{{ document.name }}"{% endif %}>Download document</a>
+{% endmacro %}

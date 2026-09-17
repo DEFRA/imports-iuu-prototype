@@ -1,0 +1,82 @@
+{% extends "app/part1/v4/views/layouts/main.html" %}
+
+{% set pageName = "What are you importing?" %}
+{% set backLinkHref = basePath + "/origin-of-import?variant=" + variant %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {% include "app/part1/v4/views/notification/_draft-header.html" %}
+
+    <span class="govuk-caption-l">About the consignment</span>
+    <h1 class="govuk-heading-l">What are you importing?</h1>
+
+    <div class="govuk-inset-text">
+      A separate notification is required for each health certificate.<br>
+      Consignments that do not require a health certificate must still be notified.
+    </div>
+
+    <form action="{{ basePath }}/what-are-you-importing" method="post">
+      <input type="hidden" name="variant" value="{{ variant }}">
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="commodity-search">
+          Search for a commodity
+        </label>
+        <div id="commodity-search-hint" class="govuk-hint">
+          You can search by common name (for example, Atlantic cod), commodity code (03047190), or scientific name (Gadus morhua).
+        </div>
+        <div class="app-commodity-search-wrapper" data-module="app-commodity-search">
+          <script type="application/json" class="app-commodity-search__data">{{ commoditiesJson | safe }}</script>
+          <div class="app-commodity-search-panel">
+            <div class="app-commodity-search" aria-expanded="false" aria-controls="commodity-search-results">
+              <input class="app-commodity-search__input" id="commodity-search" name="commodity-search" type="search" autocomplete="off" aria-controls="commodity-search-results" aria-describedby="commodity-search-hint commodity-search-status" value="{{ data['commodity-search'] }}">
+              <button class="app-commodity-search__button" type="button">
+                <span class="govuk-visually-hidden">Search</span>
+                <svg class="app-commodity-search__icon" width="20" height="20" viewBox="0 0 20.3765 20" aria-hidden="true" focusable="false">
+                  <path d="M8.90084 14.4683C12.3848 14.4683 15.2091 11.644 15.2091 8.16008C15.2091 4.67613 12.3848 1.85184 8.90084 1.85184C5.41689 1.85184 2.59259 4.67613 2.59259 8.16008C2.59259 11.644 5.41689 14.4683 8.90084 14.4683Z" stroke="currentColor" stroke-width="2.22222" fill="none"></path>
+                  <path d="M13.2347 12.8583L19.5908 19.2143" stroke="currentColor" stroke-width="2.22222" fill="none"></path>
+                </svg>
+              </button>
+            </div>
+            <ul id="commodity-search-results" class="app-commodity-search__results" role="list" aria-label="Commodity search results" hidden></ul>
+          </div>
+
+          <div class="app-commodity-search__selected" id="commodity-search-selected" hidden>
+            <div class="app-commodity-search__selected-header">
+              <p class="app-commodity-search__selected-heading" id="commodity-search-selected-heading"></p>
+              <button class="app-commodity-search__selected-clear" type="button">Clear all</button>
+            </div>
+            <ul class="app-commodity-search__selected-list" id="commodity-search-selected-list" role="list"></ul>
+          </div>
+
+          <script type="application/json" class="app-commodity-search__initial">{{ selectedCommoditiesJson | safe }}</script>
+          <div class="app-commodity-search__selected-inputs">
+            {% for selectionId in data['selected-commodities'] %}
+            <input type="hidden" name="selected-commodities" value="{{ selectionId }}">
+            {% endfor %}
+          </div>
+          <div id="commodity-search-status" class="app-commodity-search__status govuk-visually-hidden" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <details class="govuk-details" data-module="govuk-details">
+        <summary class="govuk-details__summary">
+          <span class="govuk-details__summary-text">Help with commodity codes</span>
+        </summary>
+        <div class="govuk-details__text">
+          <p class="govuk-body">Commodity codes are internationally recognised reference numbers.</p>
+          <p class="govuk-body">A commodity code describes a specific product when importing or exporting goods.</p>
+          <p class="govuk-body">You can look up commodity codes using the <a class="govuk-link" href="https://www.trade-tariff.service.gov.uk/" target="_blank" rel="noreferrer noopener">Trade Tariff tool (opens in a new tab)</a>.</p>
+        </div>
+      </details>
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">Save and continue</button>
+        <button class="govuk-button govuk-button--secondary" name="action" value="overview" data-module="govuk-button">Save and return to overview</button>
+      </div>
+      <p class="govuk-body"><a class="govuk-link" href="{{ basePath }}/dashboard?variant={{ variant }}">Cancel and return to overview</a></p>
+    </form>
+  </div>
+</div>
+{% endblock %}
