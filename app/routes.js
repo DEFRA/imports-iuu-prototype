@@ -8,5 +8,7 @@ router.get('/', (req, res) => {
 require('./part1/v1/routes')
 require('./part1/v2/routes')
 require('./part1/v3/routes')
+require('./part1/v4/routes')
 require('./part2/v1/routes')
 require('./part2/v2/routes')
+require('./part2/v3/routes')

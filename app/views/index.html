@@ -16,7 +16,6 @@
       {{ govukButton({
         text: "View prototype: scenario A",
         href: basePath + (startPage or "/upload-guidance") + "?variant=a",
-        isStartButton: true,
         classes: "govuk-!-margin-bottom-0"
       }) }}
 
@@ -53,7 +52,6 @@
       {{ govukButton({
         text: "View prototype",
         href: basePath + "/inspections",
-        isStartButton: true,
         classes: "govuk-!-margin-bottom-0"
       }) }}
     </div>
@@ -77,7 +75,11 @@
   </div>
 
   <div class="govuk-grid-column-full">
-    {{ importerVersionCard("Version 3 (work-in-progress)", "/part1/v3", "/dashboard") }}
+    {{ importerVersionCard("Version 4 (work-in-progress)", "/part1/v4", "/dashboard") }}
+  </div>
+
+  <div class="govuk-grid-column-full">
+    {{ importerVersionCard("Version 3", "/part1/v3", "/dashboard") }}
   </div>
 
   <div class="govuk-grid-column-full">
@@ -98,7 +100,11 @@
   </div>
 
   <div class="govuk-grid-column-full">
-    {{ inspectionVersionCard("Version 2 (work-in-progress)", "/part2/v2") }}
+    {{ inspectionVersionCard("Version 3 (work-in-progress)", "/part2/v3") }}
+  </div>
+
+  <div class="govuk-grid-column-full">
+    {{ inspectionVersionCard("Version 2", "/part2/v2") }}
   </div>
 
   <div class="govuk-grid-column-full">
