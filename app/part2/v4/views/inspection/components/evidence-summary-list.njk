@@ -1,0 +1,24 @@
+{% from "app/part2/v4/views/inspection/components/document-reference-list.njk" import documentLink %}
+
+{% macro evidenceLinks(documents) %}
+  {% for document in documents %}
+    {% if document.href %}{{ documentLink(document) }}{% else %}{{ document.text }}{% endif %}{% if not loop.last %}, {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% macro renderEvidenceSummaryList(sections) %}
+  <dl class="govuk-summary-list">
+    {% for section in sections %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ section.heading }} ({{ section.references.length }})</dt>
+        <dd class="govuk-summary-list__value">
+          {% if section.references.length %}
+            {{ evidenceLinks(section.references) }}
+          {% else %}
+            None supplied
+          {% endif %}
+        </dd>
+      </div>
+    {% endfor %}
+  </dl>
+{% endmacro %}

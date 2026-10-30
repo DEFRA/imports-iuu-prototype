@@ -1,0 +1,5 @@
+{% macro pdfPreviewComponent(document) %}
+  <object class="additional-document-viewer__preview" data="{{ document.previewUrl }}#view=FitH" type="application/pdf" aria-label="Preview of {{ document.name }}">
+    <p class="govuk-body">This browser cannot display the PDF. <a class="govuk-link" href="{{ document.previewUrl }}">Open the PDF</a>.</p>
+  </object>
+{% endmacro %}

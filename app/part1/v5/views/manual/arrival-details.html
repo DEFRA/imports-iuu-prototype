@@ -1,0 +1,160 @@
+{% extends "app/part1/v5/views/layouts/main.html" %}
+
+{% set pageName="Consignment details" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Consignment details</h1>
+
+    {% if errorList and errorList.length %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="error-summary-title">
+        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+        <div class="govuk-error-summary__body">
+          <ul class="govuk-list govuk-error-summary__list">
+            {% for error in errorList %}
+              <li><a href="#{{ error.id }}">{{ error.message }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <p class="govuk-body">
+      Provide your port of entry and expected date of arrival.
+    </p>
+
+    <form action="{{ basePath }}/arrival-details" method="post">
+      <h2 class="govuk-heading-m">Arrival details</h2>
+
+      <div class="govuk-form-group{% if errors['destination-port'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label govuk-heading-s govuk-!-font-weight-bold" for="destination-port">
+          What is the port of entry?
+        </label>
+        {% if errors['destination-port'] %}
+          <p id="destination-port-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['destination-port'] }}</p>
+        {% endif %}
+        <select class="govuk-select" id="destination-port" name="destination-port" {% if errors['destination-port'] %}aria-describedby="destination-port-error"{% endif %}>
+          <option value="">Select a destination port</option>
+          <option value="Dover" {% if data['destination-port'] == 'Dover' %}selected{% endif %}>Dover</option>
+          <option value="Felixstowe" {% if data['destination-port'] == 'Felixstowe' %}selected{% endif %}>Felixstowe</option>
+          <option value="Grimsby" {% if data['destination-port'] == 'Grimsby' %}selected{% endif %}>Grimsby</option>
+          <option value="Hull" {% if data['destination-port'] == 'Hull' %}selected{% endif %}>Hull</option>
+          <option value="Immingham" {% if data['destination-port'] == 'Immingham' %}selected{% endif %}>Immingham</option>
+          <option value="Liverpool" {% if data['destination-port'] == 'Liverpool' %}selected{% endif %}>Liverpool</option>
+          <option value="Portsmouth" {% if data['destination-port'] == 'Portsmouth' %}selected{% endif %}>Portsmouth</option>
+          <option value="Tilbury" {% if data['destination-port'] == 'Tilbury' %}selected{% endif %}>Tilbury</option>
+        </select>
+      </div>
+
+      <div class="govuk-form-group{% if errors['arrival-date'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="{% if errors['arrival-date'] %}arrival-date-error {% endif %}arrival-date-hint">
+          <legend class="govuk-fieldset__legend govuk-heading-s govuk-!-font-weight-bold">
+            What is the expected date of arrival?
+          </legend>
+          {% if errors['arrival-date'] %}
+            <p id="arrival-date-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['arrival-date'] }}</p>
+          {% endif %}
+          <div id="arrival-date-hint" class="govuk-hint">
+            For example, 27 3 2026
+          </div>
+          <div class="govuk-date-input" id="arrival-date">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-date-day">Day</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-day" name="arrival-date-day" type="text" inputmode="numeric" value="{{ data['arrival-date-day'] }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-date-month">Month</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-month" name="arrival-date-month" type="text" inputmode="numeric" value="{{ data['arrival-date-month'] }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-date-year">Year</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="arrival-date-year" name="arrival-date-year" type="text" inputmode="numeric" value="{{ data['arrival-date-year'] }}">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="govuk-form-group{% if errors['arrival-time'] %} govuk-form-group--error{% endif %}">
+        <fieldset class="govuk-fieldset" role="group" aria-describedby="{% if errors['arrival-time'] %}arrival-time-error {% endif %}arrival-time-hint">
+          <legend class="govuk-fieldset__legend govuk-heading-s govuk-!-font-weight-bold">
+            What time is the expected arrival?
+          </legend>
+          {% if errors['arrival-time'] %}
+            <p id="arrival-time-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['arrival-time'] }}</p>
+          {% endif %}
+          <div id="arrival-time-hint" class="govuk-hint">For example, 9:30am</div>
+          <div class="govuk-date-input" id="arrival-time">
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-time-hour">Hour</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-time-hour" name="arrival-time-hour" type="text" inputmode="numeric" value="{{ data['arrival-time-hour'] }}">
+              </div>
+            </div>
+            <div class="govuk-date-input__item">
+              <div class="govuk-form-group">
+                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-time-minute">Minute</label>
+                <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-time-minute" name="arrival-time-minute" type="text" inputmode="numeric" value="{{ data['arrival-time-minute'] }}">
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+      <h2 class="govuk-heading-m">Additional details</h2>
+
+      <div class="govuk-form-group{% if errors['country-of-export'] %} govuk-form-group--error{% endif %}">
+        <label class="govuk-label govuk-heading-s govuk-!-font-weight-bold" for="country-of-export-search">
+          Country of export
+        </label>
+        {% if errors['country-of-export'] %}
+          <p id="country-of-export-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['country-of-export'] }}</p>
+        {% endif %}
+        <div id="country-of-export-hint" class="govuk-hint">If the country is outside Europe, you will need to provide a CHED number.</div>
+        <div class="app-commodity-search-wrapper app-country-search__wrapper" data-module="app-country-search">
+          <script type="application/json" class="app-country-search__data">{{ countriesJson | safe }}</script>
+          <div class="app-commodity-search-panel">
+            <div class="app-commodity-search app-country-search__control" aria-expanded="false">
+              <input class="govuk-select app-commodity-search__input app-country-search__input" id="country-of-export-search" name="country-of-export-search" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" value="{{ data['country-of-export'] or data['country-of-export-search'] }}" placeholder="Select a country" autocomplete="off" aria-controls="country-of-export-results" aria-describedby="{% if errors['country-of-export'] %}country-of-export-error {% endif %}country-of-export-hint">
+              <button class="app-commodity-search__button app-country-search__toggle" type="button" aria-label="Show country options" aria-expanded="false" aria-controls="country-of-export-results">
+                <span class="govuk-visually-hidden">Show country options</span>
+                <span class="app-country-search__chevron" aria-hidden="true"></span>
+              </button>
+            </div>
+            <ul id="country-of-export-results" class="app-commodity-search__results" role="listbox" aria-label="Country of export options" hidden></ul>
+          </div>
+          <input type="hidden" name="country-of-export" class="app-country-search__value" value="{{ data['country-of-export'] }}">
+          <div class="app-country-search__status govuk-visually-hidden" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div id="conditional-ched-number" {% if data['country-of-export-region'] != 'row' %}hidden{% endif %}>
+        <div class="govuk-form-group{% if errors['ched-number'] %} govuk-form-group--error{% endif %}">
+          <label class="govuk-label govuk-heading-s govuk-!-font-weight-bold" for="ched-number">CHED number</label>
+          {% if errors['ched-number'] %}
+            <p id="ched-number-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['ched-number'] }}</p>
+          {% endif %}
+          <input class="govuk-input govuk-input--width-20" id="ched-number" name="ched-number" type="text" value="{{ data['ched-number'] }}" {% if errors['ched-number'] %}aria-describedby="ched-number-error"{% endif %}>
+        </div>
+      </div>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

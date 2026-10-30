@@ -1,0 +1,120 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+
+{% macro renderInspectionOutcomeRadios(actionData, errorMap) %}
+  {{ govukRadios({
+    idPrefix: "documentary-check-outcome",
+    name: "documentary-check-outcome",
+    classes: "govuk-radios--small",
+    fieldset: {
+      legend: {
+        text: "Documentary check outcome",
+        classes: "govuk-fieldset__legend--s"
+      }
+    },
+    errorMessage: { text: errorMap['documentary-check-outcome'] } if errorMap['documentary-check-outcome'] else null,
+    items: [
+      { value: "satisfactory", text: "Satisfactory", checked: actionData.outcome == "satisfactory" },
+      { value: "satisfactory-following-intervention", text: "Satisfactory following intervention", checked: actionData.outcome == "satisfactory-following-intervention" },
+      { value: "not-satisfactory", text: "Not satisfactory", checked: actionData.outcome == "not-satisfactory" }
+    ]
+  }) }}
+{% endmacro %}
+
+{% macro renderInspectionActionForm(basePath, reference, actionData, errorMap) %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="post" action="{{ basePath }}/inspection/{{ reference }}/action">
+        {{ govukRadios({
+          idPrefix: "inspection-action",
+          name: "inspection-action",
+          classes: "govuk-radios--small inspection-action-options",
+          fieldset: {
+            legend: {
+                text: "Actions",
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          errorMessage: { text: errorMap['inspection-action'] } if errorMap['inspection-action'] else null,
+          items: [
+            { value: "issue-decision", text: "Issue a decision", checked: actionData.action == "issue-decision", conditional: { html: renderInspectionOutcomeRadios(actionData, errorMap) } },
+            { value: "document-under-assessment", text: "Move to document under assessment", checked: actionData.action == "document-under-assessment" },
+            { value: "add-note", text: "Add note", checked: actionData.action == "add-note" },
+            { value: "request-information", text: "Request more information", checked: actionData.action == "request-information" },
+            { value: "referred-to-mmo", text: "Request advice from MMO", checked: actionData.action == "referred-to-mmo" },
+            { value: "physical-inspection", text: "Move to physical inspection", checked: actionData.action == "physical-inspection" },
+            { value: "appeal-review", text: "Move to appeal review", checked: actionData.action == "appeal-review" },
+            { value: "refer-to-enforcement", text: "Refer to enforcement", checked: actionData.action == "refer-to-enforcement" },
+            { value: "archive-notification", text: "Archive notification", checked: actionData.action == "archive-notification" }
+          ]
+        }) }}
+        {{ govukTextarea({
+          id: "inspection-action-notes",
+          name: "inspection-action-notes",
+          rows: 4,
+          errorMessage: { text: errorMap['inspection-action-notes'] } if errorMap['inspection-action-notes'] else null,
+          value: actionData.notes,
+          label: { text: "Notes", classes: "govuk-label--s" },
+          hint: { text: "Describe the action taken and any other related information" }
+        }) }}
+        <div data-action-content="request-information referred-to-mmo">
+          {{ govukFileUpload({
+            id: "inspection-action-attachments",
+            name: "inspection-action-attachments",
+            label: { text: "Add attachments", classes: "govuk-label--s" },
+            multiple: true
+          }) }}
+        </div>
+        <div data-action-declaration="request-information">
+          {{ govukCheckboxes({
+            name: "inspection-information-declaration",
+            idPrefix: "inspection-information-declaration",
+            classes: "govuk-checkboxes--small",
+            errorMessage: { text: errorMap['inspection-information-declaration'] } if errorMap['inspection-information-declaration'] else null,
+            items: [{
+              value: "confirmed",
+              text: "I understand that continuing will change the notification's status to 'Awaiting importer response'. The importer will be notified and can see my notes.",
+              checked: actionData.informationConfirmed
+            }]
+          }) }}
+        </div>
+        <div data-action-content="referred-to-mmo">
+          <p class="govuk-body">This request for advice will be shared with the MMO.</p>
+        </div>
+        <div data-action-content="document-under-assessment physical-inspection appeal-review">
+          <p class="govuk-body">This only changes the notification's category. Only people at your authority can see this update.</p>
+        </div>
+        <div data-action-declaration="issue-decision">
+          {{ govukCheckboxes({
+            name: "inspection-decision-declaration",
+            idPrefix: "inspection-decision-declaration",
+            classes: "govuk-checkboxes--small",
+            errorMessage: { text: errorMap['inspection-decision-declaration'] } if errorMap['inspection-decision-declaration'] else null,
+            items: [{
+              value: "confirmed",
+              text: "I confirm this records the outcome of my IUU control check and that the decision will be shared with the importer.",
+              checked: actionData.decisionConfirmed
+            }]
+          }) }}
+        </div>
+        <div data-action-declaration="refer-to-enforcement">
+          {{ govukCheckboxes({
+            name: "inspection-enforcement-declaration",
+            idPrefix: "inspection-enforcement-declaration",
+            classes: "govuk-checkboxes--small",
+            errorMessage: { text: errorMap['inspection-enforcement-declaration'] } if errorMap['inspection-enforcement-declaration'] else null,
+            items: [{
+              value: "confirmed",
+              text: "I understand this only changes the notification's category in the IUU service. It does not start enforcement action. Only people at my authority can see this update.",
+              checked: actionData.enforcementConfirmed
+            }]
+          }) }}
+        </div>
+        {{ govukButton({ text: "Submit" }) }}
+      </form>
+    </div>
+  </div>
+{% endmacro %}
