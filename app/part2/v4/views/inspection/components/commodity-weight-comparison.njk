@@ -1,0 +1,60 @@
+{% macro comparisonRows(groups) %}
+  {% for group in groups %}
+    <tbody class="govuk-table__body">
+      {% for species in group.species %}
+        <tr class="govuk-table__row">
+          {% if loop.first %}
+            <th class="govuk-table__header" scope="rowgroup" rowspan="{{ group.species.length + 1 }}">{{ group.code }}</th>
+          {% endif %}
+          <th class="govuk-table__header inspection-overview__comparison-species" scope="row">
+            {{ species.name }}
+            {% if species.scientificName %}<span class="govuk-body-s govuk-!-display-block govuk-!-margin-bottom-0"><em>{{ species.scientificName }}</em></span>{% endif %}
+          </th>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ species.notificationWeight }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ species.catchCertificateWeight }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ species.processingStatementWeight }}</td>
+          <td class="govuk-table__cell govuk-table__cell--numeric">{{ species.nonManipulationDeclarationWeight }}</td>
+        </tr>
+      {% endfor %}
+      <tr class="govuk-table__row">
+        <th class="govuk-table__header" scope="row"><span class="govuk-visually-hidden">Total for {{ group.code }}</span></th>
+        <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s"><em>{{ group.subtotals.notificationWeight }}</em></td>
+        <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s"><em>{{ group.subtotals.catchCertificateWeight }}</em></td>
+        <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s"><em>{{ group.subtotals.processingStatementWeight }}</em></td>
+        <td class="govuk-table__cell govuk-table__cell--numeric govuk-body-s"><em>{{ group.subtotals.nonManipulationDeclarationWeight }}</em></td>
+      </tr>
+    </tbody>
+  {% endfor %}
+{% endmacro %}
+
+{% macro comparisonTable(groups, reference) %}
+  <div class="govuk-table__container inspection-overview__comparison-scroll" tabindex="0" role="region" aria-label="Commodity weights for {{ reference }}">
+    <table class="govuk-table inspection-overview__comparison-table">
+      <caption class="govuk-visually-hidden">Commodity weight comparison</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Code</th>
+          <th scope="col" class="govuk-table__header">Species</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight on declaration</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight on CC</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight on PS</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">Weight on NMD</th>
+        </tr>
+      </thead>
+      {{ comparisonRows(groups) }}
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro renderCommodityWeightComparison(comparison, reference) %}
+  <section class="govuk-!-margin-bottom-8" aria-labelledby="commodity-weight-comparison-heading">
+    <h2 class="govuk-heading-m" id="commodity-weight-comparison-heading">Commodity weight comparison</h2>
+    {% if comparison.initialGroup %}
+      <p class="govuk-body govuk-!-margin-bottom-1">{{ comparison.commodityCount }} commodity code{% if comparison.commodityCount != 1 %}s{% endif %}, {{ comparison.speciesCount }} species.</p>
+      <p class="govuk-body govuk-!-margin-bottom-3">Total declared weight: <strong>{{ comparison.totalWeight }}</strong></p>
+      {{ comparisonTable([comparison.initialGroup].concat(comparison.remainingGroups), reference) }}
+    {% else %}
+      <p class="govuk-body">No commodity weight comparisons available.</p>
+    {% endif %}
+  </section>
+{% endmacro %}

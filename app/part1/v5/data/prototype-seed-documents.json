@@ -1,0 +1,2352 @@
+[
+  {
+    "reference": "CC-001",
+    "documentNumber": "ESP/SGCI/AI/2026/101",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "ESP/SGCI/AI/2026/101"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Secretar\u00eda General de Pesca"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "C/ Vel\u00e1zquez 147, 28002 Madrid, Spain"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "06/01/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "18/06/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "P0099-6/2026"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "373385"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "371900"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "370850"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "ELAI ALAI"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "ESPA\u00d1A - BERMEO - 3\u00aaBI-2-1-93"
+      },
+      {
+        "label": "Call Sign",
+        "value": "EAIW"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9046966"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "ECHEBASTAR FLEET SLU"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Muelle Erroxape S/N, 48370 Bermeo, Bizkaia, Spain"
+      },
+      {
+        "label": "Importer Company",
+        "value": "Frinsa UK"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Sarah Thompson"
+      },
+      {
+        "label": "Importer Address",
+        "value": "170 Edmund Street, Birmingham B3 2HB, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB123456789000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 121 555 1001"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "North Sea Customs Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Alice Morgan"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "10 Customs House Way, Felixstowe IP11 3SY, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB111222333000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1394 555 2001"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "370850"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "367000"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "ECHEBASTAR FLEET SLU"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port Victoria Container Terminal, New Port Road, Victoria, Mah\u00e9, Seychelles"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-ESP-2026-0001"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Seychelles - Port Victoria"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000010"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Felixstowe"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "09/03/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-002",
+    "documentNumber": "FRA 2026 CSP 000101",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "FRA 2026 CSP 000101"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Centre National de Surveillance des P\u00eaches"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "40 Avenue Louis Bougo, BP 48, 56410 \u00c9tel, France"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean Western"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "06/04/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "21/06/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "CTOI-1302/000201"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "198687"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "197420"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "196880"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "BERNICA"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "FRA - DZAOUDZI - DI 929727"
+      },
+      {
+        "label": "Call Sign",
+        "value": "FLTZ"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9600853"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "SAPMER S.A."
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Darse de P\u00eache, 97420 Le Port, R\u00e9union, France"
+      },
+      {
+        "label": "Importer Company",
+        "value": "New England Seafood International Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Michael Roberts"
+      },
+      {
+        "label": "Importer Address",
+        "value": "Genesis Way, Healing, Grimsby DN37 9TU, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB987654321000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1472 555 1002"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Portside Clearance Services Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "David Shaw"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "22 Dock Office Road, Grimsby DN31 3SY, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB444555666000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1472 555 2002"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "196880"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "194500"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "SAPMER S.A."
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port de la Pointe des Galets, Avenue de la Commune de Paris, 97420 Le Port, R\u00e9union"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-FRA-2026-0002"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Seychelles - Port Victoria"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000020"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "London Gateway"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "09/05/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-003",
+    "documentNumber": "608-BFAR12-TPJ-2026-1101-CCC",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "608-BFAR12-TPJ-2026-1101-CCC"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Bureau of Fisheries and Aquatic Resources"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "2nd Floor RDRDC Building, I. Santiago Boulevard, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 71 - PNG EEZ / Solomon Islands EEZ"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "06/07/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "24/06/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "OPRS-012264-IFP-00-26"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "14777"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "14380"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "14150"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "TOBIAS MIGUEL"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "PHILIPPINES - MANILA - 00-0002561"
+      },
+      {
+        "label": "Call Sign",
+        "value": "4DFC-7"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "8748658"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Bo. Cabu, Tambler, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Importer Company",
+        "value": "UK Seafood Trading Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Emma Wilson"
+      },
+      {
+        "label": "Importer Address",
+        "value": "1 Fish Dock Road, Grimsby DN31 3LW, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB555666777000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1472 555 1003"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Harbour Freight Agency Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Priya Patel"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "5 Harbour Lane, Liverpool L3 4FP, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB777888999000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 151 555 2003"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "14150"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "13920"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Makar Wharf Road, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-PHL-2026-0003"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Philippines - General Santos City"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000030"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Grimsby"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "09/07/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-004",
+    "documentNumber": "ESP/SGCI/AI/2026/102",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "ESP/SGCI/AI/2026/102"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Secretar\u00eda General de Pesca"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "C/ Vel\u00e1zquez 147, 28002 Madrid, Spain"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "06/10/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "27/06/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "P0112-4/2026"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "181080"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "179550"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "178940"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "PENDRUC"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "FRANCE - CONCARNEAU - CC932207"
+      },
+      {
+        "label": "Call Sign",
+        "value": "FIXF"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9741102"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "Compagnie Fran\u00e7aise du Thon Oc\u00e9anique"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "11 Rue des Sardiniers, 29900 Concarneau, France"
+      },
+      {
+        "label": "Importer Company",
+        "value": "Atlantic Tuna Imports Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "David Hughes"
+      },
+      {
+        "label": "Importer Address",
+        "value": "40 Harbour Avenue, Felixstowe IP11 3SY, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB222333444000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1394 555 1004"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Blue Channel Customs Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "James Walker"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "14 Ocean Park, Southampton SO14 3TJ, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB101112131000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 2380 555 2004"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "178940"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "176500"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "Compagnie Fran\u00e7aise du Thon Oc\u00e9anique"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port Victoria Container Terminal, New Port Road, Victoria, Mah\u00e9, Seychelles"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-FRA-2026-0004"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Seychelles - Port Victoria"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000040"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Liverpool"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "09/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-005",
+    "documentNumber": "FRA 2026 CSP 000102",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "FRA 2026 CSP 000102"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Centre National de Surveillance des P\u00eaches"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "40 Avenue Louis Bougo, BP 48, 56410 \u00c9tel, France"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean Western"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "13/06/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "30/06/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "SYC-171702"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "86500"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "85950"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "85400"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "PACIFIC DAWN"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "ESPA\u00d1A - BERMEO - BI-2045"
+      },
+      {
+        "label": "Call Sign",
+        "value": "PDWN"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9800005"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "ECHEBASTAR FLEET SLU"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Avenida de Beiramar 15, 36202 Vigo, Spain"
+      },
+      {
+        "label": "Importer Company",
+        "value": "North Harbour Seafood Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Rachel Turner"
+      },
+      {
+        "label": "Importer Address",
+        "value": "95 Commercial Road, Portsmouth PO1 1BQ, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB314159265000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 2392 555 1005"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Solent Border Services Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Laura Mitchell"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "2 Port Gate Road, Portsmouth PO1 1BQ, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB121314151000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 2392 555 2005"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "85400"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "84600"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "ECHEBASTAR FLEET SLU"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port of Bermeo, Muelle Erroxape, 48370 Bermeo, Bizkaia, Spain"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-ESP-2026-0005"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Spain - Bermeo"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000050"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Felixstowe"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "09/11/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-006",
+    "documentNumber": "608-BFAR12-TPJ-2026-1102-CCC",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "608-BFAR12-TPJ-2026-1102-CCC"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Bureau of Fisheries and Aquatic Resources"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "2nd Floor RDRDC Building, I. Santiago Boulevard, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 71 - PNG EEZ"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "16/06/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "07/03/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "OPRS-012891-IFP-00-26"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "92500"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "91800"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "91320"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "OCEAN VOYAGER"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "PHILIPPINES - GENERAL SANTOS - GS-88251"
+      },
+      {
+        "label": "Call Sign",
+        "value": "OVGR"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9800006"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Pioneer Avenue 62, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Importer Company",
+        "value": "Humber Fish Trading Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "James Cooper"
+      },
+      {
+        "label": "Importer Address",
+        "value": "22 Portside Way, Hull HU9 5PQ, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB271828182000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1482 555 1006"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Humber Customs Agency Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Thomas Evans"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "6 Alexandra Dock, Hull HU9 1TA, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB161718192000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1482 555 2006"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "91320"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "90400"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Makar Wharf Road, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-PHL-2026-0006"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Philippines - General Santos City"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000060"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Southampton"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "13/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-007",
+    "documentNumber": "ESP/SGCI/AI/2026/103",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "ESP/SGCI/AI/2026/103"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Secretar\u00eda General de Pesca"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "C/ Vel\u00e1zquez 147, 28002 Madrid, Spain"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "19/06/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "07/06/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "P0155-2/2026"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "127350"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "126000"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "125220"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "ISLAND HARVEST"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "FRANCE - LE PORT - LP-44192"
+      },
+      {
+        "label": "Call Sign",
+        "value": "ISLH"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9800007"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "SAPMER S.A."
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Darse de P\u00eache, 97420 Le Port, R\u00e9union, France"
+      },
+      {
+        "label": "Importer Company",
+        "value": "Mersey Seafood Imports Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Sophie Bennett"
+      },
+      {
+        "label": "Importer Address",
+        "value": "8 Dock Street, Liverpool L3 4FP, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB101112131000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 151 555 1007"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Mersey Port Clearance Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Nadia Khan"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "19 Seaforth Road, Liverpool L21 1JD, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB202122232000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 151 555 2007"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "125220"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "123800"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "SAPMER S.A."
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port de la Pointe des Galets, Avenue de la Commune de Paris, 97420 Le Port, R\u00e9union"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-FRA-2026-0007"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "R\u00e9union, France - Le Port"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000070"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "London Gateway"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "15/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-008",
+    "documentNumber": "FRA 2026 CSP 000103",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "FRA 2026 CSP 000103"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Centre National de Surveillance des P\u00eaches"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "40 Avenue Louis Bougo, BP 48, 56410 \u00c9tel, France"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean Western"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "22/06/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "07/09/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "MDG-25/035"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "75540"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "74850"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "74280"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "BLUE HORIZON"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "ESPA\u00d1A - VIGO - VG-77294"
+      },
+      {
+        "label": "Call Sign",
+        "value": "BLHZ"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9800008"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "ECHEBASTAR FLEET SLU"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Muelle Pesquero 24, 36202 Vigo, Spain"
+      },
+      {
+        "label": "Importer Company",
+        "value": "South Coast Seafood Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Andrew Walker"
+      },
+      {
+        "label": "Importer Address",
+        "value": "Ocean House, Southampton SO14 3TJ, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB141516171000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 2380 555 1008"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Southampton Freight Services Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "George Miller"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "31 Dock Gate 4, Southampton SO15 1HJ, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB242526272000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 2380 555 2008"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "74280"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "73550"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "ECHEBASTAR FLEET SLU"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Puerto Pesquero de Vigo, Avenida de Beiramar, 36202 Vigo, Spain"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-ESP-2026-0008"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Spain - Vigo"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000080"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Immingham"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "17/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-009",
+    "documentNumber": "608-BFAR12-TPJ-2026-1103-CCC",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "608-BFAR12-TPJ-2026-1103-CCC"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Bureau of Fisheries and Aquatic Resources"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "2nd Floor RDRDC Building, I. Santiago Boulevard, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 71 - Solomon Islands EEZ"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "25/06/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "07/12/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "OPRS-013402-IFP-00-26"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "64000"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "63440"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "62950"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "ELAI ALAI"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "ESPA\u00d1A - BERMEO - 3\u00aaBI-2-1-93"
+      },
+      {
+        "label": "Call Sign",
+        "value": "EAIW"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9046966"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Bo. Cabu, Tambler, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Importer Company",
+        "value": "Granite City Fish Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Rebecca Morgan"
+      },
+      {
+        "label": "Importer Address",
+        "value": "44 Harbour Road, Aberdeen AB11 5PS, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB181920212000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1224 555 1009"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Granite Customs Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Hannah Scott"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "7 Regent Quay, Aberdeen AB11 5AE, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB282930313000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1224 555 2009"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "62950"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "62100"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Makar Wharf Road, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-PHL-2026-0009"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Philippines - General Santos City"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000090"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Grimsby"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "19/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-010",
+    "documentNumber": "ESP/SGCI/AI/2026/104",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "ESP/SGCI/AI/2026/104"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Secretar\u00eda General de Pesca"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "C/ Vel\u00e1zquez 147, 28002 Madrid, Spain"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "28/06/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "15/07/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "P0181-7/2026"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "142600"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "141200"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "140430"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "BERNICA"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "FRA - DZAOUDZI - DI 929727"
+      },
+      {
+        "label": "Call Sign",
+        "value": "FLTZ"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9600853"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "SAPMER S.A."
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Darse de P\u00eache, 97420 Le Port, R\u00e9union, France"
+      },
+      {
+        "label": "Importer Company",
+        "value": "East Port Tuna Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Daniel Parker"
+      },
+      {
+        "label": "Importer Address",
+        "value": "77 Maritime Way, Felixstowe IP11 7SS, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB232425262000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1394 555 1010"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "East Coast Clearance Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Mark Edwards"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "4 Customs Quay, Felixstowe IP11 3SY, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB323334353000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1394 555 2010"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "140430"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "138900"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "SAPMER S.A."
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port Victoria Container Terminal, New Port Road, Victoria, Mah\u00e9, Seychelles"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-ESP-2026-0010"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Seychelles - Port Victoria"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000100"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Felixstowe"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "21/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-011",
+    "documentNumber": "FRA 2026 CSP 000104",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "FRA 2026 CSP 000104"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Centre National de Surveillance des P\u00eaches"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "40 Avenue Louis Bougo, BP 48, 56410 \u00c9tel, France"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 51 - Indian Ocean Western"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "07/01/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "18/07/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "ECV-04122026"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "98900"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "97800"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "97220"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "PENDRUC"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "FRANCE - CONCARNEAU - CC932207"
+      },
+      {
+        "label": "Call Sign",
+        "value": "FIXF"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "9741102"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "Compagnie Fran\u00e7aise du Thon Oc\u00e9anique"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Quai Carnot 8, 29900 Concarneau, France"
+      },
+      {
+        "label": "Importer Company",
+        "value": "Humber Marine Foods Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Olivia Foster"
+      },
+      {
+        "label": "Importer Address",
+        "value": "12 Humber Quays, Hull HU1 2BN, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB272829303000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1482 555 1011"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Humber Quay Logistics Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Charlotte Green"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "25 Humber Dock Street, Hull HU1 1TB, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB363738393000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1482 555 2011"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "97220"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "96100"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "Compagnie Fran\u00e7aise du Thon Oc\u00e9anique"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Port de Concarneau, Quai Carnot, 29900 Concarneau, France"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-FRA-2026-0011"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "France - Concarneau"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000110"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Liverpool"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "23/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "CC-012",
+    "documentNumber": "608-BFAR12-TPJ-2026-1104-CCC",
+    "documentType": "Catch Certificate",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "608-BFAR12-TPJ-2026-1104-CCC"
+      },
+      {
+        "label": "Validating Authority Name",
+        "value": "Bureau of Fisheries and Aquatic Resources"
+      },
+      {
+        "label": "Validating Authority Address",
+        "value": "2nd Floor RDRDC Building, I. Santiago Boulevard, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Species",
+        "value": "SKJ / Skipjack Tuna / Katsuwonus pelamis"
+      },
+      {
+        "label": "Product Code",
+        "value": "30343"
+      },
+      {
+        "label": "Catch Area",
+        "value": "FAO 71 - PNG EEZ / Solomon Islands EEZ"
+      },
+      {
+        "label": "Catch Date From",
+        "value": "07/04/2026"
+      },
+      {
+        "label": "Catch Date To",
+        "value": "21/07/2026"
+      },
+      {
+        "label": "Fishing License No.",
+        "value": "OPRS-013998-IFP-00-26"
+      },
+      {
+        "label": "Fishing Gear",
+        "value": "PS (01.1 Purse Seine)"
+      },
+      {
+        "label": "Estimated Weight To Be Landed In Kg",
+        "value": "112450"
+      },
+      {
+        "label": "Net Catch Weight In Kg",
+        "value": "111100"
+      },
+      {
+        "label": "Verified Weight Landed In Kg",
+        "value": "110640"
+      },
+      {
+        "label": "Vessel Name",
+        "value": "TOBIAS MIGUEL"
+      },
+      {
+        "label": "Flag - Home Port And Registration Number",
+        "value": "PHILIPPINES - MANILA - 00-0002561"
+      },
+      {
+        "label": "Call Sign",
+        "value": "4DFC-7"
+      },
+      {
+        "label": "IMO Number Or Other Unique Identifier",
+        "value": "8748658"
+      },
+      {
+        "label": "Name Of Exporter",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Exporter Address",
+        "value": "Pioneer Avenue 62, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Importer Company",
+        "value": "West Country Seafood Ltd"
+      },
+      {
+        "label": "Importer Name",
+        "value": "Benjamin Harrison"
+      },
+      {
+        "label": "Importer Address",
+        "value": "5 Atlantic Court, Plymouth PL4 0DW, United Kingdom"
+      },
+      {
+        "label": "Importer EORI Number",
+        "value": "GB313233343000"
+      },
+      {
+        "label": "Importer Contact Details",
+        "value": "+44 1752 555 1012"
+      },
+      {
+        "label": "Importer Representative Company",
+        "value": "Plymouth Port Agency Ltd"
+      },
+      {
+        "label": "Importer Representative Name",
+        "value": "Peter Collins"
+      },
+      {
+        "label": "Importer Representative Address",
+        "value": "11 Sutton Harbour, Plymouth PL4 0DW, United Kingdom"
+      },
+      {
+        "label": "Importer Representative EORI Number",
+        "value": "GB404142434000"
+      },
+      {
+        "label": "Importer Representative Contact Details",
+        "value": "+44 1752 555 2012"
+      },
+      {
+        "label": "Product Description",
+        "value": "Frozen Whole Skipjack Tuna"
+      },
+      {
+        "label": "CN Code",
+        "value": "30343"
+      },
+      {
+        "label": "Net Weight In Kg",
+        "value": "110640"
+      },
+      {
+        "label": "Net Fishery Product Weight In Kg",
+        "value": "109300"
+      },
+      {
+        "label": "Transport Details Name",
+        "value": "CELEBES CANNING CORPORATION"
+      },
+      {
+        "label": "Transport Details Address",
+        "value": "Makar Wharf Road, General Santos City 9500, Philippines"
+      },
+      {
+        "label": "Means Of Transport Upon Arrival",
+        "value": "Vessel"
+      },
+      {
+        "label": "Transport Document Reference",
+        "value": "BL-PHL-2026-0012"
+      },
+      {
+        "label": "Country Of Exportation Port/Airport/Other Point Of Departure",
+        "value": "Philippines - General Santos City"
+      },
+      {
+        "label": "Point Of Destination",
+        "value": "United Kingdom"
+      },
+      {
+        "label": "Container Numbers",
+        "value": "MSCU1000120"
+      },
+      {
+        "label": "Port of Landing",
+        "value": "Southampton"
+      },
+      {
+        "label": "Date of Landing",
+        "value": "25/09/2026"
+      }
+    ]
+  },
+  {
+    "reference": "PS-001",
+    "documentNumber": "PS-ES-2026-0001",
+    "documentType": "Processing Statement",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "PS-ES-2026-0001"
+      },
+      {
+        "label": "Processing Country",
+        "value": "Spain"
+      },
+      {
+        "label": "Approved Establishment",
+        "value": "ECHEBASTAR Processing Plant No. 1, Bermeo"
+      },
+      {
+        "label": "Catch Certificate Reference",
+        "value": "ESP/SGCI/AI/2026/101"
+      },
+      {
+        "label": "Species",
+        "value": "Skipjack Tuna (Katsuwonus pelamis)"
+      },
+      {
+        "label": "Total Landed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 370,850"
+      },
+      {
+        "label": "Catch Processed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 352,000"
+      },
+      {
+        "label": "Processed Fishery Product Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 316,800"
+      }
+    ]
+  },
+  {
+    "reference": "PS-002",
+    "documentNumber": "PS-FR-2026-0001",
+    "documentType": "Processing Statement",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "PS-FR-2026-0001"
+      },
+      {
+        "label": "Processing Country",
+        "value": "France"
+      },
+      {
+        "label": "Approved Establishment",
+        "value": "SAPMER Processing Facility, Le Port"
+      },
+      {
+        "label": "Catch Certificate Reference",
+        "value": "FRA 2026 CSP 000101"
+      },
+      {
+        "label": "Species",
+        "value": "Skipjack Tuna (Katsuwonus pelamis)\nYellowfin Tuna (Thunnus albacares)"
+      },
+      {
+        "label": "Total Landed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 196,880\nYellowfin Tuna: 64,500"
+      },
+      {
+        "label": "Catch Processed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 182,000\nYellowfin Tuna: 59,000"
+      },
+      {
+        "label": "Processed Fishery Product Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 163,800\nYellowfin Tuna: 53,100"
+      }
+    ]
+  },
+  {
+    "reference": "PS-003",
+    "documentNumber": "PS-PH-2026-0001",
+    "documentType": "Processing Statement",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "PS-PH-2026-0001"
+      },
+      {
+        "label": "Processing Country",
+        "value": "Philippines"
+      },
+      {
+        "label": "Approved Establishment",
+        "value": "Celebes Canning Corporation Processing Plant, General Santos City"
+      },
+      {
+        "label": "Catch Certificate Reference",
+        "value": "608-BFAR12-TPJ-2026-1102-CCC"
+      },
+      {
+        "label": "Species",
+        "value": "Skipjack Tuna (Katsuwonus pelamis)"
+      },
+      {
+        "label": "Total Landed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 91,320"
+      },
+      {
+        "label": "Catch Processed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 86,500"
+      },
+      {
+        "label": "Processed Fishery Product Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 77,850"
+      }
+    ]
+  },
+  {
+    "reference": "PS-004",
+    "documentNumber": "PS-FR-2026-0002",
+    "documentType": "Processing Statement",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "PS-FR-2026-0002"
+      },
+      {
+        "label": "Processing Country",
+        "value": "France"
+      },
+      {
+        "label": "Approved Establishment",
+        "value": "Compagnie Fran\u00e7aise du Thon Oc\u00e9anique Processing Centre, Concarneau"
+      },
+      {
+        "label": "Catch Certificate Reference",
+        "value": "FRA 2026 CSP 000104"
+      },
+      {
+        "label": "Species",
+        "value": "Skipjack Tuna (Katsuwonus pelamis)\nBigeye Tuna (Thunnus obesus)"
+      },
+      {
+        "label": "Total Landed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 97,220\nBigeye Tuna: 22,800"
+      },
+      {
+        "label": "Catch Processed Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 90,500\nBigeye Tuna: 20,800"
+      },
+      {
+        "label": "Processed Fishery Product Weight Per Species (kg)",
+        "value": "Skipjack Tuna: 81,450\nBigeye Tuna: 18,720"
+      }
+    ]
+  },
+  {
+    "reference": "NMD-001",
+    "documentNumber": "NMD-ES-2026-0001",
+    "documentType": "Non-Manipulation Declaration",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "NMD-ES-2026-0001"
+      },
+      {
+        "label": "Country of Storage",
+        "value": "Spain"
+      },
+      {
+        "label": "Storage / NMD Context",
+        "value": "Bonded Cold Storage Warehouse"
+      },
+      {
+        "label": "Catch Certificate Reference",
+        "value": "ESP/SGCI/AI/2026/101"
+      },
+      {
+        "label": "Species",
+        "value": "Skipjack Tuna (Katsuwonus pelamis)"
+      },
+      {
+        "label": "Total Landed Weight per Species",
+        "value": "370,850 kg"
+      },
+      {
+        "label": "Weight In",
+        "value": "185,000 kg"
+      },
+      {
+        "label": "Weight Out",
+        "value": "184,350 kg"
+      },
+      {
+        "label": "Storage Dates (Date and Time)",
+        "value": "05/09/2026 08:30 to 18/09/2026 14:15"
+      },
+      {
+        "label": "Movement Dates (Date and Time)",
+        "value": "Received: 05/09/2026 08:30\nDispatched: 18/09/2026 14:15"
+      }
+    ]
+  },
+  {
+    "reference": "NMD-002",
+    "documentNumber": "NMD-PT-2026-0001",
+    "documentType": "Non-Manipulation Declaration",
+    "fields": [
+      {
+        "label": "Document Number",
+        "value": "NMD-PT-2026-0001"
+      },
+      {
+        "label": "Country of Storage",
+        "value": "Portugal"
+      },
+      {
+        "label": "Storage / NMD Context",
+        "value": "Transit Storage Facility"
+      },
+      {
+        "label": "Catch Certificate Reference",
+        "value": "FRA 2026 CSP 000101"
+      },
+      {
+        "label": "Species",
+        "value": "Yellowfin Tuna (Thunnus albacares)"
+      },
+      {
+        "label": "Total Landed Weight per Species",
+        "value": "196,880 kg"
+      },
+      {
+        "label": "Weight In",
+        "value": "95,000 kg"
+      },
+      {
+        "label": "Weight Out",
+        "value": "94,650 kg"
+      },
+      {
+        "label": "Storage Dates (Date and Time)",
+        "value": "08/09/2026 09:00 to 25/09/2026 11:40"
+      },
+      {
+        "label": "Movement Dates (Date and Time)",
+        "value": "Received: 08/09/2026 09:00\nDispatched: 25/09/2026 11:40"
+      }
+    ]
+  }
+]

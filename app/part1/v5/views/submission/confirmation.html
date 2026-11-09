@@ -1,0 +1,111 @@
+{% extends "app/part1/v5/views/layouts/main.html" %}
+
+{% set pageName="Notification submitted" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+      <h1 class="govuk-panel__title">Import notification submitted</h1>
+      <div class="govuk-panel__body">
+        Your reference number<br>
+        <strong>{{ data['reference-number'] or 'Not provided' }}</strong>
+      </div>
+    </div>
+
+    <p class="govuk-body">We have received your seafood import notification.</p>
+    <p class="govuk-body">Keep a record of your reference number. You'll need it if you contact the Port Health Authority about this import notification.</p>
+    <p class="govuk-body">You can check the status of your notification anytime using your reference number: <a href="{{ basePath }}/dashboard/notifications/{{ data['reference-number'] or 'Not provided' }}?variant={{ data['extraction-variant'] or 'a' }}" class="govuk-link">{{ data['reference-number'] or 'Not provided' }}</a></p>
+
+    <h2 class="govuk-heading-m">What happens next</h2>
+    <p class="govuk-body">We have sent your notification to the Port Health Authority.</p>
+    <p class="govuk-body">The Port Health Authority will review your notification and supporting documents. They may contact you if they need more information.</p>
+    <p class="govuk-body">You should make sure the driver or vessel master has a copy of this reference number when arriving at the border.</p>
+    {% if data['importer-email'] %}
+      <p class="govuk-body">A confirmation email has been sent to <a href="mailto:{{ data['importer-email'] }}" class="govuk-link">{{ data['importer-email'] }}</a>.</p>
+    {% endif %}
+
+    <h2 class="govuk-heading-m">Notification details</h2>
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Reference number</dt>
+        <dd class="govuk-summary-list__value">{{ data['reference-number'] or 'Not provided' }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Importer</dt>
+        <dd class="govuk-summary-list__value">{{ data['importer-name'] or 'Not provided' }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Species</dt>
+        <dd class="govuk-summary-list__value">
+          {% if confirmationSummary.species.length %}
+            {% for item in confirmationSummary.species %}
+              {{ item.name or 'Not provided' }}{% if not loop.last %}<br>{% endif %}
+            {% endfor %}
+          {% else %}
+            Not provided
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Port of entry</dt>
+        <dd class="govuk-summary-list__value">{{ data['destination-port'] or data['port-of-entry'] or 'Not provided' }}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Estimated arrival</dt>
+        <dd class="govuk-summary-list__value">
+          {% if data['arrival-date-day'] and data['arrival-date-month'] and data['arrival-date-year'] %}
+            {{ data['arrival-date-day'] }}/{{ data['arrival-date-month'] }}/{{ data['arrival-date-year'] }}
+          {% else %}
+            Not provided
+          {% endif %}
+          {% if data['arrival-time-hour'] and data['arrival-time-minute'] %} at {{ data['arrival-time-hour'] }}:{{ data['arrival-time-minute'] }}{% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Net weight</dt>
+        <dd class="govuk-summary-list__value">{% if confirmationSummary.netWeight %}{{ confirmationSummary.netWeight }} kg{% else %}Not provided{% endif %}</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Country of export</dt>
+        <dd class="govuk-summary-list__value">{{ data['country-of-export'] or 'Not provided' }}</dd>
+      </div>
+      {% if data['country-of-export-region'] == 'row' or data['ched-number'] %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">CHED number</dt>
+        <dd class="govuk-summary-list__value">{{ data['ched-number'] or 'Not provided' }}</dd>
+      </div>
+      {% endif %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Catch Certificate</dt>
+        <dd class="govuk-summary-list__value">
+          {% if confirmationSummary.catchReferences.length %}
+            {{ confirmationSummary.catchReferencesVisible | join(', ') }}{% if confirmationSummary.catchReferencesRemaining.length %}<span id="catch-certificates-extra" hidden>, {{ confirmationSummary.catchReferencesRemaining | join(', ') }}</span> <button type="button" class="govuk-link app-reference-toggle" aria-controls="catch-certificates-extra" aria-expanded="false" data-reference-toggle>Show more</button>{% endif %}
+          {% else %}
+            Not provided
+          {% endif %}
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">Processing Statement</dt>
+        <dd class="govuk-summary-list__value">
+          {% if confirmationSummary.processingReferences.length %}
+            {{ confirmationSummary.processingReferencesVisible | join(', ') }}{% if confirmationSummary.processingReferencesRemaining.length %}<span id="processing-statements-extra" hidden>, {{ confirmationSummary.processingReferencesRemaining | join(', ') }}</span> <button type="button" class="govuk-link app-reference-toggle" aria-controls="processing-statements-extra" aria-expanded="false" data-reference-toggle>Show more</button>{% endif %}
+          {% else %}
+            Not provided
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+
+    <h2 class="govuk-heading-m">Keep a record</h2>
+    <p class="govuk-body"><a href="javascript:window.print()" class="govuk-link">Save</a> or <a href="javascript:window.print()" class="govuk-link">print this page</a> for your records.</p>
+
+    <p class="govuk-body">
+      <a href="{{ basePath }}/dashboard/notifications/{{ data['reference-number'] }}?variant={{ data['extraction-variant'] or 'a' }}" class="govuk-button">View submitted notification</a>
+    </p>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+<div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="vessel-details">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="vessel-name">Vessel name</label>
+    <input class="govuk-input govuk-input--width-20" id="vessel-name" name="vessel-name" type="text" value="{{ data['vessel-name'] }}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="vessel-flag">Flag state (country the vessel is registered in)</label>
+    <input class="govuk-input govuk-input--width-20" id="vessel-flag" name="vessel-flag" type="text" value="{{ data['vessel-flag'] }}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="bill-of-lading">Bill of lading reference number (optional)</label>
+    <input class="govuk-input govuk-input--width-20" id="bill-of-lading" name="bill-of-lading" type="text" value="{{ data['bill-of-lading'] }}">
+  </div>
+</div>
+
+<div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="air-details">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="flight-number">Flight number or airway bill number</label>
+    <input class="govuk-input govuk-input--width-20" id="flight-number" name="flight-number" type="text" value="{{ data['flight-number'] }}">
+  </div>
+</div>
+
+<div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="road-details">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="truck-registration">Vehicle registration number</label>
+    <input class="govuk-input govuk-input--width-20" id="truck-registration" name="truck-registration" type="text" value="{{ data['truck-registration'] }}">
+  </div>
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="container-number">Container number (if applicable)</label>
+    <input class="govuk-input govuk-input--width-20" id="container-number" name="container-number" type="text" value="{{ data['container-number'] }}">
+  </div>
+</div>

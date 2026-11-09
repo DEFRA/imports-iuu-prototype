@@ -1,0 +1,63 @@
+{% extends "app/part1/v5/views/layouts/main.html" %}
+
+{% set pageName="Confirm your notification" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Confirm your notification</h1>
+
+    {% if errorList and errorList.length %}
+      <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="error-summary-title">
+        <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
+        <div class="govuk-error-summary__body">
+          <ul class="govuk-list govuk-error-summary__list">
+            {% for error in errorList %}
+              <li><a href="#{{ error.id }}">{{ error.message }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <p class="govuk-body">Check the statements below. Confirm that you have uploaded the documents needed for this import, or that you do not need to provide them.</p>
+
+    <form action="{{ basePath }}/declaration" method="post">
+      <div class="govuk-form-group{% if errorList and errorList.length %} govuk-form-group--error{% endif %}">
+        {% if errorList and errorList.length %}
+          <p id="declaration-confirmations-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Confirm each statement to continue.</p>
+        {% endif %}
+        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="catch-certificates-confirmed" name="catch-certificates-confirmed" type="checkbox" value="confirmed" {% if errorList and errorList.length %}aria-describedby="declaration-confirmations-error"{% endif %} {% if data['catch-certificates-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="catch-certificates-confirmed">
+              I have uploaded all Catch Certificates for this import.
+            </label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="processing-statements-confirmed" name="processing-statements-confirmed" type="checkbox" value="confirmed" {% if errorList and errorList.length %}aria-describedby="declaration-confirmations-error"{% endif %} {% if data['processing-statements-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="processing-statements-confirmed">
+              I have uploaded all Processing Statements needed for this import, or none are needed.
+            </label>
+          </div>
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" id="non-manipulation-declarations-confirmed" name="non-manipulation-declarations-confirmed" type="checkbox" value="confirmed" {% if errorList and errorList.length %}aria-describedby="declaration-confirmations-error"{% endif %} {% if data['non-manipulation-declarations-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="non-manipulation-declarations-confirmed">
+              I have uploaded all Non-Manipulation Declarations needed for this import, or none are needed.
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <p class="govuk-body">You are responsible for ensuring all required documents have been provided.</p>
+
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

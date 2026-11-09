@@ -1,0 +1,20 @@
+{% extends "app/part2/v4/views/layouts/main.html" %}
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+{% set pageName = "Notification history" %}
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">{{ inspectionNotification.reference }}</span>
+    <h1 class="govuk-heading-xl">Notification history</h1>
+
+    {{ mojTimeline({
+      headingLevel: 2,
+      items: notificationHistory
+    }) }}
+
+    <p class="govuk-body">
+      <a class="govuk-link" href="{{ basePath }}/inspection/{{ inspectionNotification.reference }}">Return to notification details</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
