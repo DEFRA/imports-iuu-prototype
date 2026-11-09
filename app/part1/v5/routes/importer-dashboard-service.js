@@ -1,3 +1,6 @@
+const portOfEntryOptions = require('../data/port-of-entry-options')
+const chedPFishCommodityGroups = require('../data/commodities/ched-p-fish-commodities')
+
 const currentStatuses = new Set(['submitted', 'under-review', 'action-required'])
 const historicalStatuses = new Set(['accepted', 'rejected'])
 const draftStatuses = new Set(['draft'])
@@ -27,7 +30,7 @@ const statusOptions = [
 const sortOptions = [
   { value: 'status', text: 'Status' },
   { value: 'submitted', text: 'Date submitted' },
-  { value: 'arrival', text: 'Arrival date' },
+  { value: 'arrival', text: 'Estimated arrival' },
   { value: 'reference', text: 'Notification reference' }
 ]
 
@@ -37,7 +40,102 @@ const statusSortOrder = {
   submitted: 2
 }
 
+const commodityDescriptionByCode = new Map()
+chedPFishCommodityGroups.forEach((commodity) => {
+  for (const code of [commodity.code, ...commodity.tariffCommodityCodes]) {
+    if (!commodityDescriptionByCode.has(code)) {
+      commodityDescriptionByCode.set(code, commodity.name)
+    }
+  }
+})
+
 const normalizeValue = (value) => typeof value === 'string' ? value.trim() : ''
+const normalizeFilterValues = (value) => [...new Set((Array.isArray(value) ? value : [value])
+  .map(normalizeValue)
+  .filter(Boolean))]
+
+const shortenCommodityDescription = (description) => description
+  .replace(/\bfish of the families\b.*$/i, 'fish')
+  .replace(/\s*\([^)]*\)/g, '')
+  .replace(/\s*"[^"]*"/g, '')
+  .replace(/,\s*n\.e\.s\./gi, '')
+  .replace(/\s+/g, ' ')
+  .trim()
+
+const getCommodityOptions = (consignments) => {
+  const commodityCodes = new Set()
+  const speciesByCommodityCode = new Map()
+  const addSpeciesDescription = (code, species) => {
+    if (!code || !species) return
+    const descriptions = speciesByCommodityCode.get(code) || new Set()
+    if (![...descriptions].some((description) => description.toLowerCase() === species.toLowerCase())) {
+      descriptions.add(species)
+    }
+    speciesByCommodityCode.set(code, descriptions)
+  }
+
+  for (const consignment of consignments) {
+    const importedSpecies = Array.isArray(consignment.importedSpecies) ? consignment.importedSpecies : []
+    const codes = [
+      ...(Array.isArray(consignment.commodityCodes) ? consignment.commodityCodes : []),
+      consignment.commodityCode,
+      ...importedSpecies.map((item) => item.commodityCode)
+    ].map(normalizeValue).filter(Boolean)
+
+    codes.forEach((code) => commodityCodes.add(code))
+
+    if (importedSpecies.length) {
+      importedSpecies.forEach((item) => {
+        const code = normalizeValue(item.commodityCode) || (codes.length === 1 ? codes[0] : '')
+        addSpeciesDescription(code, normalizeValue(item.species))
+      })
+    } else {
+      codes.forEach((code) => addSpeciesDescription(code, normalizeValue(consignment.species || consignment.speciesSummary)))
+    }
+  }
+
+  return [...commodityCodes]
+    .sort((left, right) => left.localeCompare(right, 'en-GB'))
+    .map((code) => {
+      const sourceDescription = commodityDescriptionByCode.get(code) ||
+        [...(speciesByCommodityCode.get(code) || [])].sort((left, right) => left.localeCompare(right, 'en-GB')).join('; ')
+      const description = shortenCommodityDescription(sourceDescription)
+      return {
+        label: code,
+        value: code,
+        description,
+        searchTerms: [...new Set([code, description, sourceDescription].filter(Boolean))]
+      }
+    })
+}
+
+const getSpeciesOptions = (consignments) => {
+  const speciesByName = new Map()
+  const addSpecies = (name, searchTerm = '') => {
+    const label = normalizeValue(name)
+    if (!label) return
+
+    const key = label.toLowerCase()
+    if (!speciesByName.has(key)) {
+      speciesByName.set(key, { label, value: label, searchTerms: new Set() })
+    }
+    if (searchTerm) speciesByName.get(key).searchTerms.add(searchTerm)
+  }
+
+  for (const consignment of consignments) {
+    const importedSpecies = Array.isArray(consignment.importedSpecies) ? consignment.importedSpecies : []
+    if (importedSpecies.length) {
+      importedSpecies.forEach((item) => addSpecies(item.species, normalizeValue(item.scientificName)))
+    } else {
+      addSpecies(consignment.species)
+      addSpecies(consignment.speciesSummary)
+    }
+  }
+
+  return [...speciesByName.values()]
+    .sort((left, right) => left.label.localeCompare(right.label, 'en-GB'))
+    .map((option) => ({ ...option, searchTerms: [...option.searchTerms] }))
+}
 
 const buildDraftSessionData = (consignment) => {
   const [arrivalDate = ''] = normalizeValue(consignment.arrivalAt).split('T')
@@ -94,6 +192,9 @@ const getDashboardFilters = (query = {}) => {
     quickFilter,
     status,
     origin: normalizeValue(query.origin),
+    port: normalizeValue(query.port),
+    commodities: normalizeFilterValues(query.commodity),
+    species: normalizeFilterValues(query.species),
     sortBy,
     sortOrder: query['sort-order'] === 'desc' ? 'desc' : 'asc'
   }
@@ -104,10 +205,52 @@ const matchesSearch = (consignment, search) => {
   return consignment.reference.toLowerCase().includes(search.toLowerCase())
 }
 
+const matchesPort = (consignment, selectedPort) => {
+  if (!selectedPort) return true
+  const option = portOfEntryOptions.find(({ value }) => value === selectedPort)
+  const acceptedValues = [selectedPort, ...(option ? option.aliases : [])]
+  const consignmentPort = normalizeValue(consignment.port).toLowerCase()
+  return acceptedValues.some((value) => normalizeValue(value).toLowerCase() === consignmentPort)
+}
+
+const matchesCommodities = (consignment, selectedCommodities) => {
+  if (!selectedCommodities.length) return true
+  const commodityCodes = [
+    ...(Array.isArray(consignment.commodityCodes) ? consignment.commodityCodes : []),
+    consignment.commodityCode,
+    ...(Array.isArray(consignment.importedSpecies)
+      ? consignment.importedSpecies.map((item) => item.commodityCode)
+      : [])
+  ].map((code) => normalizeValue(code).toLowerCase())
+  return selectedCommodities.some((commodity) => commodityCodes.includes(commodity.toLowerCase()))
+}
+
+const matchesSpecies = (consignment, selectedSpecies) => {
+  if (!selectedSpecies.length) return true
+  const importedSpecies = Array.isArray(consignment.importedSpecies) ? consignment.importedSpecies : []
+  const speciesNames = importedSpecies.length
+    ? importedSpecies.flatMap((item) => [item.species, item.scientificName])
+    : [consignment.species, consignment.speciesSummary]
+  const normalizedSpecies = speciesNames.map((name) => normalizeValue(name).toLowerCase()).filter(Boolean)
+  return selectedSpecies.some((species) => normalizedSpecies.some((name) => name.includes(species.toLowerCase())))
+}
+
 const getSortValue = (consignment, sortBy) => {
   if (sortBy === 'arrival') return consignment.arrivalAt
   if (sortBy === 'reference') return consignment.reference
   return consignment.submittedAt || ''
+}
+
+const formatArrivalDateHeading = (arrivalAt) => {
+  const isoDate = normalizeValue(arrivalAt).split('T')[0]
+  if (!isoDate) return ''
+
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC'
+  }).format(new Date(`${isoDate}T00:00:00Z`))
 }
 
 const buildDocumentsProvidedText = (consignment) => {
@@ -143,6 +286,7 @@ const buildCommoditySpeciesSummary = (importedSpecies) => {
 const filterAndSortConsignments = (consignments, filters, tab) => {
   const allowedStatuses = tab === 'completed' ? historicalStatuses : activeStatuses
   const direction = filters.sortOrder === 'asc' ? 1 : -1
+  let previousArrivalDate
 
   return consignments
     .filter((consignment) => allowedStatuses.has(consignment.status))
@@ -150,6 +294,9 @@ const filterAndSortConsignments = (consignments, filters, tab) => {
     .filter((consignment) => matchesSearch(consignment, filters.search))
     .filter((consignment) => !filters.status || consignment.status === filters.status)
     .filter((consignment) => !filters.origin || consignment.origin === filters.origin)
+    .filter((consignment) => matchesPort(consignment, filters.port))
+    .filter((consignment) => matchesCommodities(consignment, filters.commodities))
+    .filter((consignment) => matchesSpecies(consignment, filters.species))
     .sort((left, right) => {
       if (filters.sortBy === 'status') {
         const statusComparison = (statusSortOrder[left.status] ?? 3) - (statusSortOrder[right.status] ?? 3)
@@ -161,12 +308,21 @@ const filterAndSortConsignments = (consignments, filters, tab) => {
       const comparison = getSortValue(left, filters.sortBy).localeCompare(getSortValue(right, filters.sortBy))
       return comparison * direction
     })
-    .map((consignment) => ({
-      ...consignment,
-      encodedReference: encodeURIComponent(consignment.reference),
-      documentsProvidedLines: buildDocumentsProvidedText(consignment),
-      commoditySpeciesSummary: buildCommoditySpeciesSummary(consignment.importedSpecies)
-    }))
+    .map((consignment) => {
+      const arrivalDate = normalizeValue(consignment.arrivalAt).split('T')[0]
+      const arrivalDateHeading = filters.sortBy === 'arrival' && arrivalDate && arrivalDate !== previousArrivalDate
+        ? formatArrivalDateHeading(consignment.arrivalAt)
+        : undefined
+      previousArrivalDate = arrivalDate
+
+      return {
+        ...consignment,
+        encodedReference: encodeURIComponent(consignment.reference),
+        documentsProvidedLines: buildDocumentsProvidedText(consignment),
+        commoditySpeciesSummary: buildCommoditySpeciesSummary(consignment.importedSpecies),
+        arrivalDateHeading
+      }
+    })
 }
 
 const getFilterOptions = (consignments) => ({
@@ -178,7 +334,10 @@ const getFilterOptions = (consignments) => ({
     ...Array.from(new Set(consignments.map((consignment) => consignment.origin)))
       .sort()
       .map((origin) => ({ value: origin, text: origin }))
-  ]
+  ],
+  commodityOptions: getCommodityOptions(consignments),
+  speciesOptions: getSpeciesOptions(consignments),
+  referenceOptions: consignments.map((consignment) => consignment.reference).sort((first, second) => first.localeCompare(second, 'en-GB'))
 })
 
 const buildDashboardHref = (filters, basePath, variant, tab, overrides = {}) => {
@@ -187,6 +346,9 @@ const buildDashboardHref = (filters, basePath, variant, tab, overrides = {}) => 
     'quick-filter': filters.quickFilter,
     status: filters.status,
     origin: filters.origin,
+    port: filters.port,
+    commodity: filters.commodities,
+    species: filters.species,
     'sort-by': filters.sortBy,
     'sort-order': filters.sortOrder,
     ...overrides
@@ -194,6 +356,10 @@ const buildDashboardHref = (filters, basePath, variant, tab, overrides = {}) => 
   const query = new URLSearchParams({ variant, tab })
 
   for (const [key, value] of Object.entries(values)) {
+    if (Array.isArray(value)) {
+      value.filter(Boolean).forEach((item) => query.append(key, item))
+      continue
+    }
     if (!value || (key === 'sort-by' && value === 'arrival') || (key === 'sort-order' && value === 'asc')) continue
     query.set(key, value)
   }
@@ -235,6 +401,13 @@ const getActiveFilterChips = (filters, options, basePath, variant, activeTab) =>
     addChip('status', `Status: ${statusLabel}`)
   }
   if (filters.origin) addChip('origin', `Exporting country: ${filters.origin}`)
+  if (filters.port) addChip('port', `Port of entry: ${filters.port}`)
+  filters.commodities.forEach((commodity) => {
+    addChip('commodity', `Commodity: ${commodity}`, filters.commodities.filter((value) => value !== commodity))
+  })
+  filters.species.forEach((species) => {
+    addChip('species', `Species: ${species}`, filters.species.filter((value) => value !== species))
+  })
   if (filters.sortBy !== 'arrival') {
     const sortByLabel = options.sortOptions.find((option) => option.value === filters.sortBy)?.text || filters.sortBy
     addChip('sort-by', `Sort by: ${sortByLabel}`, 'arrival')

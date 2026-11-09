@@ -35,7 +35,29 @@
   {% endif %}
 {% endmacro %}
 
-{% macro renderFilterPanel(tabId) %}
+{% macro renderDashboardMultiSelect(tabId, filterName, label, placeholder, optionsJson, selectedValuesJson) %}
+  <div class="govuk-form-group govuk-!-margin-bottom-3">
+    <label class="govuk-label" for="{{ tabId }}-{{ filterName }}-search">{{ label }}</label>
+    <div class="app-commodity-search-wrapper app-country-search__wrapper" data-dashboard-multiselect data-filter-name="{{ filterName }}" data-filter-label="{{ label }}">
+      <script type="application/json" class="app-dashboard-multiselect__options">{{ optionsJson | safe }}</script>
+      <script type="application/json" class="app-dashboard-multiselect__selected">{{ selectedValuesJson | safe }}</script>
+      <div class="app-commodity-search-panel">
+        <div class="app-commodity-search app-country-search__control" aria-expanded="false">
+          <input class="govuk-select app-commodity-search__input app-country-search__input" id="{{ tabId }}-{{ filterName }}-search" type="search" autocomplete="off" placeholder="{{ placeholder }}" aria-controls="{{ tabId }}-{{ filterName }}-results" aria-expanded="false">
+          <button class="app-commodity-search__button app-country-search__toggle" type="button" aria-label="Show {{ label | lower }} options" aria-expanded="false" aria-controls="{{ tabId }}-{{ filterName }}-results">
+            <span class="govuk-visually-hidden">Show {{ label | lower }} options</span>
+            <span class="app-country-search__chevron" aria-hidden="true"></span>
+          </button>
+        </div>
+        <ul id="{{ tabId }}-{{ filterName }}-results" class="app-commodity-search__results" role="group" aria-label="{{ label }} options" hidden></ul>
+      </div>
+      <div class="app-dashboard-multiselect__inputs"></div>
+      <div class="app-country-search__status govuk-visually-hidden" aria-live="polite"></div>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro renderFilterPanel(tabId, activeFilterChips) %}
   <form method="get" action="{{ basePath }}/dashboard#{{ tabId }}" class="govuk-!-margin-bottom-4" aria-label="Search, filter and sort notifications">
     <input type="hidden" name="variant" value="{{ variant }}">
     <input type="hidden" name="tab" value="{{ tabId }}">
@@ -46,12 +68,26 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
           <h4 class="govuk-fieldset__heading">Search</h4>
         </legend>
-        <div class="importer-dashboard__search-grid">
-          <div class="govuk-form-group govuk-!-margin-bottom-0">
-            <label class="govuk-label" for="{{ tabId }}-search">Reference</label>
-            <input class="govuk-input" id="{{ tabId }}-search" name="search" type="search" value="{{ filters.search }}">
+        <label class="govuk-label" for="{{ tabId }}-search">Notification reference</label>
+        <div class="importer-search" data-importer-search>
+          <div class="importer-search__bar">
+            <div class="importer-search__input-wrapper">
+              <input class="govuk-input importer-search__input" id="{{ tabId }}-search" name="search" type="search" autocomplete="off" value="{{ filters.search }}" aria-describedby="{{ tabId }}-search-hint">
+              <button class="importer-search__clear" type="button" aria-label="Clear search" hidden><span aria-hidden="true">&times;</span></button>
+            </div>
+            <button class="importer-search__submit" type="submit" aria-label="Search">
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="24" height="24"><circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m14.5 14.5 6 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+          </div>
+          <ul class="importer-search__suggestions" id="{{ tabId }}-search-suggestions" role="listbox" aria-label="Search suggestions" hidden></ul>
+          <div hidden data-search-options>
+              {% for reference in filterOptions.referenceOptions %}
+                <span>{{ reference }}</span>
+              {% endfor %}
           </div>
         </div>
+        <div class="govuk-hint govuk-!-margin-top-2 govuk-!-margin-bottom-0" id="{{ tabId }}-search-hint">Search using all or part of a notification reference.</div>
+        <div class="govuk-visually-hidden" data-search-status-for="{{ tabId }}-search" role="status" aria-live="polite"></div>
       </fieldset>
 
       <fieldset class="govuk-fieldset">
@@ -73,21 +109,52 @@
             </select>
           </div>
           <div class="govuk-form-group govuk-!-margin-bottom-3">
-            <label class="govuk-label" for="{{ tabId }}-origin">Exporting country</label>
-            <select class="govuk-select" id="{{ tabId }}-origin" name="origin">
-              {% for option in filterOptions.originOptions %}
-                <option value="{{ option.value }}" {% if filters.origin == option.value %}selected{% endif %}>{{ option.text }}</option>
-              {% endfor %}
-            </select>
+            <label class="govuk-label" for="{{ tabId }}-origin-search">Exporting country</label>
+            <div class="app-commodity-search-wrapper app-country-search__wrapper" data-module="app-country-search">
+              <script type="application/json" class="app-country-search__data">{{ countriesJson | safe }}</script>
+              <div class="app-commodity-search-panel">
+                <div class="app-commodity-search app-country-search__control" aria-expanded="false">
+                  <input class="govuk-select app-commodity-search__input app-country-search__input" id="{{ tabId }}-origin-search" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" value="{% if filters.origin != '__all__' %}{{ filters.origin }}{% endif %}" placeholder="Select a country" autocomplete="off" aria-controls="{{ tabId }}-origin-results">
+                  <button class="app-commodity-search__button app-country-search__toggle" type="button" aria-label="Show country options" aria-expanded="false" aria-controls="{{ tabId }}-origin-results">
+                    <span class="govuk-visually-hidden">Show country options</span>
+                    <span class="app-country-search__chevron" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <ul id="{{ tabId }}-origin-results" class="app-commodity-search__results" role="listbox" aria-label="Exporting country options" hidden></ul>
+              </div>
+              <input type="hidden" name="origin" class="app-country-search__value" value="{% if filters.origin != '__all__' %}{{ filters.origin }}{% endif %}">
+              <div class="app-country-search__status govuk-visually-hidden" aria-live="polite"></div>
+            </div>
           </div>
+          <div class="govuk-form-group govuk-!-margin-bottom-3">
+            <label class="govuk-label" for="{{ tabId }}-port-search">Port of entry</label>
+            <div class="app-commodity-search-wrapper app-country-search__wrapper" data-module="app-country-search">
+              <script type="application/json" class="app-country-search__data">{{ portOfEntryOptionsJson | safe }}</script>
+              <div class="app-commodity-search-panel">
+                <div class="app-commodity-search app-country-search__control" aria-expanded="false">
+                  <input class="govuk-select app-commodity-search__input app-country-search__input" id="{{ tabId }}-port-search" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" value="{{ filters.port }}" placeholder="Select a port or airport" autocomplete="off" aria-controls="{{ tabId }}-port-results">
+                  <button class="app-commodity-search__button app-country-search__toggle" type="button" aria-label="Show port and airport options" aria-expanded="false" aria-controls="{{ tabId }}-port-results">
+                    <span class="govuk-visually-hidden">Show port and airport options</span>
+                    <span class="app-country-search__chevron" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <ul id="{{ tabId }}-port-results" class="app-commodity-search__results" role="listbox" aria-label="Port and airport options" hidden></ul>
+              </div>
+              <input type="hidden" name="port" class="app-country-search__value" value="{{ filters.port }}">
+              <div class="app-country-search__status govuk-visually-hidden" aria-live="polite"></div>
+            </div>
+          </div>
+          {{ renderDashboardMultiSelect(tabId, 'commodity', 'Commodity', 'Select commodity codes', commodityOptionsJson, selectedCommoditiesJson) }}
+          {{ renderDashboardMultiSelect(tabId, 'species', 'Species', 'Select species', speciesOptionsJson, selectedSpeciesJson) }}
         </div>
       </fieldset>
 
       <div class="govuk-button-group govuk-!-margin-bottom-0">
-        <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">Search</button>
+        <button type="submit" class="govuk-button govuk-!-margin-bottom-0" data-module="govuk-button">Apply filters</button>
         <a href="{{ basePath }}/dashboard?variant={{ variant }}&tab={{ tabId }}#{{ tabId }}" class="govuk-link">Clear filters</a>
       </div>
     </div>
+    {{ renderActiveFilterChips(activeFilterChips, tabId) }}
 
     <div class="importer-dashboard__sort-grid">
       <div class="govuk-form-group govuk-!-margin-bottom-0">
@@ -101,8 +168,8 @@
       <div class="govuk-form-group govuk-!-margin-bottom-0">
         <label class="govuk-label" for="{{ tabId }}-sort-order">Sort direction</label>
         <select class="govuk-select" id="{{ tabId }}-sort-order" name="sort-order" data-importer-sort-control>
-          <option value="desc" {% if filters.sortOrder == 'desc' %}selected{% endif %}>Newest first</option>
-          <option value="asc" {% if filters.sortOrder == 'asc' %}selected{% endif %}>Oldest first</option>
+          <option value="desc" {% if filters.sortOrder == 'desc' %}selected{% endif %}>Descending</option>
+          <option value="asc" {% if filters.sortOrder == 'asc' %}selected{% endif %}>Ascending</option>
         </select>
       </div>
     </div>
@@ -116,6 +183,9 @@
   {% if consignments.length %}
     <div class="importer-dashboard__notification-list">
       {% for consignment in consignments %}
+        {% if consignment.arrivalDateHeading %}
+          <h3 class="govuk-heading-s govuk-!-margin-top-5 govuk-!-margin-bottom-2">{{ consignment.arrivalDateHeading }}</h3>
+        {% endif %}
         <section class="importer-dashboard__notification">
           <div class="importer-dashboard__notification-header">
             {% if consignment.status == 'draft' %}
@@ -226,14 +296,12 @@
       </ul>
 
       <div class="govuk-tabs__panel {% if activeTab != 'active' %}govuk-tabs__panel--hidden{% endif %}" id="active">
-        {{ renderFilterPanel('active') }}
-        {{ renderActiveFilterChips(activeFilterChipsByTab.active, 'active') }}
+        {{ renderFilterPanel('active', activeFilterChipsByTab.active) }}
         {{ renderConsignments(activeConsignments, 'No active notifications match these filters.') }}
       </div>
 
       <div class="govuk-tabs__panel {% if activeTab != 'completed' %}govuk-tabs__panel--hidden{% endif %}" id="completed">
-        {{ renderFilterPanel('completed') }}
-        {{ renderActiveFilterChips(activeFilterChipsByTab.completed, 'completed') }}
+        {{ renderFilterPanel('completed', activeFilterChipsByTab.completed) }}
         {{ renderConsignments(completedConsignments, 'No completed notifications match these filters.') }}
       </div>
     </div>

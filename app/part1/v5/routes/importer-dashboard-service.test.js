@@ -167,6 +167,17 @@ test('groups each species and notification weight under its commodity code and p
   ].join(', '))
 })
 
+test('pairs commodity filter codes with catalogue descriptions or associated species names', () => {
+  const options = getFilterOptions(consignments).commodityOptions
+  const codOption = options.find((option) => option.value === '03047190')
+  const skipjackOption = options.find((option) => option.value === '030343')
+
+  assert.equal(codOption.description, 'Frozen fillets of cod')
+  assert.equal(codOption.searchTerms.includes('Frozen fillets of cod "Gadus morhua, Gadus ogac"'), true)
+  assert.equal(skipjackOption.description, 'Skipjack tuna')
+  assert.deepEqual(skipjackOption.searchTerms, ['030343', 'Skipjack tuna'])
+})
+
 test('seeds a multi-commodity example with twelve catalog-backed species', () => {
   const consignment = consignments.find((item) => item.reference === 'GB-IUU-2026-11021')
   const summary = filterAndSortConsignments(consignments, getDashboardFilters(), 'active')
@@ -301,6 +312,92 @@ test('filters current submissions by status and origin', () => {
   assert.deepEqual(results.map((item) => item.reference), ['GB-IUU-2026-11002'])
 })
 
+test('filters seaport and airport selections against official entry names and seeded locations', () => {
+  const makeConsignment = (reference, port) => ({
+    reference,
+    status: 'submitted',
+    statusLabel: 'Submitted',
+    statusTagClass: 'govuk-tag--blue',
+    submittedAt: '2026-11-05T12:00:00.000Z',
+    arrivalAt: '2026-11-06T12:00:00.000Z',
+    port,
+    origin: 'Iceland',
+    documents: []
+  })
+  const entries = [
+    makeConsignment('FELIXSTOWE', 'Felixstowe'),
+    makeConsignment('HEATHROW', 'Heathrow'),
+    makeConsignment('LIVERPOOL', 'Liverpool')
+  ]
+
+  const seaportFilters = getDashboardFilters({ port: 'Felixstowe - Temperature controlled examination facility (TCEF)' })
+  const airportFilters = getDashboardFilters({ port: 'Heathrow Airport - Heathrow Perishable Centre (HPC)' })
+  const combinedFilters = getDashboardFilters({ port: 'Liverpool', origin: 'Iceland' })
+
+  assert.deepEqual(filterAndSortConsignments(entries, seaportFilters, 'active').map((item) => item.reference), ['FELIXSTOWE'])
+  assert.deepEqual(filterAndSortConsignments(entries, airportFilters, 'active').map((item) => item.reference), ['HEATHROW'])
+  assert.deepEqual(filterAndSortConsignments(entries, combinedFilters, 'active').map((item) => item.reference), ['LIVERPOOL'])
+
+  const chips = getActiveFilterChips(combinedFilters, getFilterOptions(entries), '/part1/v5', 'a', 'active')
+  const portChip = chips.find((chip) => chip.label === 'Port of entry: Liverpool')
+  const chipQuery = new URL(portChip.href, 'http://localhost').searchParams
+  assert.equal(chipQuery.get('port'), null)
+  assert.equal(chipQuery.get('origin'), 'Iceland')
+})
+
+test('matches any selected commodity and species while allowing extra values on the notification', () => {
+  const makeConsignment = (reference, importedSpecies) => ({
+    reference,
+    status: 'submitted',
+    statusLabel: 'Submitted',
+    statusTagClass: 'govuk-tag--blue',
+    submittedAt: '2026-11-05T12:00:00.000Z',
+    arrivalAt: '2026-11-06T12:00:00.000Z',
+    port: 'Grimsby',
+    origin: 'Iceland',
+    commodityCodes: importedSpecies.map((item) => item.commodityCode),
+    importedSpecies,
+    documents: []
+  })
+  const entries = [
+    makeConsignment('MATCH-COMMODITY-A-SPECIES-B', [
+      { commodityCode: '030343', species: 'Skipjack tuna', scientificName: 'Katsuwonus pelamis' },
+      { commodityCode: '030342', species: 'Yellowfin tuna', scientificName: 'Thunnus albacares' },
+      { commodityCode: '030999', species: 'Blue ling', scientificName: 'Molva dypterygia' }
+    ]),
+    makeConsignment('MATCH-COMMODITY-B-SPECIES-A', [
+      { commodityCode: '030342', species: 'Atlantic cod', scientificName: 'Gadus morhua' },
+      { commodityCode: '030998', species: 'Pacific cod', scientificName: 'Gadus macrocephalus' }
+    ]),
+    makeConsignment('COMMODITY-ONLY', [
+      { commodityCode: '030343', species: 'Skipjack tuna', scientificName: 'Katsuwonus pelamis' }
+    ]),
+    makeConsignment('SPECIES-ONLY', [
+      { commodityCode: '030999', species: 'Atlantic cod', scientificName: 'Gadus morhua' }
+    ])
+  ]
+  const filters = getDashboardFilters({
+    commodity: ['030343', '030342'],
+    species: ['Atlantic cod', 'Yellowfin tuna']
+  })
+  const results = filterAndSortConsignments(entries, filters, 'active')
+
+  assert.deepEqual(results.map((item) => item.reference), [
+    'MATCH-COMMODITY-A-SPECIES-B',
+    'MATCH-COMMODITY-B-SPECIES-A'
+  ])
+
+  const options = getFilterOptions(entries)
+  assert.equal(options.commodityOptions.some((option) => option.value === '030999'), true)
+  assert.equal(options.speciesOptions.find((option) => option.value === 'Yellowfin tuna').searchTerms.includes('Thunnus albacares'), true)
+
+  const chips = getActiveFilterChips(filters, options, '/part1/v5', 'a', 'active')
+  const commodityChip = chips.find((chip) => chip.label === 'Commodity: 030343')
+  const commodityChipQuery = new URL(commodityChip.href, 'http://localhost').searchParams
+  assert.deepEqual(commodityChipQuery.getAll('commodity'), ['030342'])
+  assert.deepEqual(commodityChipQuery.getAll('species'), ['Atlantic cod', 'Yellowfin tuna'])
+})
+
 test('active and completed tabs group importer statuses without changing status values', () => {
   const filters = getDashboardFilters()
   const active = filterAndSortConsignments(consignments, filters, 'active')
@@ -395,6 +492,31 @@ test('sorts submissions by arrival date by default', () => {
   assert.equal(results.length, 19)
   assert.equal(results[6].reference, 'GB-IUU-2026-11003')
   assert.equal(results.at(-1).reference, 'GB-IUU-2026-11021')
+})
+
+test('adds arrival date headings only when results are sorted by arrival', () => {
+  const filters = getDashboardFilters()
+  const results = filterAndSortConsignments(consignments, filters, 'active')
+  let previousArrivalDate
+
+  for (const result of results) {
+    const arrivalDate = result.arrivalAt.split('T')[0]
+    if (arrivalDate !== previousArrivalDate) {
+      assert.equal(result.arrivalDateHeading, new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC'
+      }).format(new Date(`${arrivalDate}T00:00:00Z`)))
+    } else {
+      assert.equal(result.arrivalDateHeading, undefined)
+    }
+    previousArrivalDate = arrivalDate
+  }
+
+  assert.ok(results.some((result) => result.arrivalDateHeading))
+  const referenceSorted = filterAndSortConsignments(consignments, { ...filters, sortBy: 'reference' }, 'active')
+  assert.ok(referenceSorted.every((result) => result.arrivalDateHeading === undefined))
 })
 
 test('sorts submissions by status priority when selected', () => {

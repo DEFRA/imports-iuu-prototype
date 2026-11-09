@@ -16,6 +16,7 @@
 
     <p class="govuk-body">We have received your seafood import notification.</p>
     <p class="govuk-body">Keep a record of your reference number. You'll need it if you contact the Port Health Authority about this import notification.</p>
+    <p class="govuk-body">You can check the status of your notification anytime using your reference number: <a href="{{ basePath }}/dashboard/notifications/{{ data['reference-number'] or 'Not provided' }}?variant={{ data['extraction-variant'] or 'a' }}" class="govuk-link">{{ data['reference-number'] or 'Not provided' }}</a></p>
 
     <h2 class="govuk-heading-m">What happens next</h2>
     <p class="govuk-body">We have sent your notification to the Port Health Authority.</p>
@@ -102,7 +103,7 @@
     <p class="govuk-body"><a href="javascript:window.print()" class="govuk-link">Save</a> or <a href="javascript:window.print()" class="govuk-link">print this page</a> for your records.</p>
 
     <p class="govuk-body">
-      <a href="{{ basePath }}/dashboard?variant={{ data['extraction-variant'] or 'a' }}" class="govuk-button">Return to your notifications</a>
+      <a href="{{ basePath }}/dashboard/notifications/{{ data['reference-number'] }}?variant={{ data['extraction-variant'] or 'a' }}" class="govuk-button">View submitted notification</a>
     </p>
   </div>
 </div>

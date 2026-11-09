@@ -64,19 +64,19 @@
           <div class="govuk-date-input" id="arrival-date">
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-date-day">Day</label>
+                <label class="govuk-label govuk-date-input__label" for="arrival-date-day">Day</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-day" name="arrival-date-day" type="text" inputmode="numeric" value="{{ data['arrival-date-day'] }}">
               </div>
             </div>
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-date-month">Month</label>
+                <label class="govuk-label govuk-date-input__label" for="arrival-date-month">Month</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-date-month" name="arrival-date-month" type="text" inputmode="numeric" value="{{ data['arrival-date-month'] }}">
               </div>
             </div>
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-date-year">Year</label>
+                <label class="govuk-label govuk-date-input__label" for="arrival-date-year">Year</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-4" id="arrival-date-year" name="arrival-date-year" type="text" inputmode="numeric" value="{{ data['arrival-date-year'] }}">
               </div>
             </div>
@@ -96,13 +96,13 @@
           <div class="govuk-date-input" id="arrival-time">
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-time-hour">Hour</label>
+                <label class="govuk-label govuk-date-input__label" for="arrival-time-hour">Hour</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-time-hour" name="arrival-time-hour" type="text" inputmode="numeric" value="{{ data['arrival-time-hour'] }}">
               </div>
             </div>
             <div class="govuk-date-input__item">
               <div class="govuk-form-group">
-                <label class="govuk-label govuk-date-input__label govuk-!-font-weight-bold" for="arrival-time-minute">Minute</label>
+                <label class="govuk-label govuk-date-input__label" for="arrival-time-minute">Minute</label>
                 <input class="govuk-input govuk-date-input__input govuk-input--width-2" id="arrival-time-minute" name="arrival-time-minute" type="text" inputmode="numeric" value="{{ data['arrival-time-minute'] }}">
               </div>
             </div>
@@ -145,7 +145,8 @@
           {% if errors['ched-number'] %}
             <p id="ched-number-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['ched-number'] }}</p>
           {% endif %}
-          <input class="govuk-input govuk-input--width-20" id="ched-number" name="ched-number" type="text" value="{{ data['ched-number'] }}" {% if errors['ched-number'] %}aria-describedby="ched-number-error"{% endif %}>
+          <div id="ched-number-hint" class="govuk-hint">For example, CHEDP.GB.2026.1234567</div>
+          <input class="govuk-input govuk-input--width-20" id="ched-number" name="ched-number" type="text" value="{{ data['ched-number'] }}" aria-describedby="{% if errors['ched-number'] %}ched-number-error {% endif %}ched-number-hint">
         </div>
       </div>
 

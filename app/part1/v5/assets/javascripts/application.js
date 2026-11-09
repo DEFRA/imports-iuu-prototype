@@ -113,9 +113,7 @@ window.GOVUKPrototypeKit.documentReady(() => {
     selectedFlagId: 'nmd-selected'
   })
 
-  const countrySearch = document.querySelector('[data-module="app-country-search"]')
-
-  if (countrySearch) {
+  for (const countrySearch of document.querySelectorAll('[data-module="app-country-search"]')) {
     const countryOptions = JSON.parse(countrySearch.querySelector('.app-country-search__data').textContent)
     const countriesByValue = new Map(countryOptions.map((country) => [country.value, country]))
     const input = countrySearch.querySelector('.app-commodity-search__input')
@@ -255,7 +253,7 @@ window.GOVUKPrototypeKit.documentReady(() => {
 
         row.className = 'app-commodity-search__row' +
           (index % 2 === 1 ? ' app-commodity-search__row--alt' : '')
-        row.id = 'country-export-option-' + index
+        row.id = results.id + '-option-' + index
         row.setAttribute('role', 'option')
         row.setAttribute('aria-selected', isSelected ? 'true' : 'false')
         row.dataset.countryValue = option.value
@@ -703,6 +701,280 @@ window.GOVUKPrototypeKit.documentReady(() => {
     if (input.value.trim().length >= minimumSearchLength) {
       renderResults(input.value)
     }
+  }
+
+  for (const search of document.querySelectorAll('[data-importer-search]')) {
+    const input = search.querySelector('input')
+    const clear = search.querySelector('.importer-search__clear')
+    const list = search.querySelector('[role="listbox"]')
+    const status = document.querySelector(`[data-search-status-for="${input.id}"]`)
+    const options = [...new Set(Array.from(search.querySelectorAll('[data-search-options] span'), (option) => option.textContent))]
+    let matches = []
+    let selectedIndex = -1
+
+    input.setAttribute('role', 'combobox')
+    input.setAttribute('aria-autocomplete', 'list')
+    input.setAttribute('aria-controls', list.id)
+    input.setAttribute('aria-expanded', 'false')
+
+    const close = () => {
+      list.hidden = true
+      selectedIndex = -1
+      input.setAttribute('aria-expanded', 'false')
+      input.removeAttribute('aria-activedescendant')
+      status.textContent = ''
+    }
+
+    const select = (index) => {
+      input.value = matches[index]
+      clear.hidden = false
+      close()
+      input.focus()
+      input.form.requestSubmit()
+    }
+
+    const render = () => {
+      const query = input.value.trim().toLowerCase()
+      clear.hidden = input.value.length === 0
+      close()
+      list.replaceChildren()
+      if (!query) return
+      matches = options.filter((option) => option.toLowerCase().includes(query))
+      for (const [index, value] of matches.entries()) {
+        const option = document.createElement('li')
+        option.id = `${list.id}-${index}`
+        option.setAttribute('role', 'option')
+        option.setAttribute('aria-selected', 'false')
+        const icon = search.querySelector('svg').cloneNode(true)
+        const text = document.createElement('span')
+        const matchIndex = value.toLowerCase().indexOf(query)
+        const before = document.createElement('strong')
+        const after = document.createElement('strong')
+        before.textContent = value.slice(0, matchIndex)
+        after.textContent = value.slice(matchIndex + query.length)
+        text.append(before, document.createTextNode(value.slice(matchIndex, matchIndex + query.length)), after)
+        option.append(icon, text)
+        option.addEventListener('mousedown', (event) => event.preventDefault())
+        option.addEventListener('click', () => select(index))
+        list.append(option)
+      }
+      list.hidden = matches.length === 0
+      input.setAttribute('aria-expanded', String(matches.length > 0))
+      status.textContent = matches.length
+        ? `${matches.length} suggestions available. Use the up and down arrow keys to navigate.`
+        : 'No suggestions found. You can still search using the text entered.'
+    }
+
+    input.addEventListener('input', render)
+    input.addEventListener('focus', render)
+    input.addEventListener('blur', close)
+    input.addEventListener('keydown', (event) => {
+      if (event.isComposing) return
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        close()
+      } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault()
+        if (list.hidden) render()
+        if (!matches.length || list.hidden) return
+        selectedIndex = selectedIndex < 0
+          ? (event.key === 'ArrowDown' ? 0 : matches.length - 1)
+          : (event.key === 'ArrowDown'
+              ? (selectedIndex < matches.length - 1 ? selectedIndex + 1 : 0)
+              : (selectedIndex > 0 ? selectedIndex - 1 : matches.length - 1))
+        const selected = list.children[selectedIndex]
+        selected.setAttribute('aria-selected', 'true')
+        input.setAttribute('aria-activedescendant', selected.id)
+        selected.scrollIntoView({ block: 'nearest' })
+        for (const [index, option] of Array.from(list.children).entries()) {
+          if (index !== selectedIndex) option.setAttribute('aria-selected', 'false')
+        }
+      } else if (event.key === 'Enter') {
+        event.preventDefault()
+        if (selectedIndex >= 0) {
+          select(selectedIndex)
+        } else if (matches.length > 0) {
+          select(0)
+        } else {
+          input.form.requestSubmit()
+        }
+      } else if (event.key === 'Tab') {
+        close()
+      }
+    })
+    clear.addEventListener('click', () => {
+      input.value = ''
+      clear.hidden = true
+      input.focus()
+      render()
+    })
+  }
+
+  for (const multiSelect of document.querySelectorAll('[data-dashboard-multiselect]')) {
+    const options = JSON.parse(multiSelect.querySelector('.app-dashboard-multiselect__options').textContent)
+    const initialSelectedValues = JSON.parse(multiSelect.querySelector('.app-dashboard-multiselect__selected').textContent)
+    const filterName = multiSelect.dataset.filterName
+    const filterLabel = multiSelect.dataset.filterLabel
+    const form = multiSelect.closest('form')
+    const input = multiSelect.querySelector('.app-commodity-search__input')
+    const searchBox = multiSelect.querySelector('.app-commodity-search')
+    const toggle = multiSelect.querySelector('.app-commodity-search__button')
+    const results = multiSelect.querySelector('.app-commodity-search__results')
+    const status = multiSelect.querySelector('.app-country-search__status')
+    const selectedInputs = multiSelect.querySelector('.app-dashboard-multiselect__inputs')
+    const optionsByValue = new Map(options.map((option) => [option.value, option]))
+    const selectedValues = new Set(initialSelectedValues)
+    const defaultPlaceholder = input.placeholder
+
+    const announce = (message) => {
+      status.textContent = message
+    }
+
+    const setExpanded = (isExpanded) => {
+      searchBox.setAttribute('aria-expanded', String(isExpanded))
+      input.setAttribute('aria-expanded', String(isExpanded))
+      toggle.setAttribute('aria-expanded', String(isExpanded))
+      toggle.setAttribute('aria-label', `${isExpanded ? 'Hide' : 'Show'} ${filterLabel.toLowerCase()} options`)
+      toggle.querySelector('.govuk-visually-hidden').textContent = `${isExpanded ? 'Hide' : 'Show'} ${filterLabel.toLowerCase()} options`
+      searchBox.classList.toggle('app-commodity-search--open', isExpanded)
+    }
+
+    const closeResults = () => {
+      results.hidden = true
+      setExpanded(false)
+    }
+
+    const updateSelectedInputs = () => {
+      selectedInputs.replaceChildren()
+      selectedValues.forEach((value) => {
+        const hiddenInput = document.createElement('input')
+        hiddenInput.type = 'hidden'
+        hiddenInput.name = filterName
+        hiddenInput.value = value
+        selectedInputs.append(hiddenInput)
+      })
+    }
+
+    const renderSelected = () => {
+      const selectedCount = selectedValues.size
+      if (selectedCount === 1) {
+        const [value] = selectedValues
+        const option = optionsByValue.get(value)
+        input.placeholder = option?.description ? `${option.label} - ${option.description}` : (option?.label || value)
+      } else if (selectedCount > 1) {
+        const selectedLabel = filterName === 'species' ? 'species' : 'commodities'
+        input.placeholder = `${selectedCount} ${selectedLabel} selected`
+      } else {
+        input.placeholder = defaultPlaceholder
+      }
+
+      updateSelectedInputs()
+    }
+
+    const renderResults = (showAll = false) => {
+      const query = input.value.trim().toLowerCase()
+      const matches = options.filter((option) => {
+        if (!query) return showAll
+        return [option.label, ...(option.searchTerms || [])]
+          .some((value) => value.toLowerCase().includes(query))
+      })
+      results.replaceChildren()
+
+      if (!matches.length) {
+        const row = document.createElement('li')
+        row.className = 'app-commodity-search__row app-commodity-search__row--message'
+        const message = document.createElement('span')
+        message.className = 'app-commodity-search__no-results'
+        message.textContent = query ? 'No results found' : 'No options available'
+        row.append(message)
+        results.append(row)
+        results.hidden = false
+        setExpanded(true)
+        announce(message.textContent)
+        return
+      }
+
+      matches.forEach((option, index) => {
+        const row = document.createElement('li')
+        const checkboxContainer = document.createElement('div')
+        const checkboxItem = document.createElement('div')
+        const checkbox = document.createElement('input')
+        const label = document.createElement('label')
+        const checkboxId = `${results.id}-option-${index}`
+
+        row.className = 'app-commodity-search__row app-commodity-search__row--species' +
+          (index % 2 === 1 ? ' app-commodity-search__row--alt' : '')
+        checkboxContainer.className = 'govuk-checkboxes app-commodity-search__checkbox-item'
+        checkboxItem.className = 'govuk-checkboxes__item'
+        checkbox.className = 'govuk-checkboxes__input'
+        checkbox.id = checkboxId
+        checkbox.type = 'checkbox'
+        checkbox.name = filterName
+        checkbox.value = option.value
+        checkbox.checked = selectedValues.has(option.value)
+        label.className = 'govuk-label govuk-checkboxes__label app-commodity-search__row-label'
+        label.htmlFor = checkboxId
+        const code = document.createElement('span')
+        code.className = 'app-commodity-search__commodity-code'
+        code.textContent = option.label
+        label.classList.add('app-commodity-search__commodity-option')
+        label.append(code)
+        if (option.description) {
+          const description = document.createElement('span')
+          description.className = 'app-commodity-search__commodity-description'
+          description.textContent = option.description
+          label.append(description)
+        }
+        checkboxItem.append(checkbox, label)
+        checkboxContainer.append(checkboxItem)
+        row.append(checkboxContainer)
+        results.append(row)
+      })
+
+      results.hidden = false
+      setExpanded(true)
+      announce(`${matches.length} ${matches.length === 1 ? 'option' : 'options'} available`)
+    }
+
+    const renderCurrentResults = () => renderResults(input.value.trim().length === 0)
+
+    results.addEventListener('change', (event) => {
+      const checkbox = event.target.closest('input[type="checkbox"]')
+      if (!checkbox) return
+
+      if (checkbox.checked) {
+        selectedValues.add(checkbox.value)
+      } else {
+        selectedValues.delete(checkbox.value)
+      }
+      input.value = ''
+      renderSelected()
+      renderCurrentResults()
+      announce(`${selectedValues.size} ${selectedValues.size === 1 ? 'option' : 'options'} selected`)
+    })
+
+    input.addEventListener('focus', renderCurrentResults)
+    input.addEventListener('input', renderCurrentResults)
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeResults()
+    })
+    toggle.addEventListener('mousedown', (event) => event.preventDefault())
+    toggle.addEventListener('click', () => {
+      if (results.hidden) {
+        renderCurrentResults()
+        input.focus()
+      } else {
+        closeResults()
+      }
+    })
+    form.addEventListener('submit', () => {
+      results.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => checkbox.remove())
+    })
+    document.addEventListener('pointerdown', (event) => {
+      if (!multiSelect.contains(event.target)) closeResults()
+    })
+
+    renderSelected()
   }
 
 })

@@ -9,6 +9,7 @@ const path = require('path')
 const basePath = '/part1/v5'
 const sessionDataDefaults = require('../data/session-data-defaults')
 const originCountries = require('../data/origin-countries')
+const portOfEntryOptions = require('../data/port-of-entry-options')
 const chedPFishCommodityGroups = require('../data/commodities/ched-p-fish-commodities')
 const viewsPath = path.join(__dirname, '..', 'views')
 const router = govukPrototypeKit.requests.setupRouter(basePath)
@@ -1406,6 +1407,84 @@ const fesDataDictionaryFields = {
   }
 }
 
+const createUserSubmittedConsignment = (data) => {
+  const reference = data['reference-number'] || 'IMP-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000)
+  const now = new Date()
+  const submittedDisplay = new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(now)
+
+  const arrivalDate = data['arrival-date-year'] && data['arrival-date-month'] && data['arrival-date-day']
+    ? new Date(Date.UTC(Number(data['arrival-date-year']), Number(data['arrival-date-month']) - 1, Number(data['arrival-date-day'])))
+    : now
+
+  const manualSpecies = Array.isArray(data['species-list']) ? data['species-list'] : []
+  const commodityDetails = Array.isArray(data['commodity-details-list']) ? data['commodity-details-list'] : []
+  const importedSpecies = [
+    ...manualSpecies.map((item) => ({
+      commodityCode: item.commodityCode || '',
+      species: item.name || '',
+      notificationWeight: item.netWeight ? `${item.netWeight} kg` : ''
+    })),
+    ...commodityDetails.map((item) => ({
+      commodityCode: item.commodityCode || '',
+      species: item.species || '',
+      notificationWeight: item.weight ? `${item.weight} kg` : ''
+    }))
+  ]
+  if (!importedSpecies.length) {
+    const species = data['scenario-a-species'] || data['review-species']
+    if (species) {
+      importedSpecies.push({
+        commodityCode: data['scenario-a-cn-code'] || '',
+        species,
+        notificationWeight: data['scenario-a-net-weight'] || data['review-weight-quantity'] || ''
+      })
+    }
+  }
+  const commodityCodes = [...new Set(importedSpecies.map((item) => item.commodityCode).filter(Boolean))]
+  const speciesSummary = importedSpecies.map((item) => item.species).filter(Boolean).join(', ') || 'Not provided'
+
+  return {
+    reference,
+    status: 'submitted',
+    statusLabel: 'Submitted',
+    statusTagClass: 'govuk-tag--blue',
+    submittedAt: now.toISOString(),
+    submittedDisplay,
+    arrivalAt: arrivalDate.toISOString(),
+    arrivalDisplay: new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(arrivalDate),
+    port: data['destination-port'] || data['port-of-entry'] || 'Unknown',
+    importer: data['importer-name'] || 'Unknown',
+    origin: data['country-of-origin'] || data['country-of-export'] || 'Unknown',
+    exporter: data['scenario-a-exporter-name'] || '',
+    species: speciesSummary,
+    speciesSummary,
+    commodityCodes,
+    importedSpecies,
+    weight: data['scenario-a-net-weight'] || data['review-weight-quantity'] || '0',
+    documents: [],
+    evidenceSections: [],
+    userSubmitted: true
+  }
+}
+
+const addUserSubmittedConsignment = (data) => {
+  const consignment = createUserSubmittedConsignment(data)
+  if (!Array.isArray(data.userCreatedConsignments)) {
+    data.userCreatedConsignments = []
+  }
+  data.userCreatedConsignments.push(consignment)
+}
+
 router.use((req, res, next) => {
   const noBackLink = ['/', '/dashboard', '/confirmation', '/upload-confirmation']
   res.locals.showBackLink = !noBackLink.includes(req.path)
@@ -1448,9 +1527,14 @@ router.get('/dashboard', (req, res) => {
 
   const activeTab = req.query.tab === 'completed' ? 'completed' : 'active'
   const filters = getDashboardFilters(req.query)
-  const filterOptions = getFilterOptions(importerDashboardConsignments)
-  const activeConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'active')
-  const completedConsignments = filterAndSortConsignments(importerDashboardConsignments, filters, 'completed')
+
+  // Merge static consignments with user-created ones from session
+  const userCreatedConsignments = Array.isArray(req.session.data?.userCreatedConsignments) ? req.session.data.userCreatedConsignments : []
+  const allConsignments = [...importerDashboardConsignments, ...userCreatedConsignments]
+
+  const filterOptions = getFilterOptions(allConsignments)
+  const activeConsignments = filterAndSortConsignments(allConsignments, filters, 'active')
+  const completedConsignments = filterAndSortConsignments(allConsignments, filters, 'completed')
   const tabs = ['active', 'completed']
   const activeFilterChipsByTab = Object.fromEntries(tabs.map((tab) => [
     tab,
@@ -1458,18 +1542,28 @@ router.get('/dashboard', (req, res) => {
   ]))
 
   req.session.data = structuredClone(sessionDataDefaults)
+  // Restore user-created consignments after resetting session data
+  if (userCreatedConsignments.length > 0) {
+    req.session.data.userCreatedConsignments = userCreatedConsignments
+  }
   res.locals.data = req.session.data
   res.render('part1/entry/dashboard', {
     variant,
     activeTab,
     filters,
     filterOptions,
-    summaryCards: getSummaryCards(importerDashboardConsignments, filters, basePath, variant, activeTab),
+    countriesJson: JSON.stringify(originCountries),
+    portOfEntryOptionsJson: JSON.stringify(portOfEntryOptions),
+    commodityOptionsJson: JSON.stringify(filterOptions.commodityOptions),
+    speciesOptionsJson: JSON.stringify(filterOptions.speciesOptions),
+    selectedCommoditiesJson: JSON.stringify(filters.commodities),
+    selectedSpeciesJson: JSON.stringify(filters.species),
+    summaryCards: getSummaryCards(allConsignments, filters, basePath, variant, activeTab),
     activeFilterChipsByTab,
     activeConsignments,
     completedConsignments,
-    activeCount: importerDashboardConsignments.filter((consignment) => ['draft', 'submitted', 'under-review', 'action-required'].includes(consignment.status)).length,
-    completedCount: importerDashboardConsignments.filter((consignment) => ['accepted', 'rejected'].includes(consignment.status)).length
+    activeCount: allConsignments.filter((consignment) => ['draft', 'submitted', 'under-review', 'action-required'].includes(consignment.status)).length,
+    completedCount: allConsignments.filter((consignment) => ['accepted', 'rejected'].includes(consignment.status)).length
   })
 })
 
@@ -1492,7 +1586,12 @@ router.get('/dashboard/drafts/:reference', (req, res) => {
 
 router.get('/dashboard/notifications/:reference', (req, res) => {
   const variant = getDashboardVariant(req.query.variant) || 'a'
-  const consignment = importerDashboardConsignments.find((item) => item.reference === req.params.reference)
+
+  // Check both static and user-created consignments
+  const userCreatedConsignments = Array.isArray(req.session.data?.userCreatedConsignments) ? req.session.data.userCreatedConsignments : []
+  const allConsignments = [...importerDashboardConsignments, ...userCreatedConsignments]
+  const consignment = allConsignments.find((item) => item.reference === req.params.reference)
+
   if (!consignment) {
     return res.redirect('/dashboard?variant=' + variant)
   }
@@ -2193,6 +2292,9 @@ router.post('/check-answers', (req, res) => {
   const refNumber = 'IMP-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000)
   req.session.data['reference-number'] = refNumber
   req.session.data['submission-kind'] = 'import'
+
+  addUserSubmittedConsignment(req.session.data)
+
   res.redirect('/confirmation')
 })
 
@@ -2721,6 +2823,8 @@ router.post('/declaration', (req, res) => {
   if (!data['reference-number']) {
     data['reference-number'] = 'IUU-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random() * 900000)
   }
+
+  addUserSubmittedConsignment(data)
 
   res.redirect('/confirmation')
 })
