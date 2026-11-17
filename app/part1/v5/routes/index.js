@@ -3123,9 +3123,16 @@ router.post('/declaration', (req, res) => {
 // Prototype controls - toggle options
 router.post('/prototype-options/set', (req, res) => {
   const { key, value } = req.body
-  if (!req.session.data.prototypeOptions) {
-    req.session.data.prototypeOptions = {}
+  if (!req.session.prototypeOptions) {
+    req.session.prototypeOptions = {}
   }
-  req.session.data.prototypeOptions[key] = value
-  res.json({ success: true, selectedOptions: req.session.data.prototypeOptions })
+  req.session.prototypeOptions[key] = value
+  req.session.save((err) => {
+    if (err) {
+      console.error('Session save error:', err)
+      res.status(500).json({ success: false, error: 'Failed to save session' })
+    } else {
+      res.json({ success: true, selectedOptions: req.session.prototypeOptions })
+    }
+  })
 })

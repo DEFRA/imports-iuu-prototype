@@ -6,21 +6,21 @@
 const { prototypeOptions } = require('../lib/prototype-options')
 
 const prototypeOptionsMiddleware = (req, res, next) => {
-  // Initialize prototype options in session if not present
-  if (!req.session.data.prototypeOptions) {
-    req.session.data.prototypeOptions = {}
+  // Store prototype options in a separate session property that won't be reset
+  if (!req.session.prototypeOptions) {
+    req.session.prototypeOptions = {}
   }
 
   // Set defaults for each option group
   for (const [key, group] of Object.entries(prototypeOptions)) {
-    if (!req.session.data.prototypeOptions[key]) {
-      req.session.data.prototypeOptions[key] = group.options[0].id
+    if (!req.session.prototypeOptions[key]) {
+      req.session.prototypeOptions[key] = group.options[0].id
     }
   }
 
   // Make options available to all templates
   res.locals.prototypeOptions = prototypeOptions
-  res.locals.selectedOptions = req.session.data.prototypeOptions
+  res.locals.selectedOptions = req.session.prototypeOptions
 
   next()
 }
