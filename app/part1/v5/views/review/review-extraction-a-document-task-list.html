@@ -26,25 +26,35 @@
         {% set taskUrl = taskUrl + '?tablePage=' + tablePage %}
       {% endif %}
       
-      {% set taskItem = {
-        title: {
-          text: group.title
-        },
-        href: taskUrl,
-        status: {
-          tag: {
-            text: group.status,
-            classes: group.statusTagClass
-          }
-        }
-      } %}
-      
       {% if group.summary %}
-        {% set taskItem = taskItem | merge({
+        {% set taskItem = {
+          title: {
+            text: group.title
+          },
+          href: taskUrl,
           hint: {
             text: group.summary
+          },
+          status: {
+            tag: {
+              text: group.status,
+              classes: group.statusTagClass
+            }
           }
-        }) %}
+        } %}
+      {% else %}
+        {% set taskItem = {
+          title: {
+            text: group.title
+          },
+          href: taskUrl,
+          status: {
+            tag: {
+              text: group.status,
+              classes: group.statusTagClass
+            }
+          }
+        } %}
       {% endif %}
       
       {% set taskListItems = taskListItems + [taskItem] %}
