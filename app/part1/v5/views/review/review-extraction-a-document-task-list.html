@@ -6,10 +6,6 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    {% if showBackLink and backLinkHref %}
-      <a href="{{ backLinkHref }}" class="govuk-back-link">Back</a>
-    {% endif %}
-
     <span class="govuk-caption-l">Document {{ documentIndex }} of {{ totalDocuments }}</span>
     <h1 class="govuk-heading-l">{{ document.reference }} — {{ document.documentNumber }}</h1>
 
