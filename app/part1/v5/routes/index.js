@@ -675,6 +675,35 @@ const buildGroupSummary = (group, document) => {
   return summaryParts.join(', ')
 }
 
+const buildGroupDetails = (group, document) => {
+  if (!Array.isArray(document.detailSections)) {
+    return null
+  }
+
+  const groupSections = document.detailSections.filter((section) => group.sections.includes(section.key))
+  const details = []
+
+  groupSections.forEach((section) => {
+    if (Array.isArray(section.rows)) {
+      section.rows.forEach((row) => {
+        if (row.isMissing) {
+          details.push({
+            label: row.label,
+            status: 'missing'
+          })
+        } else if (row.fieldConfidenceLabel === 'Low') {
+          details.push({
+            label: row.label,
+            status: 'low-confidence'
+          })
+        }
+      })
+    }
+  })
+
+  return details.length > 0 ? details : null
+}
+
 const getPreviousAndNextGroupKeys = (currentGroupKey, applicableGroups) => {
   const groupKeys = applicableGroups.map((g) => g.key)
   const currentIndex = groupKeys.indexOf(currentGroupKey)
@@ -2662,6 +2691,7 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const taskListItems = applicableGroups.map((group) => {
     const { status, tagClass } = getGroupStatus(group, document)
     const summary = buildGroupSummary(group, document)
+    const details = buildGroupDetails(group, document)
     
     const taskUrl = basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + group.key + (tablePage > 1 ? '?tablePage=' + tablePage : '')
     
@@ -2681,6 +2711,9 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
     if (summary) {
       item.hint = {
         text: summary
+      }
+      if (details && details.length > 1) {
+        item.hintDetails = details
       }
     }
     

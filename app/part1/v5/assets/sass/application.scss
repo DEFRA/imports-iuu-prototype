@@ -1118,3 +1118,67 @@
   display: inline-block;
   flex-shrink: 0;
 }
+
+.app-task-list__details-container {
+  margin-top: 0.5rem;
+}
+
+.app-task-list__details-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.app-task-list__details-toggle:hover {
+  text-decoration-thickness: 3px;
+}
+
+.app-task-list__details-toggle:focus {
+  outline: 3px solid #ffdd00;
+  outline-offset: 0;
+}
+
+.app-task-list__details-list {
+  list-style: none;
+  padding: 0.5rem 0 0 0;
+  margin: 0;
+  border-top: 1px solid #b1b4b6;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.app-task-list__detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 0.9375rem;
+  gap: 1rem;
+}
+
+.app-task-list__detail-label {
+  flex: 1;
+  color: #0b0c0c;
+}
+
+.app-task-list__detail-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.app-task-list__detail-status--missing {
+  background-color: #f3e7e8;
+  color: #942514;
+}
+
+.app-task-list__detail-status--low {
+  background-color: #fef7d8;
+  color: #7a5d00;
+}
