@@ -1109,6 +1109,10 @@
   display: none;
 }
 
+.govuk-task-list__status {
+  min-width: 150px;
+}
+
 .govuk-task-list__status .govuk-tag {
   white-space: nowrap;
   display: inline-block;
