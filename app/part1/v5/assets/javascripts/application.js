@@ -25,21 +25,6 @@ window.GOVUKPrototypeKit.documentReady(() => {
     })
   }
 
-  const detailsToggles = Array.from(document.querySelectorAll('.app-task-list__details-toggle'))
-  for (const toggle of detailsToggles) {
-    const detailsId = toggle.getAttribute('data-details-id')
-    const details = document.getElementById(detailsId)
-    if (!details) continue
-
-    toggle.addEventListener('click', (e) => {
-      e.preventDefault()
-      const expanded = toggle.getAttribute('aria-expanded') === 'true'
-      details.hidden = expanded
-      toggle.setAttribute('aria-expanded', String(!expanded))
-      toggle.textContent = expanded ? 'Show more' : 'Show less'
-    })
-  }
-
   const buildGeneratedDocumentReference = (prefix, count) => {
     const year = new Date().getFullYear()
     const paddedCount = String(count).padStart(4, '0')

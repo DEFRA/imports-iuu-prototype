@@ -19,42 +19,9 @@
       Check each section before you continue.
     </div>
 
-    <ol class="govuk-task-list">
-      {% for item in taskListItems %}
-        <li class="govuk-task-list__item">
-          <div class="govuk-task-list__name-and-hint">
-            <a href="{{ item.href }}" class="govuk-link govuk-task-list__link">
-              {{ item.title.text }}
-            </a>
-            {% if item.hint %}
-              <div class="govuk-hint govuk-task-list__hint">
-                {{ item.hint.text }}
-                {% if item.hintDetails and item.hintDetails.length > 1 %}
-                  <div class="app-task-list__details-container">
-                    <button type="button" class="govuk-link app-task-list__details-toggle" data-details-id="details-{{ loop.index }}" aria-expanded="false">
-                      Show more
-                    </button>
-                    <ul class="app-task-list__details-list" id="details-{{ loop.index }}" hidden>
-                      {% for detail in item.hintDetails %}
-                        <li class="app-task-list__detail-item">
-                          <span class="app-task-list__detail-label">{{ detail.label }}</span>
-                          <span class="app-task-list__detail-status {% if detail.status == 'missing' %}app-task-list__detail-status--missing{% else %}app-task-list__detail-status--low{% endif %}">
-                            {% if detail.status == 'missing' %}Missing{% else %}Low confidence{% endif %}
-                          </span>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endif %}
-              </div>
-            {% endif %}
-          </div>
-          <div class="govuk-task-list__status">
-            <span class="govuk-tag {{ item.status.tag.classes }}">{{ item.status.tag.text }}</span>
-          </div>
-        </li>
-      {% endfor %}
-    </ol>
+    {{ govukTaskList({
+      items: taskListItems
+    }) }}
 
     <form action="/review-extraction-a" method="post" class="govuk-!-margin-top-8">
       <button class="govuk-button" data-module="govuk-button">
