@@ -553,6 +553,142 @@ const scenarioASectionEditConfigs = {
   }
 }
 
+const scenarioASectionGroups = [
+  {
+    key: 'document-reference',
+    title: 'Document reference',
+    sections: ['catch-certificate-number']
+  },
+  {
+    key: 'vessel-info',
+    title: 'Vessel information',
+    sections: ['vessel-id-and-flag-state']
+  },
+  {
+    key: 'catch-details',
+    title: 'Catch details',
+    sections: ['species', 'catch-area', 'fishing-gear', 'weight-quantity']
+  },
+  {
+    key: 'transport-arrival',
+    title: 'Transport & arrival',
+    sections: ['transport-details-from-cc', 'transport-details']
+  },
+  {
+    key: 'exporter-info',
+    title: 'Exporter information',
+    sections: ['exporter-details']
+  },
+  {
+    key: 'importer-info',
+    title: 'Importer information',
+    sections: ['importer-details', 'importer-agent-details']
+  },
+  {
+    key: 'declaration',
+    title: 'Declaration',
+    sections: ['importer-declaration']
+  }
+]
+
+const processingStatementSectionGroups = [
+  {
+    key: 'document-reference',
+    title: 'Document reference',
+    sections: ['processing-statement-reference-numbers']
+  }
+]
+
+const nonManipulationSectionGroups = [
+  {
+    key: 'document-reference',
+    title: 'Document reference',
+    sections: ['storage-statement-reference-numbers']
+  }
+]
+
+const getGroupForDocument = (documentType) => {
+  if (documentType === 'Catch Certificate') {
+    return scenarioASectionGroups
+  } else if (documentType === 'Processing Statement') {
+    return processingStatementSectionGroups
+  } else if (documentType === 'Non-Manipulation Declaration') {
+    return nonManipulationSectionGroups
+  }
+  return []
+}
+
+const getDetailSectionStatus = (section, document) => {
+  const hasMissing = Array.isArray(section.rows) && section.rows.some((row) => row.isMissing)
+  const hasLowConfidence = Array.isArray(section.rows) && section.rows.some((row) => !row.isMissing && row.fieldConfidenceLabel === 'Low')
+
+  if (hasMissing) return { status: 'Missing information', tagClass: 'govuk-tag--red' }
+  if (hasLowConfidence) return { status: 'Low confidence', tagClass: 'govuk-tag--yellow' }
+  return { status: 'Completed', tagClass: 'govuk-tag--green' }
+}
+
+const getGroupStatus = (group, document) => {
+  if (!Array.isArray(document.detailSections)) {
+    return { status: 'Completed', tagClass: 'govuk-tag--green' }
+  }
+
+  const groupSections = document.detailSections.filter((section) => group.sections.includes(section.key))
+  const statuses = groupSections.map((section) => getDetailSectionStatus(section, document))
+
+  const hasMissing = statuses.some((s) => s.status === 'Missing information')
+  const hasLowConfidence = statuses.some((s) => s.status === 'Low confidence')
+
+  if (hasMissing) return { status: 'Missing information', tagClass: 'govuk-tag--red' }
+  if (hasLowConfidence) return { status: 'Low confidence', tagClass: 'govuk-tag--yellow' }
+  return { status: 'Completed', tagClass: 'govuk-tag--green' }
+}
+
+const buildGroupSummary = (group, document) => {
+  if (!Array.isArray(document.detailSections)) {
+    return ''
+  }
+
+  const groupSections = document.detailSections.filter((section) => group.sections.includes(section.key))
+  const missingFields = []
+  const lowConfidenceFields = []
+
+  groupSections.forEach((section) => {
+    if (Array.isArray(section.rows)) {
+      section.rows.forEach((row) => {
+        if (row.isMissing) {
+          missingFields.push(row.label)
+        } else if (row.fieldConfidenceLabel === 'Low') {
+          lowConfidenceFields.push(row.label)
+        }
+      })
+    }
+  })
+
+  const summaryParts = []
+  if (missingFields.length > 0) {
+    summaryParts.push(`${missingFields.length} missing`)
+  }
+  if (lowConfidenceFields.length > 0) {
+    summaryParts.push(`${lowConfidenceFields.length} low confidence`)
+  }
+
+  return summaryParts.join(', ')
+}
+
+const getPreviousAndNextGroupKeys = (currentGroupKey, applicableGroups) => {
+  const groupKeys = applicableGroups.map((g) => g.key)
+  const currentIndex = groupKeys.indexOf(currentGroupKey)
+
+  if (currentIndex === -1) {
+    return { previousKey: null, nextKey: null }
+  }
+
+  return {
+    previousKey: currentIndex > 0 ? groupKeys[currentIndex - 1] : null,
+    nextKey: currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null
+  }
+}
+
 const buildScenarioADocumentPresentation = (document) => {
   const confidenceLabel = document.extractionConfidenceLabel
   const confidenceTagClass = document.extractionConfidenceTagClass
@@ -2522,14 +2658,25 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
   const reviewPageUrl = basePath + '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
-  const documentTemplate = getScenarioADocumentTemplate(document.documentType)
+  const applicableGroups = getGroupForDocument(document.documentType)
+  const taskListGroups = applicableGroups.map((group) => {
+    const { status, tagClass } = getGroupStatus(group, document)
+    const summary = buildGroupSummary(group, document)
+    return {
+      ...group,
+      status,
+      tagClass,
+      statusTagClass: tagClass,
+      summary
+    }
+  })
 
-  res.render(documentTemplate, {
+  res.render('part1/review/review-extraction-a-document-task-list', {
     document,
     documentIndex,
     totalDocuments: documents.length,
     tablePage,
-    reviewPageUrl,
+    taskListGroups,
     showBackLink: true,
     backLinkHref: reviewPageUrl
   })
@@ -2764,6 +2911,113 @@ router.post('/review-extraction-a/document/:documentId/change', (req, res) => {
     ...existingOverride,
     ...override,
     __highConfidenceEditedFields: existingHighConfidenceEditedFields
+  }
+
+  const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+  return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+})
+
+router.get('/review-extraction-a/document/:documentId/edit-group/:groupKey', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = 'a'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+
+  if (!document) {
+    return res.redirect('/review-extraction-a#document-summary')
+  }
+
+  const applicableGroups = getGroupForDocument(document.documentType)
+  const group = applicableGroups.find((g) => g.key === req.params.groupKey)
+
+  if (!group) {
+    return res.redirect('/review-extraction-a/document/' + document.id)
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  const sections = Array.isArray(document.detailSections)
+    ? document.detailSections.filter((section) => group.sections.includes(section.key))
+    : []
+
+  const { previousKey: previousGroupKey, nextKey: nextGroupKey } = getPreviousAndNextGroupKeys(req.params.groupKey, applicableGroups)
+  const previousGroup = applicableGroups.find((g) => g.key === previousGroupKey)
+  const nextGroup = applicableGroups.find((g) => g.key === nextGroupKey)
+
+  res.render('part1/review/review-extraction-a-document-edit-group', {
+    document,
+    groupKey: req.params.groupKey,
+    groupTitle: group.title,
+    sections,
+    previousGroupKey,
+    previousGroupTitle: previousGroup ? previousGroup.title : null,
+    nextGroupKey,
+    nextGroupTitle: nextGroup ? nextGroup.title : null,
+    tablePage
+  })
+})
+
+router.post('/review-extraction-a/document/:documentId/edit-group/:groupKey', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = 'a'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+
+  if (!document) {
+    return res.redirect('/review-extraction-a#document-summary')
+  }
+
+  const applicableGroups = getGroupForDocument(document.documentType)
+  const group = applicableGroups.find((g) => g.key === req.params.groupKey)
+
+  if (!group) {
+    return res.redirect('/review-extraction-a/document/' + document.id)
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  const normalizeValue = (value) => String(value || '').trim()
+
+  if (!data['scenario-a-document-overrides'] || typeof data['scenario-a-document-overrides'] !== 'object') {
+    data['scenario-a-document-overrides'] = {}
+  }
+
+  const existingOverride = (data['scenario-a-document-overrides'][document.id] && typeof data['scenario-a-document-overrides'][document.id] === 'object')
+    ? data['scenario-a-document-overrides'][document.id]
+    : {}
+  const existingHighConfidenceEditedFields = Array.isArray(existingOverride.__highConfidenceEditedFields)
+    ? existingOverride.__highConfidenceEditedFields
+    : []
+
+  const groupOverride = {}
+  const newlyPromotedFieldKeys = []
+
+  for (const sectionKey of group.sections) {
+    const sectionConfig = scenarioASectionEditConfigs[sectionKey]
+    if (sectionConfig) {
+      for (const field of sectionConfig.fields) {
+        const fieldValue = normalizeValue(req.body[field.key])
+        groupOverride[field.key] = fieldValue
+
+        if (fieldValue) {
+          newlyPromotedFieldKeys.push(field.key)
+        }
+      }
+    }
+  }
+
+  const highConfidenceEditedFields = Array.from(new Set([...existingHighConfidenceEditedFields, ...newlyPromotedFieldKeys]))
+
+  data['scenario-a-document-overrides'][document.id] = {
+    ...existingOverride,
+    ...groupOverride,
+    __highConfidenceEditedFields: highConfidenceEditedFields
   }
 
   const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
