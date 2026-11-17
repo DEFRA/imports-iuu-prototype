@@ -2987,7 +2987,9 @@ router.get('/review-extraction-a/document/:documentId/edit-group/:groupKey', (re
     groupTitle: group.title,
     sections,
     pagination: Object.keys(pagination).length > 0 ? pagination : null,
-    tablePage
+    tablePage,
+    backLinkHref: basePath + '/review-extraction-a/document/' + document.id + tablePageQuery,
+    showBackLink: true
   })
 })
 
