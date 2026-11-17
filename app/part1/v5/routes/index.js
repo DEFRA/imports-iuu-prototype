@@ -11,9 +11,13 @@ const sessionDataDefaults = require('../data/session-data-defaults')
 const originCountries = require('../data/origin-countries')
 const portOfEntryOptions = require('../data/port-of-entry-options')
 const chedPFishCommodityGroups = require('../data/commodities/ched-p-fish-commodities')
+const prototypeOptionsMiddleware = require('../middleware/prototype-options')
 const viewsPath = path.join(__dirname, '..', 'views')
 const router = govukPrototypeKit.requests.setupRouter(basePath)
 govukPrototypeKit.requests.serveDirectory(basePath + '/assets', path.join(__dirname, '..', 'assets'))
+
+// Apply prototype options middleware
+router.use(prototypeOptionsMiddleware)
 
 const europeanCountryCodes = new Set([
   'AL', 'AD', 'AT', 'BY', 'BE', 'BA', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
@@ -3114,4 +3118,14 @@ router.post('/declaration', (req, res) => {
   addUserSubmittedConsignment(data)
 
   res.redirect('/confirmation')
+})
+
+// Prototype controls - toggle options
+router.post('/prototype-options/set', (req, res) => {
+  const { key, value } = req.body
+  if (!req.session.data.prototypeOptions) {
+    req.session.data.prototypeOptions = {}
+  }
+  req.session.data.prototypeOptions[key] = value
+  res.json({ success: true, selectedOptions: req.session.data.prototypeOptions })
 })

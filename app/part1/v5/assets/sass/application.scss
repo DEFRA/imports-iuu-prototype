@@ -5,6 +5,108 @@
 
 // Add extra styles here
 
+// Prototype controls widget
+.app-prototype-controls {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+  background: white;
+  border: 2px solid #0b0c0c;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 0.875rem;
+}
+
+.app-prototype-controls__details {
+  margin: 0;
+  padding: 0;
+}
+
+.app-prototype-controls__summary {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  user-select: none;
+  outline: none;
+  
+  &:hover {
+    background: #f3f2f1;
+  }
+  
+  &:focus {
+    outline: 3px solid #ffdd00;
+  }
+}
+
+.app-prototype-controls__content {
+  padding: 1rem;
+  border-top: 1px solid #b1b4b6;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.app-prototype-controls__label {
+  margin: 0 0 1rem 0;
+  font-weight: bold;
+  color: #0b0c0c;
+}
+
+.app-prototype-controls__group {
+  margin-bottom: 1.5rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.app-prototype-controls__group-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #0b0c0c;
+  border-bottom: 2px solid #0b0c0c;
+  padding-bottom: 0.5rem;
+}
+
+.app-prototype-controls__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.app-prototype-controls__option {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  border: 1px solid #b1b4b6;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background: #f3f2f1;
+  }
+}
+
+.app-prototype-controls__input {
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.app-prototype-controls__option-label {
+  font-weight: bold;
+  color: #0b0c0c;
+  font-size: 0.8rem;
+}
+
+.app-prototype-controls__option-desc {
+  font-size: 0.75rem;
+  color: #626a6e;
+  margin-top: 0.25rem;
+}
+
 .notification-flow__draft-header {
   display: flex;
   align-items: center;
