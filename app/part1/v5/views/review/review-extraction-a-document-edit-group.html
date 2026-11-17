@@ -48,27 +48,8 @@
       </div>
     </form>
 
-    {% if previousGroupKey or nextGroupKey %}
-      <nav class="govuk-!-margin-top-9">
-        <ul class="govuk-list">
-          {% if previousGroupKey %}
-            <li>
-              <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}/edit-group/{{ previousGroupKey }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">
-                ← Previous<span class="govuk-visually-hidden">: {{ previousGroupTitle }}</span>
-              </a>
-              <div class="govuk-hint">{{ previousGroupTitle }}</div>
-            </li>
-          {% endif %}
-          {% if nextGroupKey %}
-            <li>
-              <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}/edit-group/{{ nextGroupKey }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">
-                Next → <span class="govuk-visually-hidden">: {{ nextGroupTitle }}</span>
-              </a>
-              <div class="govuk-hint">{{ nextGroupTitle }}</div>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
+    {% if pagination %}
+      {{ govukPagination(pagination) }}
     {% endif %}
   </div>
 </div>

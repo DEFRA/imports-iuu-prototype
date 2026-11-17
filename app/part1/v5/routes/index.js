@@ -2963,15 +2963,30 @@ router.get('/review-extraction-a/document/:documentId/edit-group/:groupKey', (re
   const previousGroup = applicableGroups.find((g) => g.key === previousGroupKey)
   const nextGroup = applicableGroups.find((g) => g.key === nextGroupKey)
 
+  const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+
+  const pagination = {}
+  if (previousGroup) {
+    pagination.previous = {
+      href: basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + previousGroupKey + tablePageQuery,
+      text: 'Previous',
+      labelText: previousGroup.title
+    }
+  }
+  if (nextGroup) {
+    pagination.next = {
+      href: basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + nextGroupKey + tablePageQuery,
+      text: 'Next',
+      labelText: nextGroup.title
+    }
+  }
+
   res.render('part1/review/review-extraction-a-document-edit-group', {
     document,
     groupKey: req.params.groupKey,
     groupTitle: group.title,
     sections,
-    previousGroupKey,
-    previousGroupTitle: previousGroup ? previousGroup.title : null,
-    nextGroupKey,
-    nextGroupTitle: nextGroup ? nextGroup.title : null,
+    pagination: Object.keys(pagination).length > 0 ? pagination : null,
     tablePage
   })
 })
