@@ -1111,10 +1111,10 @@
 
 .govuk-task-list__status {
   flex-shrink: 0;
-  width: 180px;
-  padding-left: 15px;
 }
 
 .govuk-task-list__status .govuk-tag {
   white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
 }
