@@ -950,6 +950,25 @@
   white-space: nowrap;
 }
 
+.review-extraction-documents-table {
+  table-layout: fixed;
+}
+
+.review-extraction-documents-table th:nth-child(1),
+.review-extraction-documents-table td:nth-child(1) {
+  width: 45% !important;
+}
+
+.review-extraction-documents-table th:nth-child(2),
+.review-extraction-documents-table td:nth-child(2) {
+  width: 40% !important;
+}
+
+.review-extraction-documents-table th:nth-child(3),
+.review-extraction-documents-table td:nth-child(3) {
+  width: 15% !important;
+}
+
 @media (min-width: 40.0625em) {
   .review-extraction-summary .govuk-summary-list__key {
     width: 40%;
