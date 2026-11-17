@@ -1115,6 +1115,6 @@
 
 .govuk-task-list__status .govuk-tag {
   white-space: nowrap;
-  overflow-wrap: normal;
-  word-break: normal;
+  display: inline-block;
+  flex-shrink: 0;
 }

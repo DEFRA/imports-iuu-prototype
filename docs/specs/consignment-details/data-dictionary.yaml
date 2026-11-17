@@ -1,0 +1,342 @@
+spec:
+  feature: consignment-details
+  title: Import notification service – Consignment details – Component spec
+  version: "0.3"
+  date: 2026-11-10
+  status: draft
+  inputs:
+    - app/part1/v5/views/manual/arrival-details.html (current HTML prototype for the Consignment details page)
+    - app/part1/v5/routes/index.js (server-side validation, session updates and next-step routing)
+    - app/part1/v5/assets/javascripts/application.js (country autocomplete and CHED conditional visibility)
+    - app/part1/v5/data/origin-countries.js (current static country options)
+    - .github/skills/ux-component-spec/evals/consignment-details/stakeholder-answers.md (stakeholder-answer fixture supplied with the skill)
+    - Backlog IDs W06-02, W06-03, ARR-01 to ARR-06 and SUM-08 are from the stakeholder-answer fixture; the source backlog was not supplied
+  backlog:
+    work_items: [W06-02, W06-03]
+    scenarios: [ARR-01, ARR-02, ARR-03, ARR-04, ARR-05, ARR-06, SUM-08]
+
+reference_data:
+  - id: RD-01
+    name: Ports of entry
+    owner: Master Data (team to confirm)
+    source: Master Data API (stakeholder answer); the current route uses a hard-coded list
+    update: Received by API (frequency to confirm)
+    inactive: To confirm
+    status: to-confirm
+    questions: [Q-07]
+  - id: RD-02
+    name: Countries of export
+    owner: To confirm
+    source: The prototype uses a static FCDO geographical names dataset; production source to confirm
+    update: To confirm
+    inactive: To confirm
+    status: to-confirm
+    questions: [Q-01]
+  - id: RD-03
+    name: Countries requiring a CHED reference (agreed RoW list)
+    owner: To confirm
+    source: Agreed RoW list (stakeholder answer); the prototype currently classifies countries using a static European-country-code set
+    update: To confirm
+    inactive: To confirm
+    status: to-confirm
+    questions: [Q-03]
+  - id: RD-04
+    name: Ports permitted for each transport type
+    owner: Master Data (to confirm)
+    source: Master Data API (stakeholder answer; endpoint and mapping to confirm)
+    update: To confirm
+    inactive: To confirm
+    status: to-confirm
+    questions: [Q-07]
+
+fields:
+  - id: F-01
+    name: transportType
+    label: Transport type (answered on the previous screen)
+    type: enum
+    format: vessel, air or road in the current prototype
+    required: always
+    provenance:
+      kind: session
+      detail: Answer from the previous journey screen, persisted on the draft notification
+    status: agreed
+  - id: F-02
+    name: portOfEntry
+    label: What is the port of entry?
+    type: enum
+    format: Port name; the current prototype submits the displayed name, while the live identifier is to confirm
+    required: always
+    provenance:
+      kind: user-selected
+      ref: RD-01
+    status: agreed
+  - id: F-03
+    name: expectedArrivalDate
+    label: What is the expected date of arrival?
+    type: date
+    format: Entered as numeric day, month and four-digit year; the prototype stores the parts separately in session data
+    required: always
+    provenance:
+      kind: user-entered
+    status: agreed
+  - id: F-04
+    name: expectedArrivalTime
+    label: What time is the expected arrival?
+    type: time
+    format: 24-hour clock HH:mm in UK local time (Europe/London); the prototype stores hour and minute separately
+    required: always
+    provenance:
+      kind: user-entered
+    status: agreed
+  - id: F-05
+    name: countryOfExport
+    label: Country of export
+    type: enum
+    format: Country identifier from RD-02
+    required: always
+    provenance:
+      kind: user-selected
+      ref: RD-02
+    status: agreed
+  - id: F-06
+    name: chedReference
+    label: CHED number
+    type: string
+    format: Exact validation format to confirm; the current hint shows CHEDP.GB.2026.1234567
+    required: conditional
+    required_when: BR-04
+    provenance:
+      kind: user-entered
+      detail: The user obtains it before notifying (source to explain on the page)
+    status: agreed
+
+business_rules:
+  - id: BR-01
+    rule: Given a transport type was chosen on the previous screen, when the port of entry list is shown, then it only contains ports permitted for that transport type (for example Air freight does not offer Felixstowe).
+    applies_to: [F-01, F-02]
+    source: Stakeholder-answer fixture; current prototype does not filter its hard-coded port list by transport type
+    status: agreed
+  - id: BR-02
+    rule: The transport type chosen on the previous screen is played back on this page with a way to change it.
+    applies_to: [SCR-01.E09]
+    source: Stakeholder-answer fixture; playback and change link are absent from the current page HTML
+    status: agreed
+  - id: BR-03
+    rule: Given a port of entry is saved, when the transport type changes to one that does not permit that port, then the saved port is cleared and must be selected again.
+    applies_to: [F-01, F-02]
+    source: Derived from BR-01
+    status: proposed
+  - id: BR-04
+    rule: Given the country of export is on the agreed RoW list (RD-03), then the CHED number question is shown and mandatory; otherwise it is not shown and not required. The prototype currently uses its static non-European classification as a proxy.
+    applies_to: [F-05, F-06]
+    source: Stakeholder-answer fixture; production RoW membership is to confirm
+    status: agreed
+  - id: BR-05
+    rule: Given a CHED number was entered, when the country of export changes to one not on the RoW list, then the CHED number is discarded and not saved.
+    applies_to: [F-05, F-06]
+    source: Derived from BR-04
+    status: proposed
+  - id: BR-06
+    rule: When the expected date of arrival is today, whether an expected time earlier than the current UK time is accepted.
+    applies_to: [F-03, F-04]
+    source: Not specified
+    status: to-confirm
+    questions: [Q-05]
+  - id: BR-07
+    rule: Given all answers are valid, when I save and continue, then the answers are saved in the prototype session and I continue to Species details in the manual journey or Commodity details in the extraction journey.
+    applies_to: [SCR-01]
+    source: Stakeholder answer 2026-11-10 and current route behavior
+    errors: [ERR-17]
+    status: agreed
+  - id: BR-08
+    rule: When I return to the page (Back, Change or resuming a draft), my saved answers are shown.
+    applies_to: [SCR-01]
+    source: Standard pattern
+    status: proposed
+  - id: BR-09
+    rule: Repeated presses of Save and continue result in a single save.
+    applies_to: [SCR-01.E22]
+    source: Standard pattern
+    status: proposed
+  - id: BR-10
+    rule: Given the port list cannot be loaded from Master Data, then a service problem page is shown and answers already saved are kept. This state is not implemented while the prototype uses a static list.
+    applies_to: [F-02]
+    source: Standard pattern
+    errors: [ERR-16]
+    status: proposed
+  - id: BR-11
+    rule: Given no ports are permitted for the chosen transport type, then I am told and offered a way to change the transport type.
+    applies_to: [F-01, F-02]
+    source: Derived from BR-01
+    errors: [ERR-18]
+    status: proposed
+  - id: BR-12
+    rule: No maximum future-arrival window is specified at this time.
+    applies_to: [F-03]
+    source: Stakeholder answer 2026-11-10
+    status: deprecated
+
+validation_rules:
+  - { id: VR-01, field: F-02, rule: Required, type: required, layer: both, trigger: submit, errors: [ERR-01], status: agreed }
+  - { id: VR-02, field: F-02, rule: Matches an active RD-01 port, type: reference, layer: server, trigger: submit, errors: [ERR-02], status: proposed }
+  - { id: VR-03, field: F-02, rule: Permitted for the transport type in F-01 (RD-04), type: cross-field, layer: server, trigger: submit, errors: [ERR-03], status: agreed }
+  - { id: VR-04, field: F-03, rule: Required – at least one of day, month or year entered, type: required, layer: both, trigger: submit, errors: [ERR-04], status: agreed }
+  - { id: VR-05, field: F-03, rule: Day, month and year all entered, type: format, layer: both, trigger: submit, errors: [ERR-05], status: agreed }
+  - { id: VR-06, field: F-03, rule: "Real calendar date – numeric day valid for the month, month 1–12, four-digit year", type: format, layer: both, trigger: submit, errors: [ERR-06], status: agreed }
+  - { id: VR-07, field: F-03, rule: "On or after today's date in Europe/London; the current prototype compares against the server-local date", type: range, layer: server, trigger: submit, errors: [ERR-07], status: agreed }
+  - { id: VR-08, field: F-04, rule: Required – at least one of hour or minute entered, type: required, layer: both, trigger: submit, errors: [ERR-08], status: agreed }
+  - { id: VR-09, field: F-04, rule: Hour and minute both entered, type: format, layer: both, trigger: submit, errors: [ERR-09], status: agreed }
+  - { id: VR-10, field: F-04, rule: Hour is an integer 0–23, type: range, layer: both, trigger: submit, errors: [ERR-10], status: agreed }
+  - { id: VR-11, field: F-04, rule: Minute is an integer 0–59, type: range, layer: both, trigger: submit, errors: [ERR-11], status: agreed }
+  - { id: VR-12, field: F-05, rule: Required, type: required, layer: both, trigger: submit, errors: [ERR-12], status: agreed }
+  - { id: VR-13, field: F-05, rule: Matches an active RD-02 country, type: reference, layer: server, trigger: submit, errors: [ERR-13], status: proposed }
+  - { id: VR-14, field: F-06, rule: Required when BR-04 applies, type: required, layer: both, trigger: submit, errors: [ERR-14], status: agreed }
+  - { id: VR-15, field: F-06, rule: Matches the agreed CHED reference format, type: pattern, layer: both, trigger: submit, errors: [ERR-15], status: to-confirm, questions: [Q-02] }
+
+screens:
+  - id: SCR-01
+    name: Consignment details
+    purpose: Capture where and when the consignment will arrive, the country of export and, for RoW countries, the CHED number.
+    evidence: Current HTML prototype in app/part1/v5/views/manual/arrival-details.html, its route and country-autocomplete script, plus the supplied stakeholder-answer fixture. No separate Figma/PDF design or original backlog was supplied. The prototype uses a hard-coded port list, omits the transport-type playback/change link, and triggers CHED for countries outside its static European set rather than an explicit RoW list. Its date check uses the server's local timezone rather than explicitly Europe/London, and the CHED route checks presence only, not the hinted format. The time hint now shows 24-hour examples before and after midday; the date hint example (27 3 2026) is in the past. Error states are evidenced by code, not a separate design artefact.
+    backlog:
+      work_items: [W06-02, W06-03]
+      scenarios: [ARR-01, ARR-02, ARR-03, ARR-04, ARR-05, ARR-06, SUM-08]
+    next: []
+    permissions: Single importer/agent role with no differences on this screen (stakeholder answer). Organisation ownership and live authorization are outside the supplied page evidence.
+    elements:
+      - { id: SCR-01.E01, section: Service, element: Header, component: govuk/header, content: GOV.UK, source: HTML prototype layout, status: agreed }
+      - { id: SCR-01.E02, section: Service, element: Service name, component: govuk/service-navigation, content: Import notification service, source: HTML prototype layout, status: agreed }
+      - { id: SCR-01.E03, section: Service, element: Phase banner, component: govuk/phase-banner, content: "Alpha – This is a new service – your feedback will help us improve it.", source: HTML prototype layout, status: agreed }
+      - { id: SCR-01.E04, section: Navigation, element: Back link, component: govuk/back-link, content: Back, source: HTML prototype layout, status: agreed }
+      - { id: SCR-01.E05, section: Page introduction, element: Caption, component: govuk/caption-l, content: Import notification, source: HTML prototype, status: agreed }
+      - id: SCR-01.E06
+        section: Page introduction
+        element: Page heading
+        component: govuk/heading-l (H1)
+        content: Consignment details
+        source: HTML prototype
+        status: agreed
+        a11y: { name: Consignment details, role: heading level 1, notes: One H1 per page; page title should match }
+      - { id: SCR-01.E07, section: Page introduction, element: Supporting text, component: govuk/body, content: Provide your port of entry and expected date of arrival., source: HTML prototype, status: to-confirm, questions: [Q-14] }
+      - { id: SCR-01.E08, section: Arrival details, element: Sub-heading, component: govuk/heading-m (H2), content: Arrival details, source: HTML prototype, status: agreed }
+      - id: SCR-01.E09
+        section: Arrival details
+        element: Transport type playback with change link
+        component: govuk/summary-list or inset text (to design)
+        content: Not rendered in the current page; stakeholder answer says to show the chosen transport type and a change link.
+        field: F-01
+        source: Stakeholder answer – missing from current HTML
+        status: agreed
+        a11y: { name: "Change transport type", role: link, notes: Visually hidden text completes the Change link }
+      - { id: SCR-01.E10, section: Port of entry, element: Question label, component: govuk/label with heading styling, content: What is the port of entry?, field: F-02, source: HTML prototype, status: agreed }
+      - id: SCR-01.E11
+        section: Port of entry
+        element: Port select
+        component: govuk/select
+        content: Select a destination port
+        field: F-02
+        source: HTML prototype
+        status: agreed
+        states:
+          - { state: default, trigger: Page load, behaviour: Prompt option selected, designed: true }
+          - { state: populated, trigger: BR-08, behaviour: Saved port selected, designed: false }
+          - { state: error, trigger: VR-01 / VR-02 / VR-03, behaviour: Error styling and inline message, designed: false }
+          - { state: empty, trigger: BR-11, behaviour: No ports for transport type message, designed: false }
+          - { state: unavailable, trigger: BR-10, behaviour: Service problem page, designed: false }
+        a11y: { name: What is the port of entry?, role: select, notes: Inline error is referenced by aria-describedby; error summary links to this control }
+      - id: SCR-01.E12
+        section: Arrival date
+        element: Date input (fieldset, legend, hint, day, month, year)
+        component: govuk/date-input
+        content: "Legend: What is the expected date of arrival? Hint: For example, 27 3 2026. Inputs: Day, Month, Year"
+        field: F-03
+        source: HTML prototype
+        status: to-confirm
+        questions: [Q-14]
+        states:
+          - { state: error, trigger: VR-04 to VR-07, behaviour: Group or individual parts highlighted; entered values kept, designed: false }
+        a11y: { name: What is the expected date of arrival?, role: group, notes: Fieldset and legend; hint and error referenced by aria-describedby }
+      - id: SCR-01.E13
+        section: Arrival time
+        element: Time input (fieldset, legend, hint, hour, minute)
+        component: "NEW: time input (date-input pattern with Hour and Minute)"
+        content: "Legend: What time is the expected arrival? Hint: For example, 09:30 or 14:30. Inputs: Hour, Minute"
+        field: F-04
+        source: HTML prototype
+        status: to-confirm
+        questions: [Q-14]
+        states:
+          - { state: error, trigger: VR-08 to VR-11, behaviour: Group or individual parts highlighted; entered values kept, designed: false }
+        a11y: { name: What time is the expected arrival?, role: group, notes: Fieldset and legend; inputmode numeric }
+      - { id: SCR-01.E14, section: Layout, element: Section break, component: govuk/section-break-visible, content: (divider), source: HTML prototype, status: agreed }
+      - { id: SCR-01.E15, section: Additional details, element: Sub-heading, component: govuk/heading-m (H2), content: Additional details, source: HTML prototype, status: to-confirm, questions: [Q-14] }
+      - { id: SCR-01.E16, section: Country of export, element: Question label, component: govuk/label, content: Country of export, field: F-05, source: HTML prototype, status: agreed }
+      - { id: SCR-01.E17, section: Country of export, element: Hint, component: govuk/hint, content: "If the country is outside Europe, you will need to provide a CHED number.", field: F-05, source: HTML prototype, status: to-confirm, questions: [Q-03, Q-14] }
+      - id: SCR-01.E18
+        section: Country of export
+        element: Country select
+        component: "NEW: accessible country autocomplete"
+        content: "Placeholder: Select a country; option values come from the prototype country dataset"
+        field: F-05
+        source: HTML prototype
+        status: agreed
+        states:
+          - { state: error, trigger: VR-12 / VR-13, behaviour: Error styling and inline message, designed: false }
+        a11y: { name: Country of export, role: combobox, notes: Hidden selected value is submitted; results are a listbox; hint and error are referenced by aria-describedby; status is announced in a live region }
+      - id: SCR-01.E19
+        section: CHED number
+        element: CHED question (label, hint, input)
+        component: govuk/input width-20 (conditional)
+        content: "Label: CHED number. Input is shown when the selected country is classified as RoW by the prototype. Hint: For example, CHEDP.GB.2026.1234567."
+        field: F-06
+        source: HTML prototype and stakeholder-answer fixture
+        status: to-confirm
+        questions: [Q-02, Q-03]
+        states:
+          - { state: hidden, trigger: Country not in prototype non-European classification, behaviour: Hidden by the country autocomplete script; route clears the saved CHED value, designed: true }
+          - { state: shown, trigger: BR-04, behaviour: Question appears after the country select, designed: true }
+          - { state: error, trigger: VR-14 / VR-15, behaviour: Error styling and inline message, designed: false }
+        a11y: { name: CHED number, role: textbox, notes: Input follows the country selector in DOM order; hint and inline error are referenced by aria-describedby; dynamic appearance announcement needs confirmation (Q-16) }
+      - { id: SCR-01.E20, section: CHED number, element: Example of CHED format, component: govuk/hint, content: "For example, CHEDP.GB.2026.1234567", field: F-06, source: HTML prototype; stakeholder requests a greyed example, status: to-confirm, questions: [Q-02] }
+      - id: SCR-01.E21
+        section: Form
+        element: Error summary
+        component: govuk/error-summary
+        content: There is a problem
+        source: HTML prototype
+        status: proposed
+        a11y: { name: There is a problem, role: alert, notes: Receives focus on submit; links to each field in error in page order }
+      - id: SCR-01.E22
+        section: Form
+        element: Primary action
+        component: govuk/button
+        content: Save and continue
+        source: HTML prototype
+        status: agreed
+        states:
+          - { state: submitting, trigger: BR-09, behaviour: Further presses ignored until the response returns, designed: false }
+      - { id: SCR-01.E23, section: Footer, element: Manage your prototype link, component: prototype-kit footer link, content: Manage your prototype, source: shared prototype layout, status: deprecated }
+      - { id: SCR-01.E24, section: Footer, element: Clear data link, component: prototype-kit footer link, content: Clear data, source: shared prototype layout, status: deprecated }
+      - { id: SCR-01.E25, section: Footer, element: Licence and copyright, component: govuk/footer, content: "All content is available under the Open Government Licence v3.0, except where otherwise stated. © Crown copyright", source: shared prototype layout, status: agreed }
+
+analytics:
+  - { id: EVT-01, event: page_view, trigger: Page load, element: SCR-01, properties: Page path; journey step, pii: false, status: to-confirm, questions: [Q-06] }
+  - { id: EVT-02, event: validation_error, trigger: Submit with errors, element: SCR-01.E21, properties: ERR IDs shown (never entered values), pii: false, status: to-confirm, questions: [Q-06] }
+
+questions:
+  - { id: Q-01, question: Who owns and supplies the production country-of-export list, and how is it updated?, affects: [RD-02], owner: Product / Data, status: open }
+  - { id: Q-02, question: What exact CHED reference format must be accepted, where does the user obtain it, and is the displayed example illustrative or format-defining?, affects: [F-06, VR-15, SCR-01.E19, SCR-01.E20], owner: Policy / Content, status: open }
+  - { id: Q-03, question: Which countries are on the agreed RoW list that triggers CHED, who owns it and how is it updated?, affects: [RD-03, BR-04, SCR-01.E17], owner: Policy, status: open }
+  - { id: Q-04, question: Is there a maximum advance-notice window for the expected date of arrival?, affects: [BR-12], owner: Policy, status: answered, answer: Stakeholder confirmed no maximum future-arrival window at this time. }
+  - { id: Q-05, question: If the expected date is today, can the expected time be earlier than now in Europe/London?, affects: [BR-06], owner: Policy, status: open }
+  - { id: Q-06, question: Which analytics events are needed for this page? The stakeholder answer is to leave analytics to-confirm., affects: [EVT-01, EVT-02], owner: Performance analyst, status: open }
+  - { id: Q-07, question: What is the Master Data API endpoint and owner for ports and transport-to-port mapping, how often is it refreshed, and how are inactive ports handled?, affects: [RD-01, RD-04], owner: Tech lead, status: open }
+  - { id: Q-08, question: Are the date, time, country and CHED values shown in hints illustrative only and never real defaults?, affects: [SCR-01.E12, SCR-01.E13, SCR-01.E18, SCR-01.E19, SCR-01.E20], owner: Product / Content, status: answered, answer: The current inputs start blank and the hint copy is explicitly introduced as examples; no separate design mock-up was supplied. }
+  - { id: Q-09, question: How do ARR-01 to ARR-06 and SUM-08 map to individual rules? They are currently traced at screen level because the source backlog was not supplied., affects: [SCR-01], owner: BA, status: open }
+  - { id: Q-10, question: What is the approved error copy when a port is not permitted for a transport type or no ports are available?, affects: [ERR-03, ERR-18], owner: Content designer, status: open }
+  - { id: Q-11, question: What should an importer do if the consignment is from a RoW country but they do not yet have a CHED number?, affects: [BR-04, F-06], owner: Policy / Product, status: open }
+  - { id: Q-12, question: How does the CHED question appear in the current prototype?, affects: [SCR-01.E19], owner: Designer / Tech lead, status: answered, answer: The country autocomplete dispatches a change event and JavaScript reveals or hides the CHED group client-side. }
+  - { id: Q-13, question: "Which term is used on this journey: Country of export or Exporting country?", affects: [SCR-01.E16, F-05], owner: Content designer, status: answered, answer: The current prototype uses Country of export. }
+  - { id: Q-14, question: Has content design reviewed the intro, date example, Additional details heading, country hint and CHED example for live use?, affects: [SCR-01.E07, SCR-01.E12, SCR-01.E15, SCR-01.E17, SCR-01.E20], owner: Content designer, status: open }
+  - { id: Q-15, question: Which phase tag and feedback link are shown in the current prototype layout?, affects: [SCR-01.E03], owner: Service owner, status: answered, answer: The shared layout shows the Alpha phase tag and a generic feedback link. }
+  - { id: Q-16, question: Should assistive technology be explicitly notified when the CHED field is revealed after country selection?, affects: [SCR-01.E19], owner: Accessibility / Content, status: open }

@@ -1,0 +1,20 @@
+{
+  "ERR-01": { "message": "Select a port of entry.", "trigger": "VR-01", "display": "summary+inline", "status": "proposed" },
+  "ERR-02": { "message": "Select a port of entry.", "trigger": "VR-02", "display": "summary+inline", "status": "proposed" },
+  "ERR-03": { "message": "Select a port of entry that accepts {transportType} consignments.", "trigger": "VR-03", "display": "summary+inline", "status": "to-confirm", "questions": ["Q-10"] },
+  "ERR-04": { "message": "Enter a valid expected arrival date that is today or in the future.", "trigger": "VR-04", "display": "summary+inline", "status": "proposed" },
+  "ERR-05": { "message": "Enter a valid expected arrival date that is today or in the future.", "trigger": "VR-05", "display": "summary+inline", "status": "proposed" },
+  "ERR-06": { "message": "Enter a valid expected arrival date that is today or in the future.", "trigger": "VR-06", "display": "summary+inline", "status": "proposed" },
+  "ERR-07": { "message": "Enter a valid expected arrival date that is today or in the future.", "trigger": "VR-07", "display": "summary+inline", "status": "proposed" },
+  "ERR-08": { "message": "Enter a valid expected arrival time.", "trigger": "VR-08", "display": "summary+inline", "status": "proposed" },
+  "ERR-09": { "message": "Enter a valid expected arrival time.", "trigger": "VR-09", "display": "summary+inline", "status": "proposed" },
+  "ERR-10": { "message": "Enter a valid expected arrival time.", "trigger": "VR-10", "display": "summary+inline", "status": "proposed" },
+  "ERR-11": { "message": "Enter a valid expected arrival time.", "trigger": "VR-11", "display": "summary+inline", "status": "proposed" },
+  "ERR-12": { "message": "Select a country of export from the list.", "trigger": "VR-12", "display": "summary+inline", "status": "proposed" },
+  "ERR-13": { "message": "Select a country of export from the list.", "trigger": "VR-13", "display": "summary+inline", "status": "proposed" },
+  "ERR-14": { "message": "Enter a CHED number.", "trigger": "VR-14", "display": "summary+inline", "status": "proposed" },
+  "ERR-15": { "message": "Enter the CHED number in the correct format", "trigger": "VR-15", "display": "summary+inline", "status": "to-confirm", "questions": ["Q-02"] },
+  "ERR-16": { "message": "Sorry, there is a problem with the service. Try again later.", "trigger": "system", "display": "page", "status": "proposed" },
+  "ERR-17": { "message": "Sorry, there is a problem with the service. Your answers have not been saved. Try again later.", "trigger": "system", "display": "page", "status": "proposed" },
+  "ERR-18": { "message": "There are no ports of entry for {transportType}. Change the transport type.", "trigger": "BR-11", "display": "inline", "status": "to-confirm", "questions": ["Q-10"] }
+}
