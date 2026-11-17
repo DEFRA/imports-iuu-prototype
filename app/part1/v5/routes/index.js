@@ -2659,16 +2659,32 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const reviewPageUrl = basePath + '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
   const applicableGroups = getGroupForDocument(document.documentType)
-  const taskListGroups = applicableGroups.map((group) => {
+  const taskListItems = applicableGroups.map((group) => {
     const { status, tagClass } = getGroupStatus(group, document)
     const summary = buildGroupSummary(group, document)
-    return {
-      ...group,
-      status,
-      tagClass,
-      statusTagClass: tagClass,
-      summary
+    
+    const taskUrl = basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + group.key + (tablePage > 1 ? '?tablePage=' + tablePage : '')
+    
+    const item = {
+      title: {
+        text: group.title
+      },
+      href: taskUrl,
+      status: {
+        tag: {
+          text: status,
+          classes: tagClass
+        }
+      }
     }
+    
+    if (summary) {
+      item.hint = {
+        text: summary
+      }
+    }
+    
+    return item
   })
 
   res.render('part1/review/review-extraction-a-document-task-list', {
@@ -2676,7 +2692,7 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
     documentIndex,
     totalDocuments: documents.length,
     tablePage,
-    taskListGroups,
+    taskListItems,
     showBackLink: true,
     backLinkHref: reviewPageUrl
   })

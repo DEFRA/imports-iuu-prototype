@@ -19,52 +19,11 @@
       Check each section before you continue.
     </div>
 
-    {% set taskListItems = [] %}
-    {% for group in taskListGroups %}
-      {% set taskUrl = basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + group.key %}
-      {% if tablePage > 1 %}
-        {% set taskUrl = taskUrl + '?tablePage=' + tablePage %}
-      {% endif %}
-      
-      {% if group.summary %}
-        {% set taskItem = {
-          title: {
-            text: group.title
-          },
-          href: taskUrl,
-          hint: {
-            text: group.summary
-          },
-          status: {
-            tag: {
-              text: group.status,
-              classes: group.statusTagClass
-            }
-          }
-        } %}
-      {% else %}
-        {% set taskItem = {
-          title: {
-            text: group.title
-          },
-          href: taskUrl,
-          status: {
-            tag: {
-              text: group.status,
-              classes: group.statusTagClass
-            }
-          }
-        } %}
-      {% endif %}
-      
-      {% set taskListItems = taskListItems + [taskItem] %}
-    {% endfor %}
-
     {{ govukTaskList({
       items: taskListItems
     }) }}
 
-    <form action="{{ basePath }}/review-extraction-a" method="post" class="govuk-!-margin-top-8">
+    <form action="/review-extraction-a" method="post" class="govuk-!-margin-top-8">
       <button class="govuk-button" data-module="govuk-button">
         Save and continue
       </button>
