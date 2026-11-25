@@ -5,12 +5,45 @@ const test = require('node:test')
 const consignments = require('../data/importer-dashboard-consignments')
 const {
   buildDraftSessionData,
+  buildNotificationSpeciesGroups,
   filterAndSortConsignments,
   getDashboardFilters,
   getFilterOptions,
   getSummaryCards,
   getActiveFilterChips
 } = require('./importer-dashboard-service')
+
+test('groups importer species by code and adds subtotals only for codes with multiple species', () => {
+  const groups = buildNotificationSpeciesGroups([
+    {
+      commodityCode: '03024400',
+      species: 'Atlantic mackerel',
+      notificationWeight: '1,200 kg',
+      catchCertificateWeight: 'Not provided'
+    },
+    {
+      commodityCode: '03025419',
+      species: 'Argentine hake',
+      notificationWeight: '1,100 kg',
+      catchCertificateWeight: '1,000 kg'
+    },
+    {
+      commodityCode: '03024400',
+      species: 'Pacific chub mackerel',
+      notificationWeight: '800 kg',
+      catchCertificateWeight: '400 kg'
+    }
+  ])
+
+  assert.deepEqual(groups.map(({ code }) => code), ['03024400', '03025419'])
+  assert.equal(groups[0].species.length, 2)
+  assert.deepEqual(groups[0].subtotals, {
+    notificationWeight: '2,000 kg',
+    catchCertificateWeight: 'Incomplete'
+  })
+  assert.equal(groups[1].species.length, 1)
+  assert.equal(groups[1].subtotals.notificationWeight, '1,100 kg')
+})
 
 test('uses both restored drafts and every dashboard case from part 2', () => {
   assert.deepEqual(consignments.map((item) => item.reference), [

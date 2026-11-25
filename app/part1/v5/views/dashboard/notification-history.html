@@ -1,0 +1,8 @@
+{% extends "app/part1/v5/views/layouts/main.html" %}
+{% from "app/views/components/notification-history.njk" import renderNotificationHistory %}
+{% set pageName = "Notification history" %}
+{% set backLinkHref = returnUrl %}
+
+{% block content %}
+  {{ renderNotificationHistory(consignment.reference, notificationHistory, returnUrl) }}
+{% endblock %}

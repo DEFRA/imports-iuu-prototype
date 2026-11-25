@@ -20,11 +20,11 @@
 
     <div class="govuk-summary-card govuk-!-margin-bottom-6">
       <div class="govuk-summary-card__title-wrapper">
-        <h2 class="govuk-summary-card__title">Arrival details</h2>
+        <h2 class="govuk-summary-card__title">Consignment details</h2>
         <ul class="govuk-summary-card__actions">
           <li class="govuk-summary-card__action">
             <a class="govuk-link" href="{{ basePath }}/arrival-details?returnTo=/review-extraction-a">
-              Change<span class="govuk-visually-hidden"> arrival details</span>
+              Change<span class="govuk-visually-hidden"> consignment details</span>
             </a>
           </li>
         </ul>
@@ -33,12 +33,32 @@
         <dl class="govuk-summary-list govuk-!-margin-bottom-0">
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Port of entry</dt>
-            <dd class="govuk-summary-list__value">{{ arrivalDetails.portOfEntry }}</dd>
+            <dd class="govuk-summary-list__value">{{ consignmentDetails.portOfEntry or "Not provided" }}</dd>
           </div>
           <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Expected date of arrival</dt>
-            <dd class="govuk-summary-list__value">{{ arrivalDetails.expectedDateOfArrival }}</dd>
+            <dt class="govuk-summary-list__key">Expected arrival date and time</dt>
+            <dd class="govuk-summary-list__value">
+              {% if consignmentDetails.expectedDateOfArrival and consignmentDetails.expectedArrivalTime %}
+                {{ consignmentDetails.expectedDateOfArrival }} at {{ consignmentDetails.expectedArrivalTime }}
+              {% elif consignmentDetails.expectedDateOfArrival %}
+                {{ consignmentDetails.expectedDateOfArrival }} (time not provided)
+              {% elif consignmentDetails.expectedArrivalTime %}
+                Date not provided ({{ consignmentDetails.expectedArrivalTime }})
+              {% else %}
+                Not provided
+              {% endif %}
+            </dd>
           </div>
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">Country of export</dt>
+            <dd class="govuk-summary-list__value">{{ consignmentDetails.countryOfExport or "Not provided" }}</dd>
+          </div>
+          {% if consignmentDetails.requiresChed %}
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">CHED reference</dt>
+              <dd class="govuk-summary-list__value">{{ consignmentDetails.chedReference or "Not provided" }}</dd>
+            </div>
+          {% endif %}
         </dl>
       </div>
     </div>
@@ -80,74 +100,51 @@
       </div>
     </div>
 
-    <div class="govuk-summary-card">
-      <div class="govuk-summary-card__title-wrapper">
-        <h2 class="govuk-summary-card__title">Extraction summary</h2>
-      </div>
-      <div class="govuk-summary-card__content">
-        <dl class="govuk-summary-list review-extraction-summary govuk-!-margin-bottom-0">
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">Documents analysed</dt>
-            <dd class="govuk-summary-list__value">{{ extractionSummary.documentsAnalysed }}</dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              <div>Needs review</div>
-              <div class="govuk-hint review-extraction-summary__confidence govuk-!-font-size-16 govuk-!-margin-top-1 govuk-!-margin-bottom-0">Confidence: below 70%</div>
-            </dt>
-            <dd class="govuk-summary-list__value">{{ extractionSummary.needsReviewLowConfidence }}</dd>
-            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--red">Needs review</strong></dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              <div>Needs review</div>
-              <div class="govuk-hint review-extraction-summary__confidence govuk-!-font-size-16 govuk-!-margin-top-1 govuk-!-margin-bottom-0">Confidence: 70–89%</div>
-            </dt>
-            <dd class="govuk-summary-list__value">{{ extractionSummary.needsReviewMediumConfidence }}</dd>
-            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--yellow">Needs review</strong></dd>
-          </div>
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-              <div>Complete</div>
-              <div class="govuk-hint review-extraction-summary__confidence govuk-!-font-size-16 govuk-!-margin-top-1 govuk-!-margin-bottom-0">Confidence: 90% and above</div>
-            </dt>
-            <dd class="govuk-summary-list__value">{{ extractionSummary.complete }}</dd>
-            <dd class="govuk-summary-list__actions"><strong class="govuk-tag govuk-tag--green">Complete</strong></dd>
-          </div>
-        </dl>
-      </div>
-    </div>
-
+  </div>
+  <div class="govuk-grid-column-full">
     <div id="document-summary" class="govuk-!-margin-top-9">
-      <h2 class="govuk-heading-m">Document summary</h2>
+      <h2 id="document-summary-heading" class="govuk-heading-m">Document summary</h2>
       <p class="govuk-body">Showing {{ tableDocuments.length }} of {{ totalDocuments }} extracted documents.</p>
 
-      <table class="govuk-table">
+      <div class="govuk-table__container review-extraction-documents-scroll" role="region" aria-labelledby="document-summary-heading" tabindex="0">
+      <table class="govuk-table review-extraction-documents-table">
+        <colgroup>
+          <col style="width: 24%">
+          <col style="width: 23%">
+          <col style="width: 30%">
+          <col style="width: 16%">
+          <col style="width: 7%">
+        </colgroup>
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Document name</th>
             <th scope="col" class="govuk-table__header">Reference</th>
-            <th scope="col" class="govuk-table__header">Document Number</th>
-            <th scope="col" class="govuk-table__header">Document Type</th>
-            <th scope="col" class="govuk-table__header">Extraction confidence</th>
-            <th scope="col" class="govuk-table__header">Fields Extracted</th>
-            <th scope="col" class="govuk-table__header">Status</th>
+            <th scope="col" class="govuk-table__header">Type</th>
+            <th scope="col" class="govuk-table__header">Fields extracted</th>
+            <th scope="col" class="govuk-table__header"><span class="govuk-visually-hidden">Actions</span></th>
           </tr>
         </thead>
-        <tbody class="govuk-table__body">
-          {% for document in tableDocuments %}
+        {% for group in tableDocumentGroups %}
+          <tbody class="govuk-table__body">
+          {% for document in group.documents %}
             <tr class="govuk-table__row">
-              <td class="govuk-table__cell">
-                <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}?tablePage={{ tablePage }}">{{ document.reference }}</a>
-              </td>
-              <td class="govuk-table__cell">{{ document.documentNumber }}</td>
+              {% if loop.first %}
+                <th scope="rowgroup" rowspan="{{ group.documents.length }}" class="govuk-table__header govuk-!-font-weight-regular">
+                  {{ group.name or "Not available" }}
+                </th>
+              {% endif %}
+              <th scope="row" class="govuk-table__header govuk-!-font-weight-regular">
+                {{ document.documentNumber }}
+              </th>
               <td class="govuk-table__cell">{{ document.documentType }}</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.extractionConfidence }}%</strong></td>
-              <td class="govuk-table__cell">{{ document.fieldsExtractedDisplay }}</td>
-              <td class="govuk-table__cell"><strong class="govuk-tag review-extraction-document-status {{ document.statusTagClass }}">{{ document.statusLabel }}</strong></td>
+              <td class="govuk-table__cell"><strong class="govuk-tag {{ document.extractionConfidenceTagClass }}">{{ document.fieldsExtractedDisplay }}<span class="govuk-visually-hidden"> ({{ document.extractionConfidenceLabel }} extraction confidence)</span></strong></td>
+              <td class="govuk-table__cell govuk-!-text-align-right"><a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}?tablePage={{ tablePage }}">Review<span class="govuk-visually-hidden"> {{ document.documentNumber }}</span></a></td>
             </tr>
           {% endfor %}
-        </tbody>
+          </tbody>
+        {% endfor %}
       </table>
+      </div>
 
       {% if showTablePagination %}
         <nav class="govuk-pagination" aria-label="Document summary pagination">
@@ -183,7 +180,9 @@
         </nav>
       {% endif %}
     </div>
+  </div>
 
+  <div class="govuk-grid-column-two-thirds">
     <form action="{{ basePath }}/review-extraction-a" method="post" class="govuk-!-margin-top-8">
       <button class="govuk-button" data-module="govuk-button">
         Save and continue

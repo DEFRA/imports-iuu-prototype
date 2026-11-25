@@ -1,0 +1,115 @@
+{% extends "app/part1/v5/views/layouts/main.html" %}
+
+{% set pageName="Edit " + groupTitle %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-notification-banner" role="region" aria-labelledby="review-extracted-content-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="review-extracted-content-title">Review extracted content</h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <p class="govuk-body govuk-!-margin-bottom-0">Please review all extracted information carefully. Some extracted values may not match your source documents.</p>
+      </div>
+    </div>
+
+    <span class="govuk-caption-l">{{ document.reference }} — {{ document.documentNumber }}</span>
+    <h1 class="govuk-heading-l">{{ groupTitle }}</h1>
+
+    <form action="{{ basePath }}/review-extraction-a/document/{{ document.id }}/edit-group/{{ groupKey }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}" method="post">
+      {% for section in sections %}
+        {% if section.rows.length > 0 %}
+          <fieldset class="govuk-fieldset govuk-!-margin-bottom-6">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">{{ section.title }}</h2>
+            </legend>
+
+            {% for row in section.rows %}
+              <div class="govuk-form-group{% if row.isMissing %} govuk-form-group--error{% elif row.needsConfidenceCheck %} review-extraction-field-group--low-confidence{% endif %}" data-extraction-field-group data-field-key="{{ row.fieldKey }}" data-field-status="{{ row.fieldStatus }}" data-field-missing="{{ 'true' if row.isMissing else 'false' }}" data-field-error-message="{{ row.errorMessage }}" data-original-value="{{ row.originalValue }}">
+                {% if row.fieldControl == 'date' %}
+                  <fieldset class="govuk-fieldset" role="group"{% if row.describedBy %} aria-describedby="{{ row.describedBy }}"{% endif %}>
+                    <legend class="govuk-fieldset__legend">
+                      <span class="review-extraction-field-label">
+                        <span>{{ row.inputLabel }}</span>
+                        {% if row.fieldStatus %}
+                          <span class="govuk-hint govuk-!-margin-bottom-0{% if row.fieldStatus == 'Manually updated' or row.fieldStatus == 'Manually added' %} review-extraction-field-status--manual{% endif %}" id="{{ row.fieldKey }}-status">{{ row.fieldStatusLabel }}</span>
+                        {% endif %}
+                      </span>
+                    </legend>
+                {% else %}
+                  <div class="review-extraction-field-label">
+                    <label class="govuk-label" for="{{ row.fieldKey }}">
+                      {{ row.inputLabel }}{% if row.suffix %}<span class="govuk-visually-hidden"> in kilograms</span>{% endif %}
+                    </label>
+                    {% if row.fieldStatus %}
+                      <span class="govuk-hint govuk-!-margin-bottom-0{% if row.fieldStatus == 'Manually updated' or row.fieldStatus == 'Manually added' %} review-extraction-field-status--manual{% endif %}" id="{{ row.fieldKey }}-status">{{ row.fieldStatusLabel }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                {% if row.isMissing %}
+                  <p id="{{ row.fieldKey }}-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ row.errorMessage }}</p>
+                {% endif %}
+                {% if row.hint %}
+                  <div class="govuk-hint" id="{{ row.fieldKey }}-hint">{{ row.hint }}</div>
+                {% endif %}
+
+                {% if row.fieldControl == 'date' %}
+                  <div class="govuk-date-input" id="{{ row.fieldKey }}">
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="{{ row.fieldKey }}-day">Day</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2{% if row.isMissing %} govuk-input--error{% endif %}" id="{{ row.fieldKey }}-day" name="{{ row.fieldKey }}-day" type="text" inputmode="numeric" value="{{ row.dateParts.day }}" {% if row.isMissing %}aria-invalid="true"{% endif %}>
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="{{ row.fieldKey }}-month">Month</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-2{% if row.isMissing %} govuk-input--error{% endif %}" id="{{ row.fieldKey }}-month" name="{{ row.fieldKey }}-month" type="text" inputmode="numeric" value="{{ row.dateParts.month }}" {% if row.isMissing %}aria-invalid="true"{% endif %}>
+                      </div>
+                    </div>
+                    <div class="govuk-date-input__item">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label govuk-date-input__label" for="{{ row.fieldKey }}-year">Year</label>
+                        <input class="govuk-input govuk-date-input__input govuk-input--width-4{% if row.isMissing %} govuk-input--error{% endif %}" id="{{ row.fieldKey }}-year" name="{{ row.fieldKey }}-year" type="text" inputmode="numeric" value="{{ row.dateParts.year }}" {% if row.isMissing %}aria-invalid="true"{% endif %}>
+                      </div>
+                    </div>
+                  </div>
+                {% elif row.fieldControl == 'textarea' %}
+                  <textarea class="govuk-textarea{% if row.isMissing %} govuk-textarea--error{% endif %}" id="{{ row.fieldKey }}" name="{{ row.fieldKey }}" rows="{{ row.rows }}" {% if row.describedBy %}aria-describedby="{{ row.describedBy }}"{% endif %} {% if row.isMissing %}aria-invalid="true"{% endif %}>{{ row.value }}</textarea>
+                {% elif row.suffix %}
+                  <div class="govuk-input__wrapper">
+                    <input class="govuk-input{% if row.inputWidth %} govuk-input--width-{{ row.inputWidth }}{% endif %}{% if row.isMissing %} govuk-input--error{% endif %}" id="{{ row.fieldKey }}" name="{{ row.fieldKey }}" type="{{ row.inputType }}" value="{{ row.inputValue }}" {% if row.describedBy %}aria-describedby="{{ row.describedBy }}"{% endif %} {% if row.isMissing %}aria-invalid="true"{% endif %}>
+                    <div class="govuk-input__suffix" aria-hidden="true">{{ row.suffix }}</div>
+                  </div>
+                {% else %}
+                  <input class="govuk-input{% if row.inputWidth %} govuk-input--width-{{ row.inputWidth }}{% endif %}{% if row.isMissing %} govuk-input--error{% endif %}" id="{{ row.fieldKey }}" name="{{ row.fieldKey }}" type="{{ row.inputType }}" value="{{ row.inputValue }}" {% if row.describedBy %}aria-describedby="{{ row.describedBy }}"{% endif %} {% if row.isMissing %}aria-invalid="true"{% endif %}>
+                {% endif %}
+                {% if row.fieldControl == 'date' %}
+                  </fieldset>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </fieldset>
+          {% if not loop.last %}
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      <div class="govuk-button-group">
+        <button class="govuk-button" data-module="govuk-button">
+          Save and return
+        </button>
+        <a class="govuk-link" href="{{ basePath }}/review-extraction-a/document/{{ document.id }}{% if tablePage > 1 %}?tablePage={{ tablePage }}{% endif %}">Cancel</a>
+      </div>
+    </form>
+
+    {% if pagination %}
+      {{ govukPagination(pagination) }}
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

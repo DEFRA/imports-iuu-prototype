@@ -1,6 +1,24 @@
 {% extends "app/part2/v4/views/layouts/main.html" %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
-{% set pageName = "Inspections" %}
+{% set pageName = ("Error: " if errorList.length else "") + "Inspections" %}
+
+{% block bodyEnd %}
+  {{ super() }}
+  {% if errorList.length %}
+    <script>
+      window.addEventListener('load', function () {
+        // Tab fragment navigation can override the error summary's initial focus.
+        const summary = document.querySelector('.govuk-error-summary')
+        summary.setAttribute('tabindex', '-1')
+        summary.focus()
+        summary.addEventListener('blur', function () {
+          summary.removeAttribute('tabindex')
+        }, { once: true })
+      })
+    </script>
+  {% endif %}
+{% endblock %}
 
 {% macro renderSummaryFilterCards(cards) %}
   <div class="inspection-dashboard__summary-grid govuk-!-margin-bottom-6">
@@ -50,7 +68,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro renderFilterPanel(tabId, filters, filterOptions, activeFilterChips) %}
+{% macro renderFilterPanel(tabId, filters, filterOptions, activeFilterChips, dateError) %}
   <form method="get" action="{{ basePath }}/inspections#{{ tabId }}" class="govuk-!-margin-bottom-4" aria-label="Search and filter consignments">
     <input type="hidden" name="tab" value="{{ tabId }}">
     {% for quickFilter in filters.quickFilters %}
@@ -128,11 +146,14 @@
             </label>
             <input class="govuk-input" id="{{ tabId }}-filter-arrival-from" name="filter-arrival-from" type="date" value="{{ filters.arrivalFrom }}">
           </div>
-          <div class="govuk-form-group govuk-!-margin-bottom-3">
+          <div class="govuk-form-group govuk-!-margin-bottom-3{% if dateError %} govuk-form-group--error{% endif %}">
             <label class="govuk-label" for="{{ tabId }}-filter-arrival-to">
               Arrival date to
             </label>
-            <input class="govuk-input" id="{{ tabId }}-filter-arrival-to" name="filter-arrival-to" type="date" value="{{ filters.arrivalTo }}">
+            {% if dateError %}
+              <p id="{{ tabId }}-filter-arrival-to-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ dateError }}</p>
+            {% endif %}
+            <input class="govuk-input{% if dateError %} govuk-input--error{% endif %}" id="{{ tabId }}-filter-arrival-to" name="filter-arrival-to" type="date" value="{{ filters.arrivalTo }}"{% if dateError %} aria-describedby="{{ tabId }}-filter-arrival-to-error"{% endif %}>
           </div>
         </div>
       </fieldset>
@@ -327,6 +348,9 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
+    {% if errorList.length %}
+      {{ govukErrorSummary({ titleText: "There is a problem", errorList: errorList }) }}
+    {% endif %}
     <span class="govuk-caption-l">Signed in as Alex Morgan, Port of Felixstowe Port Health Authority</span>
     <h1 class="govuk-heading-xl">Import Notifications</h1>
     <div class="govuk-inset-text"><a class="govuk-link" href="#" onclick="return false;">Inspection guidance</a> is available to help review documents, identify missing evidence, make referral decisions and record inspection outcomes.</div>
@@ -347,14 +371,14 @@
       </ul>
 
       <div class="govuk-tabs__panel {% if activeTab != 'active' %}govuk-tabs__panel--hidden{% endif %}" id="active">
-        {{ renderFilterPanel('active', dashboardFilters, filterOptions, activeFilterChipsByTab.active) }}
-        {{ renderConsignmentsTable(active, 'Active') }}
+        {{ renderFilterPanel('active', dashboardFilters, filterOptions, activeFilterChipsByTab.active, arrivalToError if activeTab == 'active' else '') }}
+        {% if not errorList.length %}{{ renderConsignmentsTable(active, 'Active') }}{% endif %}
       </div>
 
       <div class="govuk-tabs__panel {% if activeTab != 'completed' %}govuk-tabs__panel--hidden{% endif %}" id="completed">
-        {{ renderFilterPanel('completed', dashboardFilters, filterOptions) }}
+        {{ renderFilterPanel('completed', dashboardFilters, filterOptions, [], arrivalToError if activeTab == 'completed' else '') }}
         {{ renderActiveFilterChips(activeFilterChipsByTab.completed, 'completed') }}
-        {{ renderConsignmentsTable(completed, 'Completed') }}
+        {% if not errorList.length %}{{ renderConsignmentsTable(completed, 'Completed') }}{% endif %}
       </div>
     </div>
 

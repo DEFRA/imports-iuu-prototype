@@ -1,0 +1,30 @@
+{% extends "app/part1/v5/views/layouts/main.html" %}
+
+{% set pageName="Review extracted document" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l">Document {{ documentIndex }} of {{ totalDocuments }}</span>
+    <h1 class="govuk-heading-l">{{ document.reference }} — {{ document.documentNumber }}</h1>
+
+    <div class="govuk-inset-text">
+      Some sections have missing information or we have low confidence in their accuracy.
+      <br>
+      Check each section before you continue.
+    </div>
+
+    {{ govukTaskList({
+      items: taskListItems
+    }) }}
+
+    <form action="/review-extraction-a" method="post" class="govuk-!-margin-top-8">
+      <button class="govuk-button" data-module="govuk-button">
+        Save and continue
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

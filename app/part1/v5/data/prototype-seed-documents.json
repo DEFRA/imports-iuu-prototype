@@ -351,12 +351,12 @@
   },
   {
     "reference": "CC-003",
-    "documentNumber": "608-BFAR12-TPJ-2026-1101-CCC",
+    "documentNumber": "608-BFAR12-TPJ-2026-2087-CCC",
     "documentType": "Catch Certificate",
     "fields": [
       {
         "label": "Document Number",
-        "value": "608-BFAR12-TPJ-2026-1101-CCC"
+        "value": "608-BFAR12-TPJ-2026-2087-CCC"
       },
       {
         "label": "Validating Authority Name",
@@ -1051,12 +1051,12 @@
   },
   {
     "reference": "CC-007",
-    "documentNumber": "ESP/SGCI/AI/2026/103",
+    "documentNumber": "ESP/SGCI/BCN/2026/287",
     "documentType": "Catch Certificate",
     "fields": [
       {
         "label": "Document Number",
-        "value": "ESP/SGCI/AI/2026/103"
+        "value": "ESP/SGCI/BCN/2026/287"
       },
       {
         "label": "Validating Authority Name",
@@ -1226,12 +1226,12 @@
   },
   {
     "reference": "CC-008",
-    "documentNumber": "FRA 2026 CSP 000103",
+    "documentNumber": "FRA 2026 BOU 000217",
     "documentType": "Catch Certificate",
     "fields": [
       {
         "label": "Document Number",
-        "value": "FRA 2026 CSP 000103"
+        "value": "FRA 2026 BOU 000217"
       },
       {
         "label": "Validating Authority Name",
@@ -1576,12 +1576,12 @@
   },
   {
     "reference": "CC-010",
-    "documentNumber": "ESP/SGCI/AI/2026/104",
+    "documentNumber": "ESP/SGCI/VGO/2026/416",
     "documentType": "Catch Certificate",
     "fields": [
       {
         "label": "Document Number",
-        "value": "ESP/SGCI/AI/2026/104"
+        "value": "ESP/SGCI/VGO/2026/416"
       },
       {
         "label": "Validating Authority Name",
@@ -1751,12 +1751,12 @@
   },
   {
     "reference": "CC-011",
-    "documentNumber": "FRA 2026 CSP 000104",
+    "documentNumber": "FRA 2026 LOR 000348",
     "documentType": "Catch Certificate",
     "fields": [
       {
         "label": "Document Number",
-        "value": "FRA 2026 CSP 000104"
+        "value": "FRA 2026 LOR 000348"
       },
       {
         "label": "Validating Authority Name",
@@ -2218,12 +2218,12 @@
   },
   {
     "reference": "PS-004",
-    "documentNumber": "PS-FR-2026-0002",
+    "documentNumber": "PS-FR-2026-0087",
     "documentType": "Processing Statement",
     "fields": [
       {
         "label": "Document Number",
-        "value": "PS-FR-2026-0002"
+        "value": "PS-FR-2026-0087"
       },
       {
         "label": "Processing Country",
@@ -2235,7 +2235,7 @@
       },
       {
         "label": "Catch Certificate Reference",
-        "value": "FRA 2026 CSP 000104"
+        "value": "FRA 2026 LOR 000348"
       },
       {
         "label": "Species",

@@ -6,7 +6,9 @@
 const govukPrototypeKit = require('govuk-prototype-kit')
 const fs = require('fs')
 const path = require('path')
+const mojFilters = require('@ministryofjustice/frontend/moj/filters/all.js')()
 const basePath = '/part1/v5'
+const mojFrontendPath = path.dirname(require.resolve('@ministryofjustice/frontend'))
 const sessionDataDefaults = require('../data/session-data-defaults')
 const originCountries = require('../data/origin-countries')
 const portOfEntryOptions = require('../data/port-of-entry-options')
@@ -14,6 +16,8 @@ const chedPFishCommodityGroups = require('../data/commodities/ched-p-fish-commod
 const viewsPath = path.join(__dirname, '..', 'views')
 const router = govukPrototypeKit.requests.setupRouter(basePath)
 govukPrototypeKit.requests.serveDirectory(basePath + '/assets', path.join(__dirname, '..', 'assets'))
+govukPrototypeKit.requests.serveDirectory(basePath + '/moj-assets', mojFrontendPath)
+govukPrototypeKit.views.addFilter('mojDate', mojFilters.mojDate)
 
 const europeanCountryCodes = new Set([
   'AL', 'AD', 'AT', 'BY', 'BE', 'BA', 'BG', 'HR', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR',
@@ -200,6 +204,8 @@ const sampleDocumentsPath = path.join(__dirname, '..', 'data', 'sample-documents
 const prototypeSeedDocuments = require('../data/prototype-seed-documents.json')
 const importerDashboardConsignments = require('../data/importer-dashboard-consignments')
 const {
+  buildDraftSessionData,
+  buildNotificationSpeciesGroups,
   filterAndSortConsignments,
   getDashboardFilters,
   getFilterOptions,
@@ -208,6 +214,87 @@ const {
 } = require('./importer-dashboard-service')
 const supportedExtractionVariants = new Set(['a', 'b'])
 const reviewExtractionReturnPaths = new Set(['/review-extraction-a'])
+const importerTimelineMonths = new Map([
+  ['january', 0], ['february', 1], ['march', 2], ['april', 3], ['may', 4], ['june', 5],
+  ['july', 6], ['august', 7], ['september', 8], ['october', 9], ['november', 10], ['december', 11]
+])
+
+const getImporterTimelineTimestamp = (value) => {
+  const date = String(value || '').trim()
+  const isoTimestamp = new Date(date)
+  if (!Number.isNaN(isoTimestamp.getTime())) {
+    return isoTimestamp.toISOString()
+  }
+
+  const match = date.match(/^(\d{1,2}) ([A-Za-z]+) (\d{4}) at (\d{2}):(\d{2})$/)
+  if (!match) return ''
+
+  const [, dayText, monthText, yearText, hourText, minuteText] = match
+  const month = importerTimelineMonths.get(monthText.toLowerCase())
+  if (month === undefined) return ''
+
+  const parts = [Number(dayText), month, Number(yearText), Number(hourText), Number(minuteText)]
+  const localTimestamp = new Date(Date.UTC(parts[2], parts[1], parts[0], parts[3], parts[4]))
+  const londonDateFormatter = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23'
+  })
+  const londonDateParts = Object.fromEntries(londonDateFormatter.formatToParts(localTimestamp).map(({ type, value: partValue }) => [type, partValue]))
+  const londonAsUtc = Date.UTC(
+    Number(londonDateParts.year),
+    Number(londonDateParts.month) - 1,
+    Number(londonDateParts.day),
+    Number(londonDateParts.hour),
+    Number(londonDateParts.minute)
+  )
+  const offset = londonAsUtc - localTimestamp.getTime()
+  const timestamp = new Date(localTimestamp.getTime() - offset)
+  const verifiedParts = Object.fromEntries(londonDateFormatter.formatToParts(timestamp).map(({ type, value: partValue }) => [type, partValue]))
+  if (
+    Number(verifiedParts.day) !== parts[0] ||
+    Number(verifiedParts.month) - 1 !== parts[1] ||
+    Number(verifiedParts.year) !== parts[2] ||
+    Number(verifiedParts.hour) !== parts[3] ||
+    Number(verifiedParts.minute) !== parts[4]
+  ) {
+    return ''
+  }
+
+  return timestamp.toISOString()
+}
+
+const buildImporterNotificationHistory = (consignment) => {
+  const events = Array.isArray(consignment.timeline) ? [...consignment.timeline] : []
+  if (!events.length) {
+    events.push({
+      date: consignment.submittedAt,
+      text: consignment.status === 'draft' ? 'Draft saved' : 'Notification submitted'
+    })
+  }
+
+  return events.reverse().map((event) => {
+    const text = String(event.text || '').trim()
+    const timestamp = getImporterTimelineTimestamp(event.date || event.timestamp)
+    if (!text || !timestamp) {
+      throw new Error(`Invalid notification history event for ${consignment.reference}`)
+    }
+
+    return {
+      label: { text },
+      byline: event.byline || {
+        text: text === 'Notification submitted' || text === 'Draft saved' ? 'Importer' : 'Import notification service'
+      },
+      datetime: { timestamp, type: 'datetime' },
+      text,
+      ...(event.html ? { html: event.html } : {})
+    }
+  })
+}
 
 const normalizeReviewExtractionReturnPath = (value) => {
   if (typeof value !== 'string') return ''
@@ -376,10 +463,42 @@ const buildScenarioADocumentTypeMetadata = (documentType) => {
   return { prefix: 'SUPPORT.DOC.GB', productCode: 'Not available', processingReference: 'Not applicable' }
 }
 
-const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTagClass, rows, editedHighConfidenceFieldKeys = []) => {
+const parseScenarioAReviewDate = (value) => {
+  const dateValue = String(value || '').trim()
+  const partialDayFirstMatch = dateValue.match(/^(\d{0,2})\/(\d{0,2})\/(\d{0,4})$/)
+  if (partialDayFirstMatch && partialDayFirstMatch.slice(1).some(Boolean)) {
+    return { day: partialDayFirstMatch[1], month: partialDayFirstMatch[2], year: partialDayFirstMatch[3] }
+  }
+
+  const dayFirstMatch = dateValue.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)
+  if (dayFirstMatch) {
+    return { day: dayFirstMatch[1], month: dayFirstMatch[2], year: dayFirstMatch[3] }
+  }
+
+  const isoMatch = dateValue.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
+  if (isoMatch) {
+    return { day: isoMatch[3], month: isoMatch[2], year: isoMatch[1] }
+  }
+
+  return { day: '', month: '', year: '' }
+}
+
+const createScenarioADetailSection = (
+  key,
+  title,
+  confidenceLabel,
+  confidenceTagClass,
+  rows,
+  editedHighConfidenceFieldKeys = [],
+  manuallyUpdatedFieldKeys = [],
+  manuallyAddedFieldKeys = [],
+  originalFieldValues = {}
+) => {
   const editedHighConfidenceFields = new Set(
     Array.isArray(editedHighConfidenceFieldKeys) ? editedHighConfidenceFieldKeys : []
   )
+  const manuallyUpdatedFields = new Set(Array.isArray(manuallyUpdatedFieldKeys) ? manuallyUpdatedFieldKeys : [])
+  const manuallyAddedFields = new Set(Array.isArray(manuallyAddedFieldKeys) ? manuallyAddedFieldKeys : [])
 
   return {
     key,
@@ -387,15 +506,52 @@ const createScenarioADetailSection = (key, title, confidenceLabel, confidenceTag
     confidenceLabel,
     confidenceTagClass,
     rows: rows.map((row) => {
+      const fieldConfig = (scenarioASectionEditConfigs[key]?.fields || []).find((field) => (
+        field.label.toLowerCase() === String(row.label || '').toLowerCase()
+      ))
       const fieldKey = row.fieldKey || getScenarioAFieldKeyForRow(key, row.label)
       const hasEditedHighConfidence = Boolean(fieldKey && row.value && editedHighConfidenceFields.has(fieldKey))
+      const fieldControl = fieldConfig?.reviewControl || fieldConfig?.control || 'input'
+      const isMissing = !row.value
+      const isManuallyUpdated = !isMissing && manuallyUpdatedFields.has(fieldKey)
+      const isManuallyAdded = !isMissing && manuallyAddedFields.has(fieldKey)
+      const originalValue = originalFieldValues[fieldKey] ?? row.value ?? ''
+      const fieldConfidenceLabel = hasEditedHighConfidence || isManuallyUpdated || isManuallyAdded
+        ? 'High'
+        : (row.fieldConfidenceLabel || confidenceLabel)
+      const fieldStatus = isManuallyAdded
+        ? 'Manually added'
+        : (isManuallyUpdated ? 'Manually updated' : (!isMissing && fieldConfidenceLabel === 'Low' ? 'Low confidence' : ''))
+      const needsConfidenceCheck = fieldStatus === 'Low confidence'
+      const describedBy = [
+        isMissing ? `${fieldKey}-error` : null,
+        fieldStatus ? `${fieldKey}-status` : null,
+        fieldConfig?.hint ? `${fieldKey}-hint` : null
+      ].filter(Boolean).join(' ')
 
       return {
         fieldKey,
         label: row.label,
+        inputLabel: fieldConfig?.inputLabel || row.label,
         value: row.value || '',
-        isMissing: !row.value,
-        fieldConfidenceLabel: hasEditedHighConfidence ? 'High' : (row.fieldConfidenceLabel || confidenceLabel),
+        originalValue,
+        fieldStatusLabel: isManuallyUpdated ? `Updated from: ${originalValue}` : fieldStatus,
+        inputValue: fieldConfig?.suffix === 'kg'
+          ? String(row.value || '').replace(/\s*kg$/i, '').trim()
+          : row.value || '',
+        fieldControl,
+        inputType: fieldConfig?.inputType || 'text',
+        inputWidth: fieldConfig?.width || '',
+        suffix: fieldConfig?.suffix || '',
+        hint: fieldConfig?.hint || '',
+        rows: fieldConfig?.rows || 3,
+        dateParts: fieldControl === 'date' ? parseScenarioAReviewDate(row.value) : null,
+        errorMessage: fieldConfig?.errorMessage || `Enter ${String(fieldConfig?.inputLabel || row.label).toLowerCase()}`,
+        describedBy,
+        isMissing,
+        fieldStatus,
+        needsConfidenceCheck,
+        fieldConfidenceLabel,
         fieldConfidenceTagClass: hasEditedHighConfidence ? 'govuk-tag--green' : (row.fieldConfidenceTagClass || confidenceTagClass)
       }
     })
@@ -440,116 +596,252 @@ const scenarioASectionEditConfigs = {
   'transport-details-from-cc': {
     title: 'Transport details from CC',
     fields: [
-      { key: 'portOfLanding', label: 'Port of Landing', control: 'input' },
-      { key: 'dateOfLanding', label: 'Date of Landing', control: 'input' }
+      { key: 'portOfLanding', label: 'Port of Landing', control: 'input', width: '20' },
+      { key: 'dateOfLanding', label: 'Date of Landing', control: 'input', reviewControl: 'date', hint: 'For example, 31 3 2026.' }
     ]
   },
   'catch-certificate-number': {
     title: 'Catch certificate number',
     fields: [
-      { key: 'documentNumber', label: 'Document number', control: 'input' },
-      { key: 'validatingAuthorityName', label: 'Validating Authority Name', control: 'input' },
-      { key: 'validatingAuthorityAddress', label: 'Validating Authority Address', control: 'textarea', rows: 3 }
+      { key: 'documentNumber', label: 'Document number', control: 'input', width: '20' },
+      { key: 'validatingAuthorityName', label: 'Validating Authority Name', control: 'input', width: '30', hint: 'Enter the full name of the authority that issued the certificate.' },
+      { key: 'validatingAuthorityAddress', label: 'Validating Authority Address', control: 'textarea', rows: 3, hint: 'Include the full address shown on the document.' }
     ]
   },
   species: {
     title: 'Species',
     fields: [
-      { key: 'species', label: 'Species', control: 'input' },
-      { key: 'productCode', label: 'Product code', control: 'input' }
+      { key: 'species', label: 'Species', control: 'input', width: '30' },
+      { key: 'productCode', label: 'Product code', control: 'input', width: '10' }
     ]
   },
   'catch-area': {
     title: 'Catch area',
     fields: [
-      { key: 'catchArea', label: 'Catch Area', control: 'input' },
-      { key: 'catchDateFrom', label: 'Catch Date from', control: 'input' },
-      { key: 'catchDateTo', label: 'Catch Date to', control: 'input' }
+      { key: 'catchArea', label: 'Catch Area', control: 'input', width: '20', hint: 'Enter the FAO area and region shown on the certificate.', errorMessage: 'Enter a catch area' },
+      { key: 'catchDateFrom', label: 'Catch Date from', control: 'input', reviewControl: 'date', hint: 'For example, 31 3 2026.', errorMessage: 'Enter the catch start date' },
+      { key: 'catchDateTo', label: 'Catch Date to', control: 'input', reviewControl: 'date', hint: 'For example, 31 3 2026.', errorMessage: 'Enter the catch end date' }
     ]
   },
   'fishing-gear': {
     title: 'Fishing gear',
     fields: [
-      { key: 'fishingLicenseNumber', label: 'Fishing License No.', control: 'input' },
-      { key: 'fishingGear', label: 'Fishing Gear', control: 'input' }
+      { key: 'fishingLicenseNumber', label: 'Fishing License No.', control: 'input', width: '20' },
+      { key: 'fishingGear', label: 'Fishing Gear', control: 'input', width: '20', hint: 'Enter the gear type or code shown on the certificate.' }
     ]
   },
   'weight-quantity': {
     title: 'Weight/quantity',
     fields: [
-      { key: 'estimatedWeightToBeLandedKg', label: 'Estimated weight to be landed in kg', control: 'input' },
-      { key: 'netCatchWeightKg', label: 'Net catch weight in kg', control: 'input' },
-      { key: 'verifiedWeightLandedKg', label: 'Verified weight landed in kg', control: 'input' }
+      { key: 'estimatedWeightToBeLandedKg', label: 'Estimated weight to be landed in kg', inputLabel: 'Estimated weight to be landed', control: 'input', width: '10', suffix: 'kg' },
+      { key: 'netCatchWeightKg', label: 'Net catch weight in kg', inputLabel: 'Net catch weight', control: 'input', width: '10', suffix: 'kg' },
+      { key: 'verifiedWeightLandedKg', label: 'Verified weight landed in kg', inputLabel: 'Verified weight landed', control: 'input', width: '10', suffix: 'kg' }
     ]
   },
   'vessel-id-and-flag-state': {
     title: 'Vessel ID and flag State',
     fields: [
-      { key: 'vesselName', label: 'Vessel Name', control: 'input' },
-      { key: 'flagHomePortAndRegistrationNumber', label: 'Flag - home port and registration number', control: 'input' },
-      { key: 'callSign', label: 'Call sign', control: 'input' },
-      { key: 'imoNumberOrOtherUniqueIdentifier', label: 'IMO number or other unique identifier', control: 'input' }
+      { key: 'vesselName', label: 'Vessel Name', control: 'input', width: '20' },
+      { key: 'flagHomePortAndRegistrationNumber', label: 'Flag - home port and registration number', control: 'input', width: '30' },
+      { key: 'callSign', label: 'Call sign', control: 'input', width: '10' },
+      { key: 'imoNumberOrOtherUniqueIdentifier', label: 'IMO number or other unique identifier', control: 'input', width: '10' }
     ]
   },
   'exporter-details': {
     title: 'exporter details',
     fields: [
-      { key: 'nameOfExporter', label: 'Name of Exporter', control: 'input' },
-      { key: 'exporterAddress', label: 'Exporter Address', control: 'textarea', rows: 3 }
+      { key: 'nameOfExporter', label: 'Name of Exporter', control: 'input', width: '30' },
+      { key: 'exporterAddress', label: 'Exporter Address', control: 'textarea', rows: 3, hint: 'Include the full address shown on the document.' }
     ]
   },
   'importer-details': {
     title: 'Importer details',
     fields: [
-      { key: 'importerCompany', label: 'Importer Company', control: 'input' },
-      { key: 'importerName', label: 'Importer Name', control: 'input' },
-      { key: 'importerAddress', label: 'Importer address', control: 'textarea', rows: 3 },
-      { key: 'importerEoriNumber', label: 'Importer EORI number', control: 'input' },
-      { key: 'importerContactDetails', label: 'Importer contact details', control: 'textarea', rows: 2 }
+      { key: 'importerCompany', label: 'Importer Company', control: 'input', width: '30' },
+      { key: 'importerName', label: 'Importer Name', control: 'input', width: '20' },
+      { key: 'importerAddress', label: 'Importer address', control: 'textarea', rows: 3, hint: 'Include the full address, including postcode and country.' },
+      { key: 'importerEoriNumber', label: 'Importer EORI number', control: 'input', width: '20' },
+      { key: 'importerContactDetails', label: 'Importer contact details', control: 'textarea', reviewControl: 'input', inputType: 'tel', width: '20', hint: 'Enter a contact telephone number.' }
     ]
   },
   'importer-agent-details': {
     title: 'Importer agent details',
     fields: [
-      { key: 'importerRepresentativeCompany', label: 'Importer Representative Company', control: 'input' },
-      { key: 'importerRepresentativeName', label: 'Importer Representative Name', control: 'input' },
-      { key: 'importerRepresentativeAddress', label: 'Importer Representative address', control: 'textarea', rows: 3 },
-      { key: 'importerRepresentativeEoriNumber', label: 'Importer Representative EORI number', control: 'input' },
-      { key: 'importerRepresentativeContactDetails', label: 'Importer Representative contact details', control: 'textarea', rows: 2 }
+      { key: 'importerRepresentativeCompany', label: 'Importer Representative Company', control: 'input', width: '30' },
+      { key: 'importerRepresentativeName', label: 'Importer Representative Name', control: 'input', width: '20' },
+      { key: 'importerRepresentativeAddress', label: 'Importer Representative address', control: 'textarea', rows: 3, hint: 'Include the full address, including postcode and country.' },
+      { key: 'importerRepresentativeEoriNumber', label: 'Importer Representative EORI number', control: 'input', width: '20' },
+      { key: 'importerRepresentativeContactDetails', label: 'Importer Representative contact details', control: 'textarea', reviewControl: 'input', inputType: 'tel', width: '20', hint: 'Enter a contact telephone number.' }
     ]
   },
   'importer-declaration': {
     title: 'Importer Declaration',
     fields: [
       { key: 'productDescription', label: 'Product Description', control: 'textarea', rows: 2 },
-      { key: 'cnCode', label: 'CN code', control: 'input' },
-      { key: 'importerDeclarationNetWeightKg', label: 'Net weight in kg', control: 'input' },
-      { key: 'netFisheryProductWeightKg', label: 'Net fishery product weight in kg', control: 'input' }
+      { key: 'cnCode', label: 'CN code', control: 'input', width: '10', hint: 'Enter the commodity code shown on the document.' },
+      { key: 'importerDeclarationNetWeightKg', label: 'Net weight in kg', inputLabel: 'Net weight', control: 'input', width: '10', suffix: 'kg' },
+      { key: 'netFisheryProductWeightKg', label: 'Net fishery product weight in kg', inputLabel: 'Net fishery product weight', control: 'input', width: '10', suffix: 'kg' }
     ]
   },
   'transport-details': {
     title: 'Transport details',
     fields: [
-      { key: 'transportName', label: 'Name', control: 'input' },
-      { key: 'transportAddress', label: 'Address', control: 'textarea', rows: 3 },
-      { key: 'meansOfTransportUponArrival', label: 'Means of transport upon arrival', control: 'input' },
-      { key: 'transportDocumentReference', label: 'Transport document reference', control: 'input' },
-      { key: 'countryOfExportationPointOfDeparture', label: 'Country of exportation Port/airport/other point of departure', control: 'input' },
-      { key: 'pointOfDestination', label: 'Point of destination', control: 'input' },
-      { key: 'containerNumbers', label: 'Container Numbers', control: 'input' }
+      { key: 'transportName', label: 'Name', control: 'input', width: '30', hint: 'Enter the name of the person or organisation responsible for transport.' },
+      { key: 'transportAddress', label: 'Address', control: 'textarea', rows: 3, hint: 'Include the full address shown on the transport document.' },
+      { key: 'meansOfTransportUponArrival', label: 'Means of transport upon arrival', control: 'input', width: '20', hint: 'For example, vessel, aircraft or road vehicle.' },
+      { key: 'transportDocumentReference', label: 'Transport document reference', control: 'input', width: '20', hint: 'Enter the bill of lading or other transport reference.' },
+      { key: 'countryOfExportationPointOfDeparture', label: 'Country of exportation Port/airport/other point of departure', control: 'input', width: '30' },
+      { key: 'pointOfDestination', label: 'Point of destination', control: 'input', width: '20' },
+      { key: 'containerNumbers', label: 'Container Numbers', control: 'input', width: '20', hint: 'Separate multiple container numbers with a comma.' }
     ]
   },
   'storage-statement-reference-numbers': {
     title: 'Storage statement reference numbers',
     fields: [
-      { key: 'storageStatementDocumentNumber', label: 'Document number', control: 'input' }
+      { key: 'storageStatementDocumentNumber', label: 'Document number', control: 'input', width: '20', hint: 'Enter the reference number shown on the storage statement.' }
     ]
   },
   'processing-statement-reference-numbers': {
     title: 'Processing statement reference numbers',
     fields: [
-      { key: 'processingStatementReference', label: 'Document number', control: 'input' }
+      { key: 'processingStatementReference', label: 'Document number', control: 'input', width: '20', hint: 'Enter the reference number shown on the processing statement.' }
     ]
+  }
+}
+
+const scenarioASectionGroups = [
+  {
+    key: 'document-reference',
+    title: 'Document reference',
+    sections: ['catch-certificate-number']
+  },
+  {
+    key: 'vessel-info',
+    title: 'Vessel information',
+    sections: ['vessel-id-and-flag-state']
+  },
+  {
+    key: 'catch-details',
+    title: 'Catch details',
+    sections: ['species', 'catch-area', 'fishing-gear', 'weight-quantity']
+  },
+  {
+    key: 'transport-arrival',
+    title: 'Transport & arrival',
+    sections: ['transport-details-from-cc', 'transport-details']
+  },
+  {
+    key: 'exporter-info',
+    title: 'Exporter information',
+    sections: ['exporter-details']
+  },
+  {
+    key: 'importer-info',
+    title: 'Importer information',
+    sections: ['importer-details', 'importer-agent-details']
+  },
+  {
+    key: 'declaration',
+    title: 'Declaration',
+    sections: ['importer-declaration']
+  }
+]
+
+const processingStatementSectionGroups = [
+  {
+    key: 'document-reference',
+    title: 'Document reference',
+    sections: ['processing-statement-reference-numbers']
+  }
+]
+
+const nonManipulationSectionGroups = [
+  {
+    key: 'document-reference',
+    title: 'Document reference',
+    sections: ['storage-statement-reference-numbers']
+  }
+]
+
+const getGroupForDocument = (documentType) => {
+  if (documentType === 'Catch Certificate') {
+    return scenarioASectionGroups
+  } else if (documentType === 'Processing Statement') {
+    return processingStatementSectionGroups
+  } else if (documentType === 'Non-Manipulation Declaration') {
+    return nonManipulationSectionGroups
+  }
+  return []
+}
+
+const getDetailSectionStatus = (section, document) => {
+  const hasMissing = Array.isArray(section.rows) && section.rows.some((row) => row.isMissing)
+  const hasLowConfidence = Array.isArray(section.rows) && section.rows.some((row) => !row.isMissing && row.fieldConfidenceLabel === 'Low')
+
+  if (hasMissing) return { status: 'Missing information', tagClass: 'govuk-tag--red' }
+  if (hasLowConfidence) return { status: 'Low confidence', tagClass: 'govuk-tag--yellow' }
+  return { status: 'Completed', tagClass: 'govuk-tag--green' }
+}
+
+const getGroupStatus = (group, document) => {
+  if (!Array.isArray(document.detailSections)) {
+    return { status: 'Completed', tagClass: 'govuk-tag--green' }
+  }
+
+  const groupSections = document.detailSections.filter((section) => group.sections.includes(section.key))
+  const statuses = groupSections.map((section) => getDetailSectionStatus(section, document))
+
+  const hasMissing = statuses.some((s) => s.status === 'Missing information')
+  const hasLowConfidence = statuses.some((s) => s.status === 'Low confidence')
+
+  if (hasMissing) return { status: 'Missing information', tagClass: 'govuk-tag--red' }
+  if (hasLowConfidence) return { status: 'Low confidence', tagClass: 'govuk-tag--yellow' }
+  return { status: 'Completed', tagClass: 'govuk-tag--green' }
+}
+
+const buildGroupSummary = (group, document) => {
+  if (!Array.isArray(document.detailSections)) {
+    return ''
+  }
+
+  const groupSections = document.detailSections.filter((section) => group.sections.includes(section.key))
+  const missingFields = []
+  const lowConfidenceFields = []
+
+  groupSections.forEach((section) => {
+    if (Array.isArray(section.rows)) {
+      section.rows.forEach((row) => {
+        if (row.isMissing) {
+          missingFields.push(row.label)
+        } else if (row.fieldConfidenceLabel === 'Low') {
+          lowConfidenceFields.push(row.label)
+        }
+      })
+    }
+  })
+
+  const summaryParts = []
+  if (missingFields.length > 0) {
+    summaryParts.push(`${missingFields.length} missing`)
+  }
+  if (lowConfidenceFields.length > 0) {
+    summaryParts.push(`${lowConfidenceFields.length} low confidence`)
+  }
+
+  return summaryParts.join(', ')
+}
+
+const getPreviousAndNextGroupKeys = (currentGroupKey, applicableGroups) => {
+  const groupKeys = applicableGroups.map((g) => g.key)
+  const currentIndex = groupKeys.indexOf(currentGroupKey)
+
+  if (currentIndex === -1) {
+    return { previousKey: null, nextKey: null }
+  }
+
+  return {
+    previousKey: currentIndex > 0 ? groupKeys[currentIndex - 1] : null,
+    nextKey: currentIndex < groupKeys.length - 1 ? groupKeys[currentIndex + 1] : null
   }
 }
 
@@ -560,9 +852,35 @@ const buildScenarioADocumentPresentation = (document) => {
   const editedHighConfidenceFieldKeys = Array.isArray(document.editedHighConfidenceFieldKeys)
     ? document.editedHighConfidenceFieldKeys
     : []
+  const manuallyUpdatedFieldKeys = Array.isArray(document.manuallyUpdatedFieldKeys)
+    ? document.manuallyUpdatedFieldKeys
+    : []
+  const manuallyAddedFieldKeys = Array.isArray(document.manuallyAddedFieldKeys)
+    ? document.manuallyAddedFieldKeys
+    : []
+  const lowConfidenceFieldKeys = new Set(Array.isArray(document.lowConfidenceFieldKeys) ? document.lowConfidenceFieldKeys : [])
 
   const createDetailSection = (key, title, rows) => {
-    return createScenarioADetailSection(key, title, confidenceLabel, confidenceTagClass, rows, editedHighConfidenceFieldKeys)
+    const rowsWithFieldConfidence = rows.map((row) => {
+      const fieldKey = row.fieldKey || getScenarioAFieldKeyForRow(key, row.label)
+      const isLowConfidence = lowConfidenceFieldKeys.has(fieldKey)
+      return {
+        ...row,
+        fieldConfidenceLabel: row.fieldConfidenceLabel || (isLowConfidence ? 'Low' : 'High'),
+        fieldConfidenceTagClass: row.fieldConfidenceTagClass || (isLowConfidence ? 'govuk-tag--yellow' : 'govuk-tag--green')
+      }
+    })
+    return createScenarioADetailSection(
+      key,
+      title,
+      confidenceLabel,
+      confidenceTagClass,
+      rowsWithFieldConfidence,
+      editedHighConfidenceFieldKeys,
+      manuallyUpdatedFieldKeys,
+      manuallyAddedFieldKeys,
+      document.originalFieldValues
+    )
   }
 
   const allDetailSections = [
@@ -753,7 +1071,6 @@ const createScenarioADocument = (index, documentType, confidence, seedData) => {
   }
 
   if (statusKey === scenarioAStatusKeys.needsReviewLowConfidence) {
-    baseRows.productCode = ''
     baseRows.validatingAuthorityName = ''
     baseRows.validatingAuthorityAddress = ''
     baseRows.catchArea = ''
@@ -761,8 +1078,6 @@ const createScenarioADocument = (index, documentType, confidence, seedData) => {
     baseRows.catchDateTo = ''
     baseRows.catchDates = ''
     baseRows.fishingLicenseNumber = ''
-    baseRows.fishingGear = ''
-    baseRows.estimatedWeightToBeLandedKg = ''
     baseRows.netCatchWeightKg = ''
     baseRows.verifiedWeightLandedKg = ''
     baseRows.callSign = ''
@@ -945,8 +1260,19 @@ const applyScenarioADocumentOverride = (document, override = null) => {
   const editedHighConfidenceFieldKeys = Array.isArray(override.__highConfidenceEditedFields)
     ? Array.from(new Set(override.__highConfidenceEditedFields.filter((item) => typeof item === 'string' && item.trim())))
     : []
+  const manuallyUpdatedFieldKeys = Array.isArray(override.__manuallyUpdatedFieldKeys)
+    ? Array.from(new Set(override.__manuallyUpdatedFieldKeys.filter((item) => typeof item === 'string' && item.trim())))
+    : []
+  const manuallyAddedFieldKeys = Array.isArray(override.__manuallyAddedFieldKeys)
+    ? Array.from(new Set(override.__manuallyAddedFieldKeys.filter((item) => typeof item === 'string' && item.trim())))
+    : []
 
   updatedDocument.editedHighConfidenceFieldKeys = editedHighConfidenceFieldKeys
+  updatedDocument.manuallyUpdatedFieldKeys = manuallyUpdatedFieldKeys
+  updatedDocument.manuallyAddedFieldKeys = manuallyAddedFieldKeys
+  updatedDocument.originalFieldValues = Object.fromEntries(
+    (document.detailSections || []).flatMap((section) => section.rows.map((row) => [row.fieldKey, row.value]))
+  )
 
   const extractedFieldOverrides = (override.__extractedFieldOverrides && typeof override.__extractedFieldOverrides === 'object')
     ? override.__extractedFieldOverrides
@@ -991,7 +1317,10 @@ const applyScenarioADocumentOverride = (document, override = null) => {
         confidenceLabel,
         confidenceTagClass,
         mergedRows,
-        editedHighConfidenceFieldKeys
+        editedHighConfidenceFieldKeys,
+        manuallyUpdatedFieldKeys,
+        manuallyAddedFieldKeys,
+        updatedDocument.originalFieldValues
       )
     ]
 
@@ -1005,16 +1334,36 @@ const applyScenarioADocumentOverride = (document, override = null) => {
 }
 
 const buildScenarioADocuments = (seedData) => {
+  const frenchDocumentFile = 'Ocean_Harvest_France_catch_and_processing_pack_2027.pdf'
+  const spanishDocumentFile = 'Spain_catch_processing_and_transit_document_pack_2027.pdf'
+  const philippineDocumentFile = 'Philippines_tuna_catch_pack_2027.pdf'
+  const exampleDocumentFiles = {
+    'CC-001': spanishDocumentFile,
+    'CC-004': spanishDocumentFile,
+    'CC-007': 'catch_certificate_Barcelona_287.pdf',
+    'CC-010': 'catch_cert_Vigo_416.pdf',
+    'PS-001': spanishDocumentFile,
+    'NMD-001': 'Spain_transit_declaration_0001.pdf',
+    'CC-002': frenchDocumentFile,
+    'CC-005': frenchDocumentFile,
+    'CC-008': 'Boulogne_catch_certificate_000217.pdf',
+    'CC-011': 'Lorient_catch_certificate_000348.pdf',
+    'PS-002': frenchDocumentFile,
+    'PS-004': 'processing_statement_FR_0087.pdf',
+    'CC-003': 'tuna_catch_certificate_2087.pdf',
+    'CC-006': philippineDocumentFile,
+    'CC-009': philippineDocumentFile,
+    'CC-012': philippineDocumentFile,
+    'PS-003': 'processing_statement_PH_0001.pdf',
+    'NMD-002': 'transit_declaration_PT.pdf'
+  }
   const lowConfidenceMissingFields = [
     'Validating Authority Name',
     'Validating Authority Address',
-    'Product Code',
     'Catch Area',
     'Catch Date From',
     'Catch Date To',
     'Fishing License No.',
-    'Fishing Gear',
-    'Estimated Weight To Be Landed In Kg',
     'Net Catch Weight In Kg',
     'Verified Weight Landed In Kg',
     'Flag - Home Port And Registration Number',
@@ -1048,11 +1397,13 @@ const buildScenarioADocuments = (seedData) => {
   const documentStates = {
     'CC-001': {
       confidence: 43,
-      missingFields: lowConfidenceMissingFields
+      missingFields: lowConfidenceMissingFields,
+      lowConfidenceFieldKeys: ['productCode', 'fishingGear', 'estimatedWeightToBeLandedKg']
     },
     'CC-002': {
       confidence: 41,
-      missingFields: lowConfidenceMissingFields
+      missingFields: lowConfidenceMissingFields,
+      lowConfidenceFieldKeys: ['productCode', 'fishingGear', 'estimatedWeightToBeLandedKg']
     },
     'CC-003': {
       confidence: 79,
@@ -1083,10 +1434,14 @@ const buildScenarioADocuments = (seedData) => {
       ...document,
       reference: seedDocument.reference,
       documentNumber: seedDocument.documentNumber,
+      sourceFileName: exampleDocumentFiles[seedDocument.reference] ||
+        seedDocument.documentType.toLowerCase().replace(/ /g, '_') + '_' +
+        seedDocument.documentNumber.replace(/[ /]/g, '-') + '.pdf',
       referenceNumber: seedDocument.documentNumber,
       fieldsExtracted,
       totalFields: seedDocument.fields.length,
       fieldsExtractedDisplay: fieldsExtracted + '/' + seedDocument.fields.length,
+      lowConfidenceFieldKeys: state.lowConfidenceFieldKeys || [],
       detailSections: [{
         key: 'extracted-fields',
         title: seedDocument.documentType + ' details',
@@ -1577,11 +1932,88 @@ router.get('/dashboard/drafts/:reference', (req, res) => {
     return res.redirect('/dashboard?variant=' + variant)
   }
 
-  return res.render('part1/dashboard/notification-not-available', {
+  const commodityCodes = draft.commodityCodes || [draft.commodityCode]
+  const importedSpecies = draft.importedSpecies?.length
+    ? draft.importedSpecies
+    : [{
+        species: draft.speciesSummary || draft.species || 'Not provided',
+        declarationStatus: 'Not provided',
+        commodityCode: commodityCodes.filter(Boolean).join(', ') || 'Not provided',
+        notificationWeight: draft.weight || 'Not provided',
+        catchCertificateWeight: draft.catchCertificateWeight || 'Not provided'
+      }]
+  const draftDetails = {
+    ...draft,
+    isDraft: true,
+    transport: draft.transport || 'Not provided',
+    catchArea: draft.catchArea || 'Not provided',
+    importedSpecies,
+    speciesGroups: buildNotificationSpeciesGroups(importedSpecies),
+    timeline: [{ date: draft.submittedDisplay || 'Not provided', text: 'Draft saved' }]
+  }
+  const reference = encodeURIComponent(draft.reference)
+  const historyUrl = `${basePath}/dashboard/drafts/${reference}/history?variant=${variant}`
+  const notificationHistory = buildImporterNotificationHistory(draftDetails)
+
+  return res.render('part1/dashboard/notification', {
     variant,
-    reference: draft.reference,
-    dashboardUrl: `${basePath}/dashboard?variant=${variant}&tab=drafts#drafts`
+    dashboardUrl: `${basePath}/dashboard?variant=${variant}&tab=drafts#drafts`,
+    recentChange: notificationHistory[0],
+    consignment: {
+      ...draftDetails,
+      historyUrl,
+      continueUrl: `${basePath}/dashboard/drafts/${encodeURIComponent(draft.reference)}/continue?variant=${variant}`
+    }
   })
+})
+
+router.get('/dashboard/drafts/:reference/continue', (req, res) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const draft = importerDashboardConsignments.find((item) => (
+    item.status === 'draft' && item.reference === req.params.reference
+  ))
+
+  if (!draft) {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  Object.assign(req.session.data, buildDraftSessionData(draft))
+  return res.redirect('/review-extraction-a')
+})
+
+const renderImporterNotificationHistory = (req, res, isDraft) => {
+  const variant = getDashboardVariant(req.query.variant) || 'a'
+  const userCreatedConsignments = Array.isArray(req.session.data?.userCreatedConsignments)
+    ? req.session.data.userCreatedConsignments
+    : []
+  const allConsignments = [...importerDashboardConsignments, ...userCreatedConsignments]
+  const consignment = allConsignments.find((item) => (
+    item.reference === req.params.reference && (item.status === 'draft') === isDraft
+  ))
+
+  if (!consignment || consignment.isAvailable === false || consignment.detailPageAvailable === false) {
+    return res.redirect('/dashboard?variant=' + variant)
+  }
+
+  const reference = encodeURIComponent(consignment.reference)
+  const detailsUrl = isDraft
+    ? `${basePath}/dashboard/drafts/${reference}?variant=${variant}`
+    : `${basePath}/dashboard/notifications/${reference}?variant=${variant}`
+
+  return res.render('part1/dashboard/notification-history', {
+    variant,
+    consignment,
+    notificationHistory: buildImporterNotificationHistory(consignment),
+    returnUrl: detailsUrl
+  })
+}
+
+router.get('/dashboard/drafts/:reference/history', (req, res) => {
+  return renderImporterNotificationHistory(req, res, true)
+})
+
+router.get('/dashboard/notifications/:reference/history', (req, res) => {
+  return renderImporterNotificationHistory(req, res, false)
 })
 
 router.get('/dashboard/notifications/:reference', (req, res) => {
@@ -1615,10 +2047,18 @@ router.get('/dashboard/notifications/:reference', (req, res) => {
       }
     })
   }))
+  const notificationHistory = buildImporterNotificationHistory(consignment)
+  const historyUrl = `${basePath}/dashboard/notifications/${encodeURIComponent(consignment.reference)}/history?variant=${variant}`
 
   res.render('part1/dashboard/notification', {
     variant,
-    consignment: { ...consignment, evidenceSections }
+    recentChange: notificationHistory[0],
+    consignment: {
+      ...consignment,
+      evidenceSections,
+      historyUrl,
+      speciesGroups: buildNotificationSpeciesGroups(consignment.importedSpecies)
+    }
   })
 })
 
@@ -1923,7 +2363,7 @@ router.post('/arrival-details', (req, res) => {
   data['country-of-export-region'] = getCountryExportRegion(data['country-of-export'])
   data['ched-number'] = data['country-of-export-region'] === 'row' ? String(req.body['ched-number'] || '').trim() : ''
   if (data['country-of-export-region'] === 'row' && !data['ched-number']) {
-    addError('ched-number', 'ched-number', 'Enter a CHED number.')
+    addError('ched-number', 'ched-number', 'Enter a CHED reference.')
   }
 
   if (errorList.length) {
@@ -1997,6 +2437,10 @@ router.post('/commodity-details', (req, res) => {
     }
   }
 
+  if (action !== 'add-another' && hasAnyValue && !errorList.length) {
+    addError('add-commodity', 'Add or remove your commodity before continuing.')
+  }
+
   data['commodity-entry-code'] = commodityCode
   data['commodity-entry-species'] = species
   data['commodity-entry-weight'] = weight
@@ -2005,19 +2449,16 @@ router.post('/commodity-details', (req, res) => {
     return res.status(400).render('part1/extraction/commodity-details', { errors, errorList })
   }
 
-  if (hasAnyValue) {
+  if (action === 'add-another') {
     data['commodity-details-list'].push({
       commodityCode,
       species,
       weight
     })
-  }
 
-  data['commodity-entry-code'] = ''
-  data['commodity-entry-species'] = ''
-  data['commodity-entry-weight'] = ''
-
-  if (action === 'add-another') {
+    data['commodity-entry-code'] = ''
+    data['commodity-entry-species'] = ''
+    data['commodity-entry-weight'] = ''
     return res.redirect('/commodity-details')
   }
 
@@ -2445,23 +2886,36 @@ router.get('/review-extraction-a', (req, res) => {
 
     return left.reference.localeCompare(right.reference)
   })
+  const groupDocuments = (items) => {
+    const groups = new Map()
+    for (const document of items) {
+      const key = document.sourceFileName || document.id
+      if (!groups.has(key)) groups.set(key, { name: document.sourceFileName, documents: [] })
+      groups.get(key).documents.push(document)
+    }
+    return Array.from(groups.values())
+  }
+  const groupedTableDocuments = groupDocuments(sortedTableDocuments).flatMap((group) => group.documents)
   const totalTablePages = Math.max(1, Math.ceil(totalDocuments / documentsPerPage))
   const requestedTablePage = parseInt(req.query.tablePage, 10)
   const tablePage = Number.isNaN(requestedTablePage)
     ? 1
     : Math.min(Math.max(requestedTablePage, 1), totalTablePages)
   const tableStart = (tablePage - 1) * documentsPerPage
-  const tableDocuments = sortedTableDocuments.slice(tableStart, tableStart + documentsPerPage)
-  const fallbackPortOfEntry = 'Grimsby'
-  const fallbackExpectedArrivalDate = '12/12/2026'
+  const tableDocuments = groupedTableDocuments.slice(tableStart, tableStart + documentsPerPage)
+  const tableDocumentGroups = groupDocuments(tableDocuments)
   const arrivalDay = String(data['arrival-date-day'] || '').trim()
   const arrivalMonth = String(data['arrival-date-month'] || '').trim()
   const arrivalYear = String(data['arrival-date-year'] || '').trim()
   const hasEnteredArrivalDate = Boolean(arrivalDay && arrivalMonth && arrivalYear)
   const expectedDateOfArrival = hasEnteredArrivalDate
     ? [arrivalDay.padStart(2, '0'), arrivalMonth.padStart(2, '0'), arrivalYear].join('/')
-    : fallbackExpectedArrivalDate
-  const portOfEntry = data['destination-port'] || fallbackPortOfEntry
+    : ''
+  const arrivalHour = String(data['arrival-time-hour'] || '').trim()
+  const arrivalMinute = String(data['arrival-time-minute'] || '').trim()
+  const expectedArrivalTime = arrivalHour && arrivalMinute
+    ? arrivalHour.padStart(2, '0') + ':' + arrivalMinute.padStart(2, '0')
+    : ''
   const commodityDetails = Array.isArray(data['commodity-details-list']) ? data['commodity-details-list'] : []
 
   const buildReviewExtractionAUrl = (summaryPage) => {
@@ -2483,6 +2937,7 @@ router.get('/review-extraction-a', (req, res) => {
     extractionSummary: data['scenario-a-summary'],
     totalDocuments,
     tableDocuments,
+    tableDocumentGroups,
     tablePage,
     totalTablePages,
     showTablePagination: totalDocuments > documentsPerPage,
@@ -2491,9 +2946,13 @@ router.get('/review-extraction-a', (req, res) => {
     tableNextUrl: tablePage < totalTablePages ? buildReviewExtractionAUrl(tablePage + 1) + '#document-summary' : '',
     commodityDetails,
     draftReference: data['dashboard-draft-reference'],
-    arrivalDetails: {
-      portOfEntry,
-      expectedDateOfArrival
+    consignmentDetails: {
+      portOfEntry: data['destination-port'],
+      expectedDateOfArrival,
+      expectedArrivalTime,
+      countryOfExport: data['country-of-export'],
+      requiresChed: getCountryExportRegion(data['country-of-export']) === 'row',
+      chedReference: data['ched-number']
     }
   })
 })
@@ -2522,14 +2981,41 @@ router.get('/review-extraction-a/document/:documentId', (req, res) => {
   const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
   const reviewPageUrl = basePath + '/review-extraction-a' + (tablePage > 1 ? '?tablePage=' + tablePage : '') + '#document-summary'
 
-  const documentTemplate = getScenarioADocumentTemplate(document.documentType)
+  const applicableGroups = getGroupForDocument(document.documentType)
+  const taskListItems = applicableGroups.map((group) => {
+    const { status, tagClass } = getGroupStatus(group, document)
+    const summary = buildGroupSummary(group, document)
+    
+    const taskUrl = basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + group.key + (tablePage > 1 ? '?tablePage=' + tablePage : '')
+    
+    const item = {
+      title: {
+        text: group.title
+      },
+      href: taskUrl,
+      status: {
+        tag: {
+          text: status,
+          classes: tagClass
+        }
+      }
+    }
+    
+    if (summary) {
+      item.hint = {
+        text: summary
+      }
+    }
+    
+    return item
+  })
 
-  res.render(documentTemplate, {
+  res.render('part1/review/review-extraction-a-document-task-list', {
     document,
     documentIndex,
     totalDocuments: documents.length,
     tablePage,
-    reviewPageUrl,
+    taskListItems,
     showBackLink: true,
     backLinkHref: reviewPageUrl
   })
@@ -2770,6 +3256,159 @@ router.post('/review-extraction-a/document/:documentId/change', (req, res) => {
   return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
 })
 
+router.get('/review-extraction-a/document/:documentId/edit-group/:groupKey', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = 'a'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+
+  if (!document) {
+    return res.redirect('/review-extraction-a#document-summary')
+  }
+
+  const applicableGroups = getGroupForDocument(document.documentType)
+  const group = applicableGroups.find((g) => g.key === req.params.groupKey)
+
+  if (!group) {
+    return res.redirect('/review-extraction-a/document/' + document.id)
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  const sections = Array.isArray(document.detailSections)
+    ? document.detailSections.filter((section) => group.sections.includes(section.key))
+    : []
+
+  const { previousKey: previousGroupKey, nextKey: nextGroupKey } = getPreviousAndNextGroupKeys(req.params.groupKey, applicableGroups)
+  const previousGroup = applicableGroups.find((g) => g.key === previousGroupKey)
+  const nextGroup = applicableGroups.find((g) => g.key === nextGroupKey)
+
+  const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+
+  const pagination = {}
+  if (previousGroup) {
+    pagination.previous = {
+      href: basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + previousGroupKey + tablePageQuery,
+      text: 'Previous',
+      labelText: previousGroup.title
+    }
+  }
+  if (nextGroup) {
+    pagination.next = {
+      href: basePath + '/review-extraction-a/document/' + document.id + '/edit-group/' + nextGroupKey + tablePageQuery,
+      text: 'Next',
+      labelText: nextGroup.title
+    }
+  }
+
+  res.render('part1/review/review-extraction-a-document-edit-group', {
+    document,
+    groupKey: req.params.groupKey,
+    groupTitle: group.title,
+    sections,
+    pagination: Object.keys(pagination).length > 0 ? pagination : null,
+    tablePage,
+    backLinkHref: basePath + '/review-extraction-a/document/' + document.id + tablePageQuery,
+    showBackLink: true
+  })
+})
+
+router.post('/review-extraction-a/document/:documentId/edit-group/:groupKey', (req, res) => {
+  const data = req.session.data
+  data['extraction-variant'] = 'a'
+  applyExtractionVariantData(data)
+
+  const documents = Array.isArray(data['scenario-a-documents']) ? data['scenario-a-documents'] : []
+  const document = documents.find((item) => item.id === req.params.documentId)
+
+  if (!document) {
+    return res.redirect('/review-extraction-a#document-summary')
+  }
+
+  const applicableGroups = getGroupForDocument(document.documentType)
+  const group = applicableGroups.find((g) => g.key === req.params.groupKey)
+
+  if (!group) {
+    return res.redirect('/review-extraction-a/document/' + document.id)
+  }
+
+  const requestedTablePage = parseInt(req.query.tablePage, 10)
+  const tablePage = Number.isNaN(requestedTablePage) ? 1 : Math.max(requestedTablePage, 1)
+
+  const normalizeValue = (value) => String(value || '').trim()
+
+  if (!data['scenario-a-document-overrides'] || typeof data['scenario-a-document-overrides'] !== 'object') {
+    data['scenario-a-document-overrides'] = {}
+  }
+
+  const existingOverride = (data['scenario-a-document-overrides'][document.id] && typeof data['scenario-a-document-overrides'][document.id] === 'object')
+    ? data['scenario-a-document-overrides'][document.id]
+    : {}
+  const existingHighConfidenceEditedFields = Array.isArray(existingOverride.__highConfidenceEditedFields)
+    ? existingOverride.__highConfidenceEditedFields
+    : []
+  const manuallyUpdatedFieldKeys = new Set(Array.isArray(existingOverride.__manuallyUpdatedFieldKeys)
+    ? existingOverride.__manuallyUpdatedFieldKeys
+    : [])
+  const manuallyAddedFieldKeys = new Set(Array.isArray(existingOverride.__manuallyAddedFieldKeys)
+    ? existingOverride.__manuallyAddedFieldKeys
+    : [])
+
+  const groupOverride = {}
+  const newlyPromotedFieldKeys = []
+
+  for (const sectionKey of group.sections) {
+    const sectionConfig = scenarioASectionEditConfigs[sectionKey]
+    if (sectionConfig) {
+      for (const field of sectionConfig.fields) {
+        let fieldValue
+        if (field.reviewControl === 'date') {
+          const dateParts = [req.body[field.key + '-day'], req.body[field.key + '-month'], req.body[field.key + '-year']]
+            .map(normalizeValue)
+          fieldValue = dateParts.some(Boolean) ? dateParts.join('/') : ''
+        } else {
+          fieldValue = normalizeValue(req.body[field.key])
+        }
+        groupOverride[field.key] = fieldValue
+
+        const previousValue = normalizeValue(document[field.key])
+        const comparablePreviousValue = field.suffix === 'kg'
+          ? previousValue.replace(/\s*kg$/i, '').trim()
+          : previousValue
+        const valueChanged = fieldValue !== comparablePreviousValue
+
+        if (valueChanged && !manuallyUpdatedFieldKeys.has(field.key) && !manuallyAddedFieldKeys.has(field.key)) {
+          if (comparablePreviousValue) {
+            manuallyUpdatedFieldKeys.add(field.key)
+          } else {
+            manuallyAddedFieldKeys.add(field.key)
+          }
+        }
+
+        if (fieldValue && valueChanged) {
+          newlyPromotedFieldKeys.push(field.key)
+        }
+      }
+    }
+  }
+
+  const highConfidenceEditedFields = Array.from(new Set([...existingHighConfidenceEditedFields, ...newlyPromotedFieldKeys]))
+
+  data['scenario-a-document-overrides'][document.id] = {
+    ...existingOverride,
+    ...groupOverride,
+    __highConfidenceEditedFields: highConfidenceEditedFields,
+    __manuallyUpdatedFieldKeys: Array.from(manuallyUpdatedFieldKeys),
+    __manuallyAddedFieldKeys: Array.from(manuallyAddedFieldKeys)
+  }
+
+  const tablePageQuery = tablePage > 1 ? '?tablePage=' + tablePage : ''
+  return res.redirect('/review-extraction-a/document/' + document.id + tablePageQuery)
+})
+
 // -------------------------------------------------------
 // Review extraction — Scenario A (multiple documents)
 // -------------------------------------------------------
@@ -2786,38 +3425,17 @@ router.post('/review-extraction-b', (req, res) => {
 
 router.post('/declaration', (req, res) => {
   const data = req.session.data
-  const confirmationFields = [
-    {
-      key: 'catch-certificates-confirmed',
-      message: 'Confirm Catch Certificates'
-    },
-    {
-      key: 'processing-statements-confirmed',
-      message: 'Confirm Processing Statements'
-    },
-    {
-      key: 'non-manipulation-declarations-confirmed',
-      message: 'Confirm Non-Manipulation Declarations'
-    }
-  ]
-  const errorList = []
+  const confirmation = req.body['documents-confirmed']
+  const isConfirmed = Array.isArray(confirmation)
+    ? confirmation.includes('confirmed')
+    : confirmation === 'confirmed'
+  data['documents-confirmed'] = isConfirmed ? 'confirmed' : ''
+  data['declaration-confirmed'] = isConfirmed ? 'confirmed' : ''
 
-  for (const field of confirmationFields) {
-    const confirmation = req.body[field.key]
-    const isConfirmed = Array.isArray(confirmation)
-      ? confirmation.includes('confirmed')
-      : confirmation === 'confirmed'
-    data[field.key] = isConfirmed ? 'confirmed' : ''
-
-    if (!isConfirmed) {
-      errorList.push({ id: field.key, message: field.message })
-    }
-  }
-
-  data['declaration-confirmed'] = errorList.length === 0 ? 'confirmed' : ''
-
-  if (errorList.length) {
-    return res.status(400).render('part1/submission/declaration', { errorList })
+  if (!isConfirmed) {
+    return res.status(400).render('part1/submission/declaration', {
+      errorList: [{ id: 'documents-confirmed', message: 'Confirm the declaration above' }]
+    })
   }
 
   if (!data['reference-number']) {

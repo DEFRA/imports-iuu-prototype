@@ -758,7 +758,6 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  margin-bottom: 40px;
 }
 
 .importer-notification__summary-card {
@@ -770,76 +769,23 @@
   width: 32%;
 }
 
-.importer-notification__evidence-groups {
-  margin-bottom: 24px;
-}
-
-.importer-notification__evidence-group {
-  margin-bottom: 22px;
-}
-
-.importer-notification__evidence-group:last-child {
+.importer-notification__species-table {
+  table-layout: fixed;
+  min-width: 760px;
   margin-bottom: 0;
 }
 
-.importer-notification__evidence-group-heading {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+.importer-notification__species-table .govuk-table__header:last-child,
+.importer-notification__species-table .govuk-table__cell:last-child {
+  padding-right: 8px;
 }
 
-.importer-notification__provided-tag {
-  letter-spacing: 0;
-  margin-bottom: 0;
-  text-transform: none;
+.importer-notification__recent-change .moj-timeline::before {
+  height: calc(100% - 20px);
 }
 
-.importer-notification__provided-tag--provided {
-  background-color: #d2e2f1;
-  color: #003078;
-}
-
-.importer-notification__provided-tag--missing {
-  background-color: #f3f2f1;
-  color: #505a5f;
-}
-
-.importer-notification__evidence-reference-list {
-  border-left: 2px solid #b1b4b6;
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0 0 0 14px;
-}
-
-.importer-notification__evidence-reference-item {
-  margin-bottom: 8px;
-}
-
-.importer-notification__evidence-reference-item:last-child {
-  margin-bottom: 0;
-}
-
-.importer-notification__timeline {
-  border-left: 4px solid #b1b4b6;
-  padding-left: 24px;
-}
-
-.importer-notification__timeline li {
-  position: relative;
-  margin-bottom: 24px;
-}
-
-.importer-notification__timeline li::before {
-  position: absolute;
-  top: 5px;
-  left: -33px;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #505a5f;
-  border-radius: 50%;
-  background: #ffffff;
-  content: "";
+.importer-notification__recent-change .moj-timeline__item {
+  padding-bottom: 10px;
 }
 
 @media (max-width: 48.0525em) {
@@ -948,6 +894,21 @@
 
 .review-extraction-document-status {
   white-space: nowrap;
+}
+
+.review-extraction-documents-table {
+  table-layout: fixed;
+  min-width: 960px;
+}
+
+.review-extraction-documents-table th,
+.review-extraction-documents-table td {
+  overflow-wrap: anywhere;
+}
+
+.review-extraction-documents-table th:not(:last-child),
+.review-extraction-documents-table td:not(:last-child) {
+  padding-right: 30px;
 }
 
 @media (min-width: 40.0625em) {
@@ -1088,4 +1049,49 @@
 
 .importer-search [hidden] {
   display: none;
+}
+
+.govuk-task-list__status {
+  flex-shrink: 0;
+}
+
+.govuk-task-list__status .govuk-tag {
+  white-space: nowrap;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.review-extraction-field-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.review-extraction-field-label .govuk-label {
+  margin-bottom: 0;
+}
+
+.review-extraction-field-label .govuk-hint {
+  font-size: 16px;
+  line-height: 1.25;
+  flex-shrink: 0;
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.govuk-fieldset__legend .review-extraction-field-label {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.govuk-fieldset[role="group"] > .govuk-fieldset__legend {
+  width: 100%;
+}
+
+.review-extraction-field-group--low-confidence {
+  border-left: 5px solid #f47738;
+  padding-left: 12px;
 }

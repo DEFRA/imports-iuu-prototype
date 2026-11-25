@@ -2,7 +2,7 @@
 {% from "app/part2/v4/views/inspection/components/evidence-summary-list.njk" import renderEvidenceSummaryList %}
 {% from "app/part2/v4/views/inspection/components/commodity-weight-comparison.njk" import renderCommodityWeightComparison %}
 {% from "app/part2/v4/views/inspection/components/inspection-action-form.njk" import renderInspectionActionForm %}
-{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+{% from "app/views/components/notification-history.njk" import renderRecentChanges %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
@@ -109,14 +109,7 @@
       </div>
     {% endif %}
 
-    <section class="inspection-overview__recent-change govuk-!-margin-bottom-8" aria-labelledby="recent-change-heading">
-      <h2 class="govuk-heading-m" id="recent-change-heading">Recent changes</h2>
-      {{ mojTimeline({ headingLevel: 3, classes: "inspection-overview__recent-change-timeline", items: [recentChange] }) }}
-      {% if recentChange.completionCertificate %}
-        <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible govuk-!-margin-top-1 govuk-!-margin-bottom-2">
-      {% endif %}
-      <a class="govuk-link govuk-body" href="{{ basePath }}/inspection/{{ inspectionNotification.reference }}/history">View previous changes</a>
-    </section>
+    {{ renderRecentChanges(recentChange, basePath + "/inspection/" + inspectionNotification.reference + "/history", "inspection-overview__recent-change", "inspection-overview__recent-change-timeline") }}
 
     <section class="govuk-!-margin-bottom-8" aria-labelledby="documents-insights-heading">
     <h2 class="govuk-heading-m" id="documents-insights-heading">Documents insights</h2>

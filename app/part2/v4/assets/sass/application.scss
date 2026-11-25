@@ -26,6 +26,15 @@
   vertical-align: top;
 }
 
+.inspection-overview__comparison-table .govuk-table__header:last-child,
+.inspection-overview__comparison-table .govuk-table__cell:last-child {
+  padding-right: 8px;
+}
+
+.inspection-overview__comparison-table tfoot .govuk-table__header:first-child {
+  white-space: nowrap;
+}
+
 .inspection-overview__comparison-species {
   font-weight: 400;
 }
