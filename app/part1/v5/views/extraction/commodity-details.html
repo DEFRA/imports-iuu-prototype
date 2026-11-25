@@ -133,10 +133,15 @@
         </div>
       </div>
 
-      <div class="govuk-button-group">
-        <button class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="add-another">
-          Add another commodity
-        </button>
+      <div class="govuk-form-group{% if errors['add-commodity'] %} govuk-form-group--error{% endif %}">
+        {% if errors['add-commodity'] %}
+          <p id="add-commodity-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['add-commodity'] }}</p>
+        {% endif %}
+        <div class="govuk-button-group{% if errors['add-commodity'] %} govuk-!-margin-bottom-0{% endif %}">
+          <button class="govuk-button govuk-button--secondary{% if errors['add-commodity'] %} govuk-!-margin-bottom-0{% endif %}" data-module="govuk-button" id="add-commodity" name="action" value="add-another"{% if errors['add-commodity'] %} aria-describedby="add-commodity-error"{% endif %}>
+            Add commodity
+          </button>
+        </div>
       </div>
 
       <h2 class="govuk-heading-m">Before you continue</h2>

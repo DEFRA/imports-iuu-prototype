@@ -1,0 +1,39 @@
+{% macro renderDocumentGuidance(headingLevel = 3) %}
+  <div class="govuk-!-margin-bottom-6">
+    <details class="govuk-details govuk-!-margin-bottom-2" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Help with required documents</span>
+      </summary>
+      <div class="govuk-details__text">
+        <h{{ headingLevel }} class="govuk-heading-s">Catch certificate</h{{ headingLevel }}>
+        <p class="govuk-body">Your Catch Certificate shows that the fish were caught legally in line with fisheries regulations.</p>
+        <p class="govuk-body">It's issued by the authority responsible for the vessel that caught the fish.</p>
+
+        <h{{ headingLevel }} class="govuk-heading-s">Processing statement</h{{ headingLevel }}>
+        <p class="govuk-body">A Processing Statement is needed when fish have been caught then processed. For example, fish that's been filleted, packed, canned or transformed into another product.</p>
+        <p class="govuk-body">Your Processing Statement provides the processing, product and traceability information needed for your notification.</p>
+        <p class="govuk-body">It links the processed product back to the original catch documentation.</p>
+
+        <h{{ headingLevel }} class="govuk-heading-s">Non-Manipulation Declaration</h{{ headingLevel }}>
+        <p class="govuk-body">A Non-Manipulation Declaration provides transit and traceability information needed to complete your notification.</p>
+        <p class="govuk-body">You'll need this document if the fish has passed through one or more countries after processing and before import into Great Britain.</p>
+      </div>
+    </details>
+
+    <details class="govuk-details govuk-!-margin-bottom-2" data-module="govuk-details">
+      <summary class="govuk-details__summary">
+        <span class="govuk-details__summary-text">Help with additional documents</span>
+      </summary>
+      <div class="govuk-details__text">
+        <p class="govuk-body">The Port Health Authority may ask for additional documentation to support their checks.</p>
+        <p class="govuk-body">Additional supporting documents are not analysed automatically and no information is collected from them, but they may be used as part of the review of your notification.</p>
+        <p class="govuk-body">Depending on your consignment, this may include:</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>a Movement Reference Number (MRN) if you're using the Common Transit Convention (CTC) to move goods between countries</li>
+          <li>a specific catch document instead of a standard catch certificate, such as an ICCAT Bluefin Tuna Catch Document for bluefin tuna</li>
+        </ul>
+        <p class="govuk-body">You should have any relevant import documentation available before you start your notification.</p>
+      </div>
+    </details>
+  </div>
+{% endmacro %}

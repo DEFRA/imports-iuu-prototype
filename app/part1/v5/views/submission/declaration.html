@@ -6,9 +6,6 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l">Import notification</span>
-    <h1 class="govuk-heading-l">Confirm your notification</h1>
-
     {% if errorList and errorList.length %}
       <div class="govuk-error-summary" data-module="govuk-error-summary" role="alert" tabindex="-1" aria-labelledby="error-summary-title">
         <h2 class="govuk-error-summary__title" id="error-summary-title">There is a problem</h2>
@@ -22,38 +19,32 @@
       </div>
     {% endif %}
 
-    <p class="govuk-body">Check the statements below. Confirm that you have uploaded the documents needed for this import, or that you do not need to provide them.</p>
+    <span class="govuk-caption-l">Import notification</span>
+    <h1 class="govuk-heading-l">Confirm your notification</h1>
+
+    <p class="govuk-body">I confirm that, to the best of my knowledge, the information provided in this notification is complete and accurate and that I have provided all documentation required for this consignment under the applicable UK illegal, unreported and unregulated (IUU) fishing legislation.</p>
+    <p class="govuk-body">This includes the relevant catch certificate and, where required, any processing statement, non-manipulation document or other supporting documentation.</p>
+    <p class="govuk-body">I understand that I may be required to provide further information or evidence to the competent authority and that failure to provide the required documentation, or providing false or misleading information, may result in the consignment being held or refused and may lead to enforcement action.</p>
 
     <form action="{{ basePath }}/declaration" method="post">
       <div class="govuk-form-group{% if errorList and errorList.length %} govuk-form-group--error{% endif %}">
         {% if errorList and errorList.length %}
-          <p id="declaration-confirmations-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Confirm each statement to continue.</p>
+          <p id="documents-confirmed-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> Confirm the declaration above</p>
         {% endif %}
         <div class="govuk-checkboxes" data-module="govuk-checkboxes">
           <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="catch-certificates-confirmed" name="catch-certificates-confirmed" type="checkbox" value="confirmed" {% if errorList and errorList.length %}aria-describedby="declaration-confirmations-error"{% endif %} {% if data['catch-certificates-confirmed'] == 'confirmed' %}checked{% endif %}>
-            <label class="govuk-label govuk-checkboxes__label" for="catch-certificates-confirmed">
-              I have uploaded all Catch Certificates for this import.
+            <input class="govuk-checkboxes__input" id="documents-confirmed" name="documents-confirmed" type="checkbox" value="confirmed" aria-describedby="documents-confirmed-hint{% if errorList and errorList.length %} documents-confirmed-error{% endif %}" {% if data['documents-confirmed'] == 'confirmed' %}checked{% endif %}>
+            <label class="govuk-label govuk-checkboxes__label" for="documents-confirmed">
+              I confirm the declaration above.
             </label>
-          </div>
-          <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="processing-statements-confirmed" name="processing-statements-confirmed" type="checkbox" value="confirmed" {% if errorList and errorList.length %}aria-describedby="declaration-confirmations-error"{% endif %} {% if data['processing-statements-confirmed'] == 'confirmed' %}checked{% endif %}>
-            <label class="govuk-label govuk-checkboxes__label" for="processing-statements-confirmed">
-              I have uploaded all Processing Statements needed for this import, or none are needed.
-            </label>
-          </div>
-          <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="non-manipulation-declarations-confirmed" name="non-manipulation-declarations-confirmed" type="checkbox" value="confirmed" {% if errorList and errorList.length %}aria-describedby="declaration-confirmations-error"{% endif %} {% if data['non-manipulation-declarations-confirmed'] == 'confirmed' %}checked{% endif %}>
-            <label class="govuk-label govuk-checkboxes__label" for="non-manipulation-declarations-confirmed">
-              I have uploaded all Non-Manipulation Declarations needed for this import, or none are needed.
-            </label>
+            <div id="documents-confirmed-hint" class="govuk-hint govuk-checkboxes__hint">
+              This declaration does not replace any signature, validation or endorsement required on the IUU documents themselves.
+            </div>
           </div>
         </div>
       </div>
 
-      <p class="govuk-body">You are responsible for ensuring all required documents have been provided.</p>
-
-      <button class="govuk-button" data-module="govuk-button">
+      <button class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
         Save and continue
       </button>
     </form>

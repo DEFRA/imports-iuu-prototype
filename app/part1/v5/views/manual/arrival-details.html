@@ -121,7 +121,7 @@
         {% if errors['country-of-export'] %}
           <p id="country-of-export-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['country-of-export'] }}</p>
         {% endif %}
-        <div id="country-of-export-hint" class="govuk-hint">If the country is outside Europe, you will need to provide a CHED number.</div>
+        <div id="country-of-export-hint" class="govuk-hint">If the country is outside Europe, you will need to provide a CHED reference.</div>
         <div class="app-commodity-search-wrapper app-country-search__wrapper" data-module="app-country-search">
           <script type="application/json" class="app-country-search__data">{{ countriesJson | safe }}</script>
           <div class="app-commodity-search-panel">
@@ -141,13 +141,21 @@
 
       <div id="conditional-ched-number" {% if data['country-of-export-region'] != 'row' %}hidden{% endif %}>
         <div class="govuk-form-group{% if errors['ched-number'] %} govuk-form-group--error{% endif %}">
-          <label class="govuk-label govuk-heading-s govuk-!-font-weight-bold" for="ched-number">CHED number</label>
+          <label class="govuk-label govuk-heading-s govuk-!-font-weight-bold" for="ched-number">CHED reference</label>
           {% if errors['ched-number'] %}
             <p id="ched-number-error" class="govuk-error-message"><span class="govuk-visually-hidden">Error:</span> {{ errors['ched-number'] }}</p>
           {% endif %}
           <div id="ched-number-hint" class="govuk-hint">For example, CHEDP.GB.2026.1234567</div>
           <input class="govuk-input govuk-input--width-20" id="ched-number" name="ched-number" type="text" value="{{ data['ched-number'] }}" aria-describedby="{% if errors['ched-number'] %}ched-number-error {% endif %}ched-number-hint">
         </div>
+        <details class="govuk-details" data-module="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">How to get a CHED reference</span>
+          </summary>
+          <div class="govuk-details__text">
+            <p class="govuk-body">Apply for a CHED reference through TRACES NT. Read the <a class="govuk-link" href="https://webgate.ec.europa.eu/imsoc-guide/tracesnt-help/Content/en/documents-certificates/ched.html" target="_blank" rel="noreferrer noopener">guidance on CHEDs in TRACES NT (opens in a new tab)</a>.</p>
+          </div>
+        </details>
       </div>
 
       <button class="govuk-button" data-module="govuk-button">

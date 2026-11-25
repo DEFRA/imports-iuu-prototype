@@ -4,6 +4,123 @@
 //
 
 window.GOVUKPrototypeKit.documentReady(() => {
+  const extractionFieldGroups = document.querySelectorAll('[data-extraction-field-group]')
+  for (const fieldGroup of extractionFieldGroups) {
+    const fieldKey = fieldGroup.dataset.fieldKey
+    const controls = Array.from(fieldGroup.querySelectorAll('input:not([type="hidden"]), textarea, select'))
+    const statusContainer = fieldGroup.querySelector('.review-extraction-field-label') ||
+      fieldGroup.querySelector('fieldset[role="group"] .govuk-fieldset__legend')
+    const describedByTarget = fieldGroup.querySelector('fieldset[role="group"]') || controls[0]
+    const initiallyMissing = fieldGroup.dataset.fieldMissing === 'true'
+    let previousValue = JSON.stringify(controls.map((control) => control.value.trim()))
+    const originalValue = previousValue
+    const initiallyLowConfidence = fieldGroup.dataset.fieldStatus === 'Low confidence'
+    let manualStatus = ['Manually updated', 'Manually added'].includes(fieldGroup.dataset.fieldStatus)
+      ? fieldGroup.dataset.fieldStatus
+      : ''
+
+    const updateDescribedBy = (status, missing) => {
+      if (!describedByTarget) return
+
+      const describedBy = (describedByTarget.getAttribute('aria-describedby') || '')
+        .split(/\s+/)
+        .filter((id) => id && id !== `${fieldKey}-status` && id !== `${fieldKey}-error`)
+
+      if (missing) describedBy.push(`${fieldKey}-error`)
+      if (status && !missing) describedBy.push(`${fieldKey}-status`)
+      describedByTarget.setAttribute('aria-describedby', describedBy.join(' '))
+    }
+
+    const updateStatus = (status) => {
+      let statusElement = fieldGroup.querySelector(`#${fieldKey}-status`)
+      if (!status) {
+        statusElement?.remove()
+      } else {
+        if (!statusElement) {
+          statusElement = document.createElement('span')
+          statusElement.id = `${fieldKey}-status`
+          statusElement.className = statusContainer?.matches('fieldset .govuk-fieldset__legend')
+            ? 'govuk-hint govuk-!-display-inline govuk-!-margin-bottom-0'
+            : 'govuk-hint govuk-!-margin-bottom-0'
+          statusContainer.append(statusElement)
+        }
+        statusElement.textContent = status === 'Manually updated'
+          ? `Updated from: ${fieldGroup.dataset.originalValue}`
+          : status
+        statusElement.classList.toggle('review-extraction-field-status--manual', ['Manually updated', 'Manually added'].includes(status))
+      }
+
+      fieldGroup.classList.toggle('review-extraction-field-group--low-confidence', status === 'Low confidence')
+      updateDescribedBy(status, fieldGroup.dataset.fieldMissing === 'true')
+    }
+
+    const updateMissingState = (missing) => {
+      fieldGroup.dataset.fieldMissing = String(missing)
+      fieldGroup.classList.toggle('govuk-form-group--error', missing)
+      const errorElement = fieldGroup.querySelector(`#${fieldKey}-error`)
+
+      if (missing && !errorElement) {
+        const errorMessage = document.createElement('p')
+        errorMessage.id = `${fieldKey}-error`
+        errorMessage.className = 'govuk-error-message'
+        const visuallyHidden = document.createElement('span')
+        visuallyHidden.className = 'govuk-visually-hidden'
+        visuallyHidden.textContent = 'Error:'
+        errorMessage.append(visuallyHidden, ` ${fieldGroup.dataset.fieldErrorMessage}`)
+
+        const hint = fieldGroup.querySelector(`#${fieldKey}-hint`)
+        const firstControl = fieldGroup.querySelector('.govuk-date-input, .govuk-input__wrapper, textarea, input')
+        if (hint) {
+          hint.before(errorMessage)
+        } else if (firstControl) {
+          firstControl.before(errorMessage)
+        } else {
+          fieldGroup.append(errorMessage)
+        }
+      } else if (!missing) {
+        errorElement?.remove()
+      }
+
+      for (const control of controls) {
+        control.classList.toggle('govuk-input--error', missing && control.tagName === 'INPUT')
+        control.classList.toggle('govuk-textarea--error', missing && control.tagName === 'TEXTAREA')
+        if (missing) {
+          control.setAttribute('aria-invalid', 'true')
+        } else {
+          control.removeAttribute('aria-invalid')
+        }
+      }
+
+      updateDescribedBy('', missing)
+    }
+
+    fieldGroup.addEventListener('focusout', (event) => {
+      if (fieldGroup.contains(event.relatedTarget)) return
+
+      const currentValue = JSON.stringify(controls.map((control) => control.value.trim()))
+      if (currentValue === previousValue) return
+      previousValue = currentValue
+
+      const isMissing = controls.every((control) => !control.value.trim())
+      updateMissingState(isMissing)
+
+      if (isMissing) {
+        updateStatus('')
+        return
+      }
+
+      if (initiallyLowConfidence && currentValue === originalValue) {
+        updateStatus('Low confidence')
+        return
+      }
+
+      if (!manualStatus) {
+        manualStatus = initiallyMissing ? 'Manually added' : 'Manually updated'
+      }
+      updateStatus(manualStatus)
+    })
+  }
+
   const sortControls = Array.from(document.querySelectorAll('[data-importer-sort-control]'))
   for (const control of sortControls) {
     control.addEventListener('change', () => {

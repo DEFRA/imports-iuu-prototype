@@ -429,6 +429,14 @@ const getActiveFilterChips = (filters, basePath, tab) => {
 
 const buildInspectionDashboardViewModel = (query = {}, today = new Date(), statusOverrides = {}, basePath = '/part2/v4') => {
   const filters = buildDashboardFilters(query)
+  const arrivalFromDate = parseIsoDateInput(filters.arrivalFrom)
+  const arrivalToDate = parseIsoDateInput(filters.arrivalTo)
+  const arrivalToError = arrivalFromDate && arrivalToDate && arrivalToDate < arrivalFromDate
+    ? 'Arrival date to must be the same as or after arrival date from'
+    : ''
+  const errorList = arrivalToError
+    ? [{ text: arrivalToError, href: `#${filters.tab}-filter-arrival-to` }]
+    : []
   const consignments = mockConsignmentSummariesApi.listConsignmentSummaries(today).map((consignment) => {
     const override = statusOverrides[consignment.reference]
     if (!override) return consignment
@@ -475,6 +483,8 @@ const buildInspectionDashboardViewModel = (query = {}, today = new Date(), statu
 
   return {
     activeTab: filters.tab,
+    arrivalToError,
+    errorList,
     dashboardFilters: filters,
     filterOptions: {
       referenceOptions: consignments.map((consignment) => consignment.reference).sort((first, second) => first.localeCompare(second, 'en-GB')),

@@ -1,0 +1,25 @@
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+
+{% macro renderRecentChanges(recentChange, historyUrl, sectionClass, timelineClass) %}
+  <section class="{{ sectionClass }} govuk-!-margin-bottom-8" aria-labelledby="recent-change-heading">
+    <h2 class="govuk-heading-m" id="recent-change-heading">Recent changes</h2>
+    {{ mojTimeline({ headingLevel: 3, classes: timelineClass, items: [recentChange] }) }}
+    {% if recentChange.completionCertificate %}
+      <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible govuk-!-margin-top-1 govuk-!-margin-bottom-2">
+    {% endif %}
+    <a class="govuk-link govuk-body" href="{{ historyUrl }}">View previous changes</a>
+  </section>
+{% endmacro %}
+
+{% macro renderNotificationHistory(reference, notificationHistory, returnUrl) %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l">{{ reference }}</span>
+      <h1 class="govuk-heading-xl">Notification history</h1>
+      {{ mojTimeline({ headingLevel: 2, items: notificationHistory }) }}
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{ returnUrl }}">Return to notification details</a>
+      </p>
+    </div>
+  </div>
+{% endmacro %}

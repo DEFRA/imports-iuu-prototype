@@ -48,6 +48,21 @@ const getInspectionNotificationByReference = (reference, today = new Date()) => 
   return notifications.find((notification) => notification.reference === reference)
 }
 
+const getWeightTotal = (species, field) => {
+  const values = species.map((item) => String(item[field] || 'Not provided'))
+  if (!values.length) return 'Not provided'
+
+  const weights = values.map((value) => {
+    const match = value.match(/^([\d,]+(?:\.\d+)?)\s*kg$/)
+    return match ? Number(match[1].replace(/,/g, '')) : null
+  })
+  const allNumeric = weights.every((weight) => weight !== null && Number.isFinite(weight))
+
+  return allNumeric
+    ? `${new Intl.NumberFormat('en-GB', { maximumFractionDigits: 3 }).format(weights.reduce((total, weight) => total + weight, 0))} kg`
+    : (new Set(values).size === 1 ? values[0] : 'Incomplete')
+}
+
 const buildCommodityWeightComparison = (notification) => {
   const groupsByCode = new Map()
   for (const comparison of notification.commodityWeightComparisons || []) {
@@ -66,22 +81,15 @@ const buildCommodityWeightComparison = (notification) => {
   const groups = Array.from(groupsByCode.values()).map((group) => ({
     ...group,
     subtotals: Object.fromEntries(weightFields.map((field) => {
-      const values = group.species.map((species) => String(species[field] || 'Not provided'))
-      const weights = values.map((value) => {
-        const match = value.match(/^([\d,]+(?:\.\d+)?)\s*kg$/)
-        return match ? Number(match[1].replace(/,/g, '')) : null
-      })
-      const allNumeric = weights.every((weight) => weight !== null && Number.isFinite(weight))
-      const subtotal = allNumeric
-        ? `${new Intl.NumberFormat('en-GB', { maximumFractionDigits: 3 }).format(weights.reduce((total, weight) => total + weight, 0))} kg`
-        : (new Set(values).size === 1 ? values[0] : 'Incomplete')
-      return [field, subtotal]
+      return [field, getWeightTotal(group.species, field)]
     }))
   }))
+  const allSpecies = groups.flatMap((group) => group.species)
   return {
     commodityCount: groups.length,
     speciesCount: groups.reduce((count, group) => count + group.species.length, 0),
     totalWeight: notification.declaredWeight || 'Not provided',
+    totals: Object.fromEntries(weightFields.map((field) => [field, getWeightTotal(allSpecies, field)])),
     initialGroup: groups[0],
     remainingGroups: groups.slice(1)
   }

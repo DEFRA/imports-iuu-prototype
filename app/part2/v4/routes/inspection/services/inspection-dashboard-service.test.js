@@ -20,6 +20,38 @@ const additionalDocuments = require('../../../data/additional-documents')
 
 const fixedToday = new Date(Date.UTC(2026, 0, 1))
 
+test('reversed arrival dates retain answers and link the error to the submitted tab', () => {
+  for (const tab of ['active', 'completed']) {
+    const model = buildInspectionDashboardViewModel({
+      tab,
+      'filter-arrival-from': '2025-12-20',
+      'filter-arrival-to': '2025-12-19'
+    }, fixedToday)
+    assert.equal(model.dashboardFilters.arrivalFrom, '2025-12-20')
+    assert.equal(model.dashboardFilters.arrivalTo, '2025-12-19')
+    assert.equal(model.arrivalToError, 'Arrival date to must be the same as or after arrival date from')
+    assert.deepEqual(model.errorList, [{
+      text: model.arrivalToError,
+      href: `#${tab}-filter-arrival-to`
+    }])
+  }
+})
+
+test('arrival filters allow past dates, equal dates and open-ended ranges', () => {
+  for (const dates of [
+    {},
+    { 'filter-arrival-from': '2025-12-19' },
+    { 'filter-arrival-to': '2025-12-20' },
+    { 'filter-arrival-from': '2025-12-19', 'filter-arrival-to': '2025-12-20' },
+    { 'filter-arrival-from': '2025-12-20', 'filter-arrival-to': '2025-12-20' },
+    { 'filter-arrival-from': '2026-01-01', 'filter-arrival-to': '2026-01-02' }
+  ]) {
+    const model = buildInspectionDashboardViewModel(dates, fixedToday)
+    assert.equal(model.arrivalToError, '')
+    assert.deepEqual(model.errorList, [])
+  }
+})
+
 test('shows inspection actions in the agreed order without the intervention outcome', () => {
   const formPath = path.join(__dirname, '..', '..', '..', 'views', 'inspection', 'components', 'inspection-action-form.njk')
   const form = fs.readFileSync(formPath, 'utf8')
@@ -610,6 +642,12 @@ test('groups comparison species by code and retains all source weight values', (
   assert.equal(comparison.commodityCount, 5)
   assert.equal(comparison.speciesCount, 12)
   assert.equal(comparison.totalWeight, '8,170 kg')
+  assert.deepEqual(comparison.totals, {
+    notificationWeight: '8,170 kg',
+    catchCertificateWeight: '8,170 kg',
+    processingStatementWeight: '8,170 kg',
+    nonManipulationDeclarationWeight: '8,170 kg'
+  })
   assert.equal(comparison.initialGroup.species.length, 2)
   assert.equal(comparison.remainingGroups.length, 4)
   assert.equal(comparison.initialGroup.species[0].scientificName, 'Scomber scombrus')
@@ -625,6 +663,12 @@ test('groups comparison species by code and retains all source weight values', (
     }
   }
   const mismatch = buildCommodityWeightComparison(getInspectionNotificationByReference('GB-IUU-2026-11002', fixedToday))
+  assert.deepEqual(mismatch.totals, {
+    notificationWeight: 'Incomplete',
+    catchCertificateWeight: '152,000 kg',
+    processingStatementWeight: 'Not provided',
+    nonManipulationDeclarationWeight: 'Not provided'
+  })
   assert.equal(mismatch.remainingGroups[0].species[0].notificationWeight, 'Not declared')
   assert.equal(mismatch.initialGroup.species[0].processingStatementWeight, 'Not provided')
   assert.equal(mismatch.remainingGroups[0].subtotals.notificationWeight, 'Not declared')

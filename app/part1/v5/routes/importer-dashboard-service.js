@@ -283,6 +283,45 @@ const buildCommoditySpeciesSummary = (importedSpecies) => {
   }
 }
 
+const getSpeciesWeightSubtotal = (species, field) => {
+  const values = species.map((item) => {
+    const value = item[field]
+    return typeof value === 'number' && Number.isFinite(value)
+      ? `${value} kg`
+      : normalizeValue(value) || 'Not provided'
+  })
+  const weights = values.map((value) => {
+    const match = value.match(/^([\d,]+(?:\.\d+)?)\s*(?:kg)?$/i)
+    return match ? Number(match[1].replace(/,/g, '')) : null
+  })
+  const allNumeric = weights.every((weight) => weight !== null && Number.isFinite(weight))
+
+  if (allNumeric) {
+    return `${new Intl.NumberFormat('en-GB', { maximumFractionDigits: 3 }).format(weights.reduce((total, weight) => total + weight, 0))} kg`
+  }
+
+  return new Set(values).size === 1 ? values[0] : 'Incomplete'
+}
+
+const buildNotificationSpeciesGroups = (importedSpecies) => {
+  const groupsByCode = new Map()
+  for (const species of Array.isArray(importedSpecies) ? importedSpecies : []) {
+    const code = normalizeValue(species.commodityCode) || 'Not provided'
+    if (!groupsByCode.has(code)) {
+      groupsByCode.set(code, { code, species: [] })
+    }
+    groupsByCode.get(code).species.push(species)
+  }
+
+  return Array.from(groupsByCode.values()).map((group) => ({
+    ...group,
+    subtotals: {
+      notificationWeight: getSpeciesWeightSubtotal(group.species, 'notificationWeight'),
+      catchCertificateWeight: getSpeciesWeightSubtotal(group.species, 'catchCertificateWeight')
+    }
+  }))
+}
+
 const filterAndSortConsignments = (consignments, filters, tab) => {
   const allowedStatuses = tab === 'completed' ? historicalStatuses : activeStatuses
   const direction = filters.sortOrder === 'asc' ? 1 : -1
@@ -419,6 +458,7 @@ const getActiveFilterChips = (filters, options, basePath, variant, activeTab) =>
 
 module.exports = {
   buildDraftSessionData,
+  buildNotificationSpeciesGroups,
   filterAndSortConsignments,
   getDashboardFilters,
   getFilterOptions,
